@@ -239,7 +239,7 @@ export default function Footer() {
               <ul className="space-y-1 text-xs text-slate-500">
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">About us</Link></li>
                 <li><a href="#events" className="hover:text-cyan-600 transition">Events</a></li>
-                <li><a href="#contact" className="hover:text-cyan-600 transition">Contact Us</a></li>
+                <li><Link to="/contact" className="hover:text-cyan-600 transition">Contact Us</Link></li>
               </ul>
             </div>
 

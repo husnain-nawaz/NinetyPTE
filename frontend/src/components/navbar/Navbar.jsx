@@ -80,12 +80,13 @@ export default function Navbar() {
           {/* Right Action Items matching business screenshot: Headset Icon, 文A, "Get Free Trial" */}
           <div className="hidden sm:flex items-center gap-4 xl:gap-5">
             {/* Headset Support Button (Cyan Outline with Cyan Headset Icon) */}
-            <button 
+            <Link 
+              to="/contact"
               className="w-8 h-8 rounded-full border border-cyan-400 hover:bg-cyan-50 text-cyan-500 flex items-center justify-center transition shadow-2xs" 
-              title="Customer Support & Guidance"
+              title="Contact Us & Guidance"
             >
               <Headphones className="w-4 h-4 stroke-[2.5]" />
-            </button>
+            </Link>
 
             {/* Language / Translation Icon in Cyan */}
             <button 
@@ -122,10 +123,14 @@ export default function Navbar() {
             
             <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
               <div className="flex items-center justify-between text-slate-700">
-                <button className="flex items-center gap-1.5 text-cyan-600 text-xs font-bold">
+                <Link 
+                  to="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-1.5 text-cyan-600 text-xs font-bold"
+                >
                   <Headphones className="w-4 h-4" />
                   <span>Support</span>
-                </button>
+                </Link>
                 <button className="flex items-center gap-1 text-cyan-600 text-xs font-bold">
                   <span className="font-serif">文A</span>
                   <span>Language</span>
@@ -202,12 +207,13 @@ export default function Navbar() {
         {/* Right Action Items matching reference: Headset Icon, Translate, Log in >, Start Free Trial > */}
         <div className="hidden sm:flex items-center gap-4 xl:gap-5">
           {/* Headset Support Button (White Circle with Cyan Headset Icon) */}
-          <button 
+          <Link 
+            to="/contact"
             className="w-8 h-8 rounded-full bg-white hover:bg-slate-50 text-cyan-600 flex items-center justify-center shadow-xs transition" 
-            title="Customer Support & Guidance"
+            title="Contact Us & Guidance"
           >
             <Headphones className="w-4 h-4 stroke-[2.5]" />
-          </button>
+          </Link>
 
           {/* Language / Translation Icon */}
           <button 
