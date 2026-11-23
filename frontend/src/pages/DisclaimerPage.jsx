@@ -186,17 +186,54 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
           </div>
         )}
 
-        {/* REFUND POLICY VIEW */}
+        {/* REFUND / CANCELLATION POLICY VIEW */}
         {isRefund && (
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
-              Refund & Cancellation Policy
+              Refund / Cancellation Policy
             </h1>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              Due to the immediate digital provisioning of NinetyPTE online mock tests, question bank access, and automated AI scoring credits, digital subscriptions are non-refundable once activated.
+              Thanks for registering on NinetyPTE.
             </p>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              For PTE exam voucher bookings, cancellations and rescheduling are subject to official Pearson test center policies. If you experience an unresolvable technical disruption on our portal, contact support at support@ninetypte.com for investigation and credit adjustment.
+              All the products/services that we offer on our website come with a free trial of each of them. Given the nature of digital goods, it becomes very difficult for us to offer a refund or credit on a purchase.
+            </p>
+
+            <div className="space-y-3">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+                Hence, we advise users to first go for the free trials of the below-mentioned products/services for their satisfaction:
+              </p>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
+                <li>
+                  <strong>Subscription</strong> – we offer free AI evaluations for users to get satisfied & accustomed to the AI scoring system before purchasing the subscription.
+                </li>
+                <li>
+                  <strong>Mock Tests</strong> – both full & sectional mock tests offer a one-time completely free, fully scored test for users to check for the AI scoring system, pattern & their system compatibility ruling out all issues they could face after purchasing the tests or subscription.
+                </li>
+              </ul>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+                However, we do understand that there could sometimes be a situation where the user would want to cancel the purchase & get a refund. For such an instance, we offer a cancellation/refund where the user will need to intimate us within 30 minutes of making the purchase. The following need to be taken care of while proceeding for cancellation/refund:
+              </p>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700">
+                <li>The cancellation request must only be sent to <span className="font-semibold text-cyan-600">support@ninetypte.com</span> strictly within 30 minutes of the purchase/making the payment.</li>
+                <li>Cancellation requests sent only to the mentioned email will be considered.</li>
+                <li>Any email received after 30 minutes of making the payment will not be considered for cancellation & no refund will be processed for any such request.</li>
+                <li>Any mock tests purchased will not be cancelled/refunded as the access once given cannot be revoked.</li>
+                <li>Mock tests that have been unlocked using codes will not be refunded. In such an instance, the unlock code provided by the NinetyPTE team must not have been used by the user or any other party to unlock any of the available mock tests.</li>
+                <li>Once your cancellation request has been accepted & processed, it might take up to 5 business days for the refunded amount to reach you.</li>
+                <li>Please understand that we will process a refund only on the received amount, but there is no guarantee that you will get the same amount back into your account as there are 3rd party payment merchants involved who would charge a fee or commissions on any refund request.</li>
+                <li>NinetyPTE is not responsible for any other fees (bank fee, international transaction fee etc.) incurred by the user while making the payment & hence, this amount will not be included in the refund request.</li>
+                <li><strong>Note:</strong> Please be advised that refunds will not be processed for missing out on active promotions. Thank you for your understanding.</li>
+              </ul>
+            </div>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal pt-2">
+              It is understood that the user has gone through the refund & cancellation policy provided on <span className="font-semibold text-cyan-600">www.ninetypte.com</span> & has agreed to it before proceeding with the payment.
             </p>
           </div>
         )}
