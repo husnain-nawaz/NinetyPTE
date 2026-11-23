@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown, ChevronRight, Headphones, Menu, X } from 'lucide-react';
+import ProductsMegaMenu from './ProductsMegaMenu';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setProductsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setProductsOpen(false);
+    }, 180);
+  };
 
   return (
     <nav className="relative z-50 bg-gradient-to-r from-[#1e40af] via-[#0284c7] to-[#06b6d4] text-white px-4 sm:px-8 py-3.5 shadow-sm">
@@ -21,29 +34,25 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-white">
-            <div className="relative">
+            <div 
+              className="relative py-2"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <button 
                 onClick={() => setProductsOpen(!productsOpen)}
                 className="flex items-center gap-1 hover:text-cyan-200 transition font-semibold"
               >
                 <span>Products</span>
-                <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                <ChevronDown className={`w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 ${productsOpen ? 'rotate-180 text-cyan-200' : ''}`} />
               </button>
 
               {productsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white text-slate-800 rounded-xl shadow-xl py-2 border border-slate-100 z-50 text-xs">
-                  <a href="#pte-academic" className="block px-4 py-2 hover:bg-slate-50 font-semibold text-slate-800">
-                    PTE Academic / UKVI
-                  </a>
-                  <a href="#pte-core" className="block px-4 py-2 hover:bg-slate-50 font-semibold text-slate-800">
-                    PTE Core
-                  </a>
-                  <a href="#mock-tests" className="block px-4 py-2 hover:bg-slate-50 font-semibold text-slate-800">
-                    AI Scored Mock Tests
-                  </a>
-                  <a href="#institutes" className="block px-4 py-2 hover:bg-slate-50 font-semibold text-slate-800">
-                    Institute Software (B2B)
-                  </a>
+                <div 
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <ProductsMegaMenu />
                 </div>
               )}
             </div>
