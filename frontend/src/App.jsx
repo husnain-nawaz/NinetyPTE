@@ -11,6 +11,7 @@ import InstituteSoftwarePage from './pages/InstituteSoftwarePage';
 import AboutPTEPage from './pages/AboutPTEPage';
 import AboutUsPage from './pages/AboutUsPage';
 import EventsPage from './pages/EventsPage';
+import PTEJobsPage from './pages/PTEJobsPage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -54,6 +55,8 @@ function AppContent() {
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/webinars" element={<EventsPage />} />
+          <Route path="/pte-jobs" element={<PTEJobsPage />} />
+          <Route path="/jobs" element={<PTEJobsPage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />
