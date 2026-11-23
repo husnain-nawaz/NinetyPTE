@@ -26,6 +26,7 @@ export default function App() {
             <Route path="/mobile-app" element={<MobileAppPage />} />
             <Route path="/business" element={<InstituteSoftwarePage />} />
             <Route path="/institute-software" element={<InstituteSoftwarePage />} />
+            <Route path="/pte-for-businesses" element={<InstituteSoftwarePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
