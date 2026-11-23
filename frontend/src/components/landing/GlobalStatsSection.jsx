@@ -24,10 +24,10 @@ export default function GlobalStatsSection() {
               Global PTE Network
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug">
-              Alfa PTE's Practice Questions & User Insights
+              NinetyPTE's Practice Questions & User Insights
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-lg">
-              Alfa PTE stands out by offering the most extensive collection of practice questions and mock tests available, ensuring that every aspect of your preparation is covered. Explore the world of learning with Alfa PTE. Our platform connects you with a diverse community of learners, providing insights into study trends, success rates, and collective progress. Join us and be part of a global movement towards PTE excellence, equipped with the best resources for success.
+              NinetyPTE stands out by offering the most extensive collection of practice questions and mock tests available, ensuring that every aspect of your preparation is covered. Explore the world of learning with NinetyPTE. Our platform connects you with a diverse community of learners, providing insights into study trends, success rates, and collective progress. Join us and be part of a global movement towards PTE excellence, equipped with the best resources for success.
             </p>
           </div>
 

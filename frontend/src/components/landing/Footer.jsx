@@ -17,8 +17,8 @@ export default function Footer() {
           {/* Column 1: Brand & Contact */}
           <div className="lg:col-span-2 space-y-4">
             <a href="#" className="flex items-center gap-1.5 group">
-              <span className="text-3xl font-black italic tracking-tighter text-slate-900">
-                alfa
+              <span className="text-3xl font-black tracking-tighter text-slate-900">
+                ninety<span className="text-cyan-500 font-extrabold">pte</span>
               </span>
               <span className="w-2 h-2 rounded-full bg-cyan-500 mb-2"></span>
             </a>
@@ -139,7 +139,7 @@ export default function Footer() {
         {/* Bottom Bar: Copyright & Legal Disclaimer */}
         <div className="border-t border-slate-200/80 pt-8 space-y-4 text-[11px] text-slate-400">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>All rights reserved © Alfa Education / NinetyPTE, 2026</p>
+            <p>All rights reserved © NinetyPTE, 2026</p>
             <div className="flex flex-wrap gap-4 font-semibold text-slate-500">
               <a href="#disclaimer" className="hover:text-cyan-600">Disclaimer</a>
               <a href="#terms" className="hover:text-cyan-600">Terms & Conditions</a>
@@ -149,7 +149,7 @@ export default function Footer() {
           </div>
 
           <p className="text-center sm:text-left text-[10px] text-slate-400 leading-relaxed">
-            Alfa / NinetyPTE is an independent test preparation platform and is not affiliated with, endorsed by, or connected to Pearson Education Ltd or Pearson VUE®.
+            NinetyPTE is an independent test preparation platform and is not affiliated with, endorsed by, or connected to Pearson Education Ltd or Pearson VUE®.
           </p>
         </div>
 

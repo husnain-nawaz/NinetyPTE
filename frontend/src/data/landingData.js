@@ -61,49 +61,49 @@ export const GLOBAL_OFFICES = [
   {
     country: "Australia",
     flag: "🇦🇺",
-    name: "Alfa PTE",
+    name: "NinetyPTE",
     address: "Level 19, 263 William Street Melbourne VIC 3000, Australia",
     phone: "+61 470 260 221"
   },
   {
     country: "India",
     flag: "🇮🇳",
-    name: "Alfa PTE (ALFABITNET SOLUTIONS PVT LTD)",
+    name: "NinetyPTE Global Technologies",
     address: "Suite 514, SBR CV Towers, Madhapur, Hyderabad, Telangana 500081, India",
     phone: "+91 88664 96537"
   },
   {
     country: "UAE",
     flag: "🇦🇪",
-    name: "Alfa EdTech Solutions",
+    name: "NinetyPTE EdTech Solutions",
     address: "Premises No IH-00-01-01-OF-01, Level 1, Innovation One, Dubai International Financial Centre, UAE",
     phone: "+971 4 582 9100"
   },
   {
     country: "Bangladesh",
     flag: "🇧🇩",
-    name: "Alfa Edu Bangladesh",
+    name: "NinetyPTE Edu Bangladesh",
     address: "20/1, Indira Road, Farmgate, Dhaka 1230",
     phone: "+880 18325-85969 / +880 17120-15065"
   },
   {
     country: "Pakistan",
     flag: "🇵🇰",
-    name: "Opal Institute",
+    name: "Opal Institute (NinetyPTE Regional Partner)",
     address: "55P3+4FC, Service Rd Shaheenabad, Gujranwala",
     phone: "+92 325 8603436"
   },
   {
     country: "Turkey",
     flag: "🇹🇷",
-    name: "Alfa Education Teknoloji Ve Pazarlama",
+    name: "NinetyPTE Education Teknoloji",
     address: "Osmanaga mahallesi murvercicegi sokak no: 19/24 Kadikoy / Istanbul",
     phone: "+90 5548579361"
   },
   {
     country: "Indonesia",
     flag: "🇮🇩",
-    name: "Yayasan Berdayakan Anak Bangsa",
+    name: "Yayasan Berdayakan Anak Bangsa (NinetyPTE Partner)",
     address: "Jalan Merdeka Gg., Merak No 4A-B, Indonesia",
     phone: "+62 8115603210"
   }

@@ -31,7 +31,7 @@ export default function FeaturesSection() {
         {/* Main Section Heading */}
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Why Alfa PTE is the Best PTE <span className="text-cyan-500">Practice Platform</span> for Exam Success
+            Why NinetyPTE is the Best PTE <span className="text-cyan-500">Practice Platform</span> for Exam Success
           </h2>
         </div>
 
@@ -45,7 +45,7 @@ export default function FeaturesSection() {
               Instant AI Scoring for Every PTE Practice Test
             </h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Alfa PTE's cutting-edge AI-powered scoring is similar to the PTE along with instant score feedback empowering the users to efficiently identify their strengths and areas for improvement, thereby streamlining their study process and enhancing their preparation for the PTE exam.
+              NinetyPTE's cutting-edge AI-powered scoring is similar to the PTE along with instant score feedback empowering the users to efficiently identify their strengths and areas for improvement, thereby streamlining their study process and enhancing their preparation for the PTE exam.
             </p>
             <div className="pt-2">
               <a
@@ -124,7 +124,7 @@ export default function FeaturesSection() {
               Take Full-Length, Sectional, Timed & Custom PTE Mock Tests
             </h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Alfa PTE provides an extensive range of PTE mock tests with in-depth score analytics for the users to prepare. These include full mock tests, sectional mock tests, and a one-of-its-kind 'Create Your Own Mock Test' feature that enables you to create a mock test with your choice of questions helping you to prepare effectively for the PTE exam.
+              NinetyPTE provides an extensive range of PTE mock tests with in-depth score analytics for the users to prepare. These include full mock tests, sectional mock tests, and a one-of-its-kind 'Create Your Own Mock Test' feature that enables you to create a mock test with your choice of questions helping you to prepare effectively for the PTE exam.
             </p>
             <div className="pt-2">
               <a
@@ -148,7 +148,7 @@ export default function FeaturesSection() {
               Detailed PTE Practice & Performance Analytics
             </h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Alfa PTE enriches your study experience with detailed practice tools and advanced analytics, giving you an accurate picture of your performance and meticulously tracking your performance to fine-tune your preparation strategy for the PTE exam, ensuring a comprehensive understanding of the test components.
+              NinetyPTE enriches your study experience with detailed practice tools and advanced analytics, giving you an accurate picture of your performance and meticulously tracking your performance to fine-tune your preparation strategy for the PTE exam, ensuring a comprehensive understanding of the test components.
             </p>
             <div className="pt-2">
               <a
@@ -206,13 +206,13 @@ export default function FeaturesSection() {
           <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200/80 space-y-4 flex flex-col justify-between">
             <div className="space-y-3">
               <span className="text-xs font-bold tracking-wider uppercase text-cyan-600">
-                Practice PTE Online with the Alfa PTE Mobile App
+                Practice PTE Online with the NinetyPTE Mobile App
               </span>
               <h4 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
                 Smart PTE Practice App for PTE Academic, UKVI & PTE Core
               </h4>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Practice on the go with Alfa PTE's comprehensive PTE practice mobile application that offers a complete solution for PTE preparation like AI-powered practice tests, mock tests, detailed score analysis, multi-lingual support & many more amazing features.
+                Practice on the go with NinetyPTE's comprehensive PTE practice mobile application that offers a complete solution for PTE preparation like AI-powered practice tests, mock tests, detailed score analysis, multi-lingual support & many more amazing features.
               </p>
             </div>
 
@@ -250,7 +250,7 @@ export default function FeaturesSection() {
                 Explore More Features to Support Your PTE Preparation
               </h4>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Alfa PTE offers a lot of other innovative tools designed to enhance your PTE exam preparation, ensuring a well-rounded and effective study experience — including Band 9 essay templates, collocation banks, continuous MP3 audio player, and weekly prediction files.
+                NinetyPTE offers a lot of other innovative tools designed to enhance your PTE exam preparation, ensuring a well-rounded and effective study experience — including Band 9 essay templates, collocation banks, continuous MP3 audio player, and weekly prediction files.
               </p>
             </div>
 

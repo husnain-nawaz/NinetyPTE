@@ -11,8 +11,8 @@ export default function Navbar() {
         {/* Brand Logo */}
         <div className="flex items-center gap-8">
           <a href="#" className="flex items-center gap-1.5 group">
-            <span className="text-3xl font-black italic tracking-tighter text-white">
-              alfa
+            <span className="text-3xl font-black tracking-tighter text-white">
+              ninety<span className="text-cyan-400 font-extrabold">pte</span>
             </span>
             <span className="w-2 h-2 rounded-full bg-cyan-400 mb-2"></span>
           </a>

@@ -25,7 +25,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-white/85 text-xs sm:text-sm leading-relaxed max-w-lg font-normal">
-              Unlock your potential with Alfa PTE, the leading practice platform for PTE Academic / UKVI, and PTE Core preparation. Join our global community of over a million users and begin your journey to achieving your desired scores today!
+              Unlock your potential with NinetyPTE, the leading practice platform for PTE Academic / UKVI, and PTE Core preparation. Join our global community of over a million users and begin your journey to achieving your desired scores today!
             </p>
 
             <div>
@@ -107,9 +107,9 @@ export default function HeroSection() {
                 <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <div className="flex items-center gap-1.5">
                     <div className="w-5 h-5 rounded-full bg-cyan-400 text-slate-950 text-[10px] font-black flex items-center justify-center">
-                      A
+                      90
                     </div>
-                    <span className="text-[10px] font-bold">Alfa PTE User</span>
+                    <span className="text-[10px] font-bold">NinetyPTE User</span>
                   </div>
                   <span className="text-[8px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded font-mono">
                     VIP
