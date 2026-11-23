@@ -14,6 +14,7 @@ import EventsPage from './pages/EventsPage';
 import PTEJobsPage from './pages/PTEJobsPage';
 import TrainTheTrainerPage from './pages/TrainTheTrainerPage';
 import PTEForGermanyPage from './pages/PTEForGermanyPage';
+import PTEForSingaporePage from './pages/PTEForSingaporePage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -63,6 +64,8 @@ function AppContent() {
           <Route path="/train-trainer" element={<TrainTheTrainerPage />} />
           <Route path="/pte-for-germany" element={<PTEForGermanyPage />} />
           <Route path="/pte-germany" element={<PTEForGermanyPage />} />
+          <Route path="/pte-for-singapore" element={<PTEForSingaporePage />} />
+          <Route path="/pte-singapore" element={<PTEForSingaporePage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />
