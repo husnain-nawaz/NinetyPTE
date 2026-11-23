@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Headphones, Menu, X } from 'lucide-react';
 import ProductsMegaMenu from './ProductsMegaMenu';
 
@@ -25,15 +26,17 @@ export default function Navbar() {
         {/* Left Side: Brand Logo + Nav Links */}
         <div className="flex items-center gap-6 xl:gap-8">
           {/* Brand Logo */}
-          <a href="#" className="flex items-center gap-1.5 group shrink-0">
+          <Link to="/" className="flex items-center gap-1.5 group shrink-0">
             <span className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
               ninety<span className="text-cyan-300 font-extrabold">pte</span>
             </span>
             <span className="w-2 h-2 rounded-full bg-cyan-300 mb-2"></span>
-          </a>
+          </Link>
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-white">
+            <Link to="/" className="hover:text-cyan-200 transition font-semibold">Home</Link>
+
             <div 
               className="relative py-2"
               onMouseEnter={handleMouseEnter}
@@ -57,7 +60,7 @@ export default function Navbar() {
               )}
             </div>
 
-            <a href="#pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</a>
+            <Link to="/pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</Link>
             <a href="#business" className="hover:text-cyan-200 transition font-semibold">Business</a>
             <a href="#mobile-app" className="hover:text-cyan-200 transition font-semibold">Mobile App</a>
             <a href="#voucher" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</a>

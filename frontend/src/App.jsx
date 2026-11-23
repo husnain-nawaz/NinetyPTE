@@ -1,54 +1,34 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/navbar/Navbar';
-import HeroSection from './components/landing/HeroSection';
-import FeaturesSection from './components/landing/FeaturesSection';
-import GlobalStatsSection from './components/landing/GlobalStatsSection';
-import ProductTabsSection from './components/landing/ProductTabsSection';
-import PTEInfoSections from './components/landing/PTEInfoSections';
-import SuccessStoriesSection from './components/landing/SuccessStoriesSection';
-import InstituteSoftwareSection from './components/landing/InstituteSoftwareSection';
-import GlobalPresenceSection from './components/landing/GlobalPresenceSection';
-import FAQSection from './components/landing/FAQSection';
 import Footer from './components/landing/Footer';
 import FloatingWidgets from './components/landing/FloatingWidgets';
+import LandingPage from './pages/LandingPage';
+import PricingPage from './pages/PricingPage';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-800 antialiased selection:bg-cyan-500 selection:text-white relative">
-      {/* Top Navbar */}
-      <Navbar />
+    <BrowserRouter>
+      <div className="min-h-screen bg-white font-sans text-slate-800 antialiased selection:bg-cyan-500 selection:text-white relative flex flex-col justify-between">
+        
+        {/* Top Navbar */}
+        <Navbar />
 
-      {/* Hero Section with Diagonal Gradient Mesh and Multi-Device Mockup */}
-      <HeroSection />
+        {/* Dynamic Route View */}
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
 
-      {/* Main Feature Highlights (AI Scoring, Mock Tests, Analytics, Mobile App) */}
-      <FeaturesSection />
+        {/* Comprehensive Site Footer */}
+        <Footer />
 
-      {/* Global PTE Network Space Background with Wireframe Globe */}
-      <GlobalStatsSection />
+        {/* Floating WhatsApp and Scroll-to-Top Widgets */}
+        <FloatingWidgets />
 
-      {/* Product Category Tabs (PTE Academic/UKVI, Core, IELTS, LanguageCert) */}
-      <ProductTabsSection />
-
-      {/* Educational Guides (What is PTE, Why Choose PTE, Test Types, Destination Countries) */}
-      <PTEInfoSections />
-
-      {/* Student Success Stories & Testimonials Carousel */}
-      <SuccessStoriesSection />
-
-      {/* Institute / B2B Software Platform */}
-      <InstituteSoftwareSection />
-
-      {/* Global Regional Support Centers */}
-      <GlobalPresenceSection />
-
-      {/* Frequently Asked Questions Accordion */}
-      <FAQSection />
-
-      {/* Comprehensive Site Footer */}
-      <Footer />
-
-      {/* Floating WhatsApp and Scroll-to-Top Widgets */}
-      <FloatingWidgets />
-    </div>
+      </div>
+    </BrowserRouter>
   );
 }
