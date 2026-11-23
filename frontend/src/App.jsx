@@ -9,6 +9,7 @@ import BookExamPage from './pages/BookExamPage';
 import MobileAppPage from './pages/MobileAppPage';
 import InstituteSoftwarePage from './pages/InstituteSoftwarePage';
 import AboutPTEPage from './pages/AboutPTEPage';
+import AboutUsPage from './pages/AboutUsPage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -48,6 +49,8 @@ function AppContent() {
           <Route path="/pte-for-businesses" element={<InstituteSoftwarePage />} />
           <Route path="/about-pte" element={<AboutPTEPage />} />
           <Route path="/pte-academic" element={<AboutPTEPage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />

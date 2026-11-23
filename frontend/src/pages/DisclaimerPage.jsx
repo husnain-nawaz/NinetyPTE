@@ -40,15 +40,15 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              This practice portal has been developed by NinetyPTE to assist students preparing for the Pearson Test of English. The material available on this portal is compiled solely for preparation and learning purposes. NinetyPTE does not guarantee any specific test score solely based on using this platform.
+              This practice portal has been developed by NinetyPTE to help the students prepare for Pearson's Test of English. The material available on this portal has been collected only to assist PTE aspirants in their preparation & NinetyPTE does not guarantee a score only on the basis of this portal.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              Study resources and practice content are gathered from public educational materials. NinetyPTE makes no proprietary claims over third-party materials and disclaims liability for any actions taken in reliance on provided information. Views or opinions expressed on this platform represent those of individual contributors and do not necessarily reflect the official policies of NinetyPTE.
+              This material has been collected from various sources which were openly available on several information media & NinetyPTE neither claims ownership nor accepts any liability for the content of this site, nor for the consequences of any actions taken on the basis of the information provided. Any views or opinions presented on this site are solely those of the author and do not necessarily represent those of the company. Viewers are expressly required not to make defamatory statements and not to infringe or authorize any infringement of copyright or any other legal right. Any such communication is contrary to company policy and outside the scope of the task of the individual concerned. The company will not accept any liability in respect of such communication, and the individual responsible will be personally liable for any damages or other liability arising.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              Unauthorized reproduction, copying, distribution, or misuse of practice materials, question items, or diagnostic reports without prior written authorization is strictly prohibited.
+              If you are not the intended recipient, you are notified that disclosing, copying, distributing, or taking any action in reliance on the contents of this information is strictly prohibited.
             </p>
           </div>
         )}
