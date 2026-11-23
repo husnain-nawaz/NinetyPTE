@@ -10,13 +10,11 @@ export default function Navbar() {
   const [productsOpen, setProductsOpen] = useState(false);
   const hoverTimeoutRef = useRef(null);
 
-  // Check route types
+  // Check if on Business / Institute routes
   const isBusiness = 
     location.pathname === '/business' || 
     location.pathname === '/institute-software' || 
     location.pathname === '/pte-for-businesses';
-
-  const isLanding = location.pathname === '/';
 
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -30,7 +28,9 @@ export default function Navbar() {
   };
 
   // =========================================================================
-  // 1. BUSINESS NAVBAR (White Background matching uploaded screenshot)
+  // 1. BUSINESS NAVBAR (White Background - 1:1 match with user screenshot 2)
+  // Links: Home | Products ⌄ | About PTE | Mock Tests
+  // Right: Cyan Headphone | Cyan 文A | "Get Free Trial" (Solid Cyan Pill)
   // =========================================================================
   if (isBusiness) {
     return (
@@ -79,14 +79,14 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right Action Items: Headset Icon, 文A, "Get Free Trial" */}
+          {/* Right Action Items: Cyan Headset, Cyan 文A, "Get Free Trial" Cyan Pill */}
           <div className="hidden sm:flex items-center gap-4 xl:gap-5">
             <Link 
               to="/contact"
-              className="w-8 h-8 rounded-full border border-cyan-400 hover:bg-cyan-50 text-cyan-500 flex items-center justify-center transition shadow-2xs" 
-              title="Contact Us & Guidance"
+              className="text-cyan-500 hover:text-cyan-600 transition flex items-center justify-center" 
+              title="Support & Contact"
             >
-              <Headphones className="w-4 h-4 stroke-[2.5]" />
+              <Headphones className="w-5 h-5 stroke-[2.2]" />
             </Link>
 
             <LanguageDropdown variant="business" />
@@ -95,7 +95,7 @@ export default function Navbar() {
               onClick={() => {
                 const el = document.getElementById('enquiry-form');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
-                else window.scrollTo({ top: 300, behavior: 'smooth' });
+                else window.scrollTo({ top: 400, behavior: 'smooth' });
               }}
               className="px-5 py-2 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs sm:text-sm shadow-xs transition active:scale-95 cursor-pointer"
             >
@@ -112,7 +112,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Drawer for Business */}
         {mobileMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 p-6 space-y-4 text-sm font-semibold text-slate-800 shadow-xl">
             <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-600">Home</Link>
@@ -137,7 +137,7 @@ export default function Navbar() {
                   setMobileMenuOpen(false);
                   const el = document.getElementById('enquiry-form');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  else window.scrollTo({ top: 300, behavior: 'smooth' });
+                  else window.scrollTo({ top: 400, behavior: 'smooth' });
                 }}
                 className="w-full py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-center text-sm shadow-md"
               >
@@ -151,42 +151,26 @@ export default function Navbar() {
   }
 
   // =========================================================================
-  // 2. INNER PAGES NAVBAR (White Background matching About PTE & Portal Pages)
+  // 2. CONSUMER NAVBAR (Blue Gradient - 1:1 match with user screenshot 1)
+  // Links: Products ⌄ | Pricing | Business | Mobile App | PTE Voucher
+  // Right: Headset in White Circle | White 文A | Log in > | Start Free Trial >
   // =========================================================================
-  // When not on the gradient Landing Page, all inner pages have clean white navbar
-  const isWhiteNavbar = !isLanding;
-
   return (
-    <nav className={`relative z-50 px-4 sm:px-8 py-3.5 transition-colors ${
-      isWhiteNavbar 
-        ? 'bg-white text-slate-800 border-b border-slate-100 shadow-xs' 
-        : 'bg-gradient-to-r from-[#1e40af] via-[#0284c7] to-[#06b6d4] text-white shadow-sm'
-    }`}>
+    <nav className="relative z-50 bg-gradient-to-r from-[#1e40af] via-[#0284c7] to-[#06b6d4] text-white px-4 sm:px-8 py-3.5 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Left Side: Brand Logo + Nav Links */}
         <div className="flex items-center gap-6 xl:gap-8">
           <Link to="/" className="flex items-center gap-1.5 group shrink-0">
-            <span className={`text-2xl sm:text-3xl font-black tracking-tighter ${
-              isWhiteNavbar ? 'text-slate-900' : 'text-white'
-            }`}>
-              ninety<span className={isWhiteNavbar ? 'text-cyan-500 font-extrabold' : 'text-cyan-300 font-extrabold'}>pte</span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
+              ninety<span className="text-cyan-300 font-extrabold">pte</span>
             </span>
-            <span className={`w-2 h-2 rounded-full mb-2 ${
-              isWhiteNavbar ? 'bg-cyan-500' : 'bg-cyan-300'
-            }`}></span>
+            <span className="w-2 h-2 rounded-full bg-cyan-300 mb-2"></span>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <div className={`hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold ${
-            isWhiteNavbar ? 'text-slate-800' : 'text-white'
-          }`}>
-            <Link to="/" className={`transition font-semibold ${
-              isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-            }`}>
-              Home
-            </Link>
-
+          {/* Desktop Nav Links: Strictly Products ⌄, Pricing, Business, Mobile App, PTE Voucher */}
+          <div className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-white">
+            
             {/* Products Mega-Menu Dropdown */}
             <div 
               className="relative py-2"
@@ -195,14 +179,10 @@ export default function Navbar() {
             >
               <button 
                 onClick={() => setProductsOpen(!productsOpen)}
-                className={`flex items-center gap-1 transition font-semibold ${
-                  isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-                }`}
+                className="flex items-center gap-1 hover:text-cyan-200 transition font-semibold"
               >
                 <span>Products</span>
-                <ChevronDown className={`w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 ${
-                  productsOpen ? 'rotate-180 text-cyan-500' : ''
-                }`} />
+                <ChevronDown className={`w-3.5 h-3.5 stroke-[2.5] transition-transform duration-200 ${productsOpen ? 'rotate-180 text-cyan-200' : ''}`} />
               </button>
 
               {productsOpen && (
@@ -215,111 +195,40 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* About PTE Link: Highlighted if on /about-pte */}
-            <Link 
-              to="/about-pte" 
-              className={`transition font-semibold ${
-                location.pathname === '/about-pte' || location.pathname === '/pte-academic'
-                  ? 'text-[#00c2cb] font-extrabold'
-                  : isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              About PTE
-            </Link>
-
-            {/* Mock Tests Link */}
-            <Link 
-              to="/mock-tests" 
-              className={`transition font-semibold ${
-                location.pathname === '/mock-tests' || location.pathname === '/pte-mock-test'
-                  ? 'text-[#00c2cb] font-extrabold'
-                  : isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              Mock Tests
-            </Link>
-
-            <Link 
-              to="/pricing" 
-              className={`transition font-semibold ${
-                location.pathname === '/pricing'
-                  ? 'text-[#00c2cb] font-extrabold'
-                  : isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              Pricing
-            </Link>
-
-            <Link 
-              to="/business" 
-              className={`transition font-semibold ${
-                isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              Business
-            </Link>
-
-            <Link 
-              to="/mobile-app" 
-              className={`transition font-semibold ${
-                location.pathname === '/mobile-app'
-                  ? 'text-[#00c2cb] font-extrabold'
-                  : isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              Mobile App
-            </Link>
-
-            <Link 
-              to="/book-exam" 
-              className={`transition font-semibold ${
-                location.pathname === '/book-exam' || location.pathname === '/pte-voucher'
-                  ? 'text-[#00c2cb] font-extrabold'
-                  : isWhiteNavbar ? 'hover:text-cyan-600' : 'hover:text-cyan-200'
-              }`}
-            >
-              PTE Voucher
-            </Link>
+            <Link to="/pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</Link>
+            <Link to="/business" className="hover:text-cyan-200 transition font-semibold">Business</Link>
+            <Link to="/mobile-app" className="hover:text-cyan-200 transition font-semibold">Mobile App</Link>
+            <Link to="/book-exam" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</Link>
           </div>
         </div>
 
-        {/* Right Action Items */}
+        {/* Right Action Items: White Circle Headset, White 文A, Log in >, Start Free Trial > */}
         <div className="hidden sm:flex items-center gap-4 xl:gap-5">
-          {/* Headset Support Button */}
+          {/* Headset in White Circle */}
           <Link 
             to="/contact"
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition shadow-2xs ${
-              isWhiteNavbar
-                ? 'border border-cyan-400 hover:bg-cyan-50 text-cyan-500'
-                : 'bg-white hover:bg-slate-50 text-cyan-600 shadow-xs'
-            }`} 
+            className="w-8 h-8 rounded-full bg-white hover:bg-slate-50 text-cyan-600 flex items-center justify-center shadow-xs transition" 
             title="Contact Us & Guidance"
           >
             <Headphones className="w-4 h-4 stroke-[2.5]" />
           </Link>
 
           {/* Language / Translation Dropdown */}
-          <LanguageDropdown variant={isWhiteNavbar ? 'business' : 'consumer'} />
+          <LanguageDropdown variant="consumer" />
 
-          {/* Log in > Link */}
+          {/* Log in > */}
           <Link
             to="/login"
-            className={`flex items-center gap-1 text-sm font-semibold transition ${
-              isWhiteNavbar ? 'text-cyan-600 hover:text-cyan-700 font-bold' : 'text-white hover:text-cyan-200'
-            }`}
+            className="flex items-center gap-1 text-white hover:text-cyan-200 text-sm font-semibold transition"
           >
             <span>Log in</span>
             <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
           </Link>
 
-          {/* Start Free Trial > Pill Button */}
+          {/* Start Free Trial > Pill Button (White Background, Cyan Text) */}
           <Link
             to="/signup"
-            className={`px-5 py-2 rounded-full font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group ${
-              isWhiteNavbar
-                ? 'bg-[#00c2cb] hover:bg-[#00a8b5] text-white'
-                : 'bg-white hover:bg-cyan-50 text-[#00a8b5]'
-            }`}
+            className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
           >
             <span>Start Free Trial</span>
             <ChevronRight className="w-3.5 h-3.5 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
@@ -329,7 +238,7 @@ export default function Navbar() {
         {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={`lg:hidden p-2 ${isWhiteNavbar ? 'text-slate-800 hover:text-cyan-600' : 'text-white'}`}
+          className="lg:hidden p-2 text-white"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -337,34 +246,29 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className={`lg:hidden absolute top-full left-0 w-full p-6 space-y-4 text-sm font-semibold shadow-xl border-b backdrop-blur-md ${
-          isWhiteNavbar ? 'bg-white/95 text-slate-800 border-slate-200' : 'bg-slate-900/95 text-white border-white/10'
-        }`}>
-          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">Home</Link>
-          <Link to="/about-pte" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">About PTE</Link>
-          <Link to="/mock-tests" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">Mock Tests</Link>
-          <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">Pricing</Link>
-          <Link to="/business" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">Business</Link>
-          <Link to="/mobile-app" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">Mobile App</Link>
-          <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-500">PTE Voucher</Link>
+        <div className="lg:hidden absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 p-6 space-y-4 text-sm font-semibold text-white shadow-xl">
+          <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-300">Pricing</Link>
+          <Link to="/business" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-300">Business</Link>
+          <Link to="/mobile-app" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-300">Mobile App</Link>
+          <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-300">PTE Voucher</Link>
           
-          <div className={`pt-4 border-t flex flex-col gap-3 ${isWhiteNavbar ? 'border-slate-200' : 'border-white/10'}`}>
-            <div className="flex items-center justify-between">
+          <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+            <div className="flex items-center justify-between text-white">
               <Link 
                 to="/login" 
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-1 text-cyan-600 font-bold text-sm"
+                className="flex items-center gap-1 text-white hover:text-cyan-300 font-bold text-sm"
               >
                 <span>Log in</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </Link>
-              <LanguageDropdown variant={isWhiteNavbar ? 'business' : 'consumer'} />
+              <LanguageDropdown variant="consumer" />
             </div>
             
             <Link 
               to="/signup" 
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-center text-sm shadow-md block"
+              className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md block"
             >
               Start Free Trial &gt;
             </Link>
