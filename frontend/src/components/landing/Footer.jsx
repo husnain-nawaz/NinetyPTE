@@ -177,7 +177,7 @@ export default function Footer() {
             <div className="space-y-2.5 pt-2 border-t border-slate-100">
               <h4 className="font-extrabold text-slate-900 text-xs tracking-tight">PTE Acceptance countries</h4>
               <ul className="space-y-1.5 text-xs text-slate-500">
-                <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for Canada</Link></li>
+                <li><Link to="/pte-for-canada" className="hover:text-cyan-600 transition">PTE for Canada</Link></li>
                 <li><Link to="/pte-for-uk" className="hover:text-cyan-600 transition">PTE for UK</Link></li>
                 <li><Link to="/pte-for-usa" className="hover:text-cyan-600 transition">PTE for USA</Link></li>
                 <li><Link to="/pte-for-new-zealand" className="hover:text-cyan-600 transition">PTE for New Zealand</Link></li>
