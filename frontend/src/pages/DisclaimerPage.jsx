@@ -32,6 +32,7 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
       {/* ========================================================================= */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-12 py-10 sm:py-16">
         
+        {/* DISCLAIMER VIEW */}
         {isDisclaimer && (
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
@@ -39,36 +40,96 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              This practice portal has been developed by NinetyPTE to help the students prepare for Pearson's Test of English. The material available on this portal has been collected only to assist PTE aspirants in their preparation & NinetyPTE does not guarantee a score only on the basis of this portal.
+              This practice portal has been developed by NinetyPTE to assist students preparing for the Pearson Test of English. The material available on this portal is compiled solely for preparation and learning purposes. NinetyPTE does not guarantee any specific test score solely based on using this platform.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              This material has been collected from various sources which were openly available on several information media & NinetyPTE neither claims ownership nor accepts any liability for the content of this site, nor for the consequences of any actions taken on the basis of the information provided. Any views or opinions presented on this site are solely those of the author and do not necessarily represent those of the company. Viewers are expressly required not to make defamatory statements and not to infringe or authorize any infringement of copyright or any other legal right. Any such communication is contrary to company policy and outside the scope of the task of the individual concerned. The company will not accept any liability in respect of such communication, and the individual responsible will be personally liable for any damages or other liability arising.
+              Study resources and practice content are gathered from public educational materials. NinetyPTE makes no proprietary claims over third-party materials and disclaims liability for any actions taken in reliance on provided information. Views or opinions expressed on this platform represent those of individual contributors and do not necessarily reflect the official policies of NinetyPTE.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              If you are not the intended recipient, you are notified that disclosing, copying, distributing, or taking any action in reliance on the contents of this information is strictly prohibited.
+              Unauthorized reproduction, copying, distribution, or misuse of practice materials, question items, or diagnostic reports without prior written authorization is strictly prohibited.
             </p>
           </div>
         )}
 
+        {/* TERMS AND CONDITIONS VIEW */}
         {isTerms && (
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
-              Terms & Conditions
+              Terms and Conditions
             </h1>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              Welcome to NinetyPTE. By accessing our platform, practicing questions, subscribing to plans, or using our institute software, you agree to comply with and be bound by the following terms and conditions.
+              These Terms and Conditions govern your access to and use of NinetyPTE websites, portals, and mobile applications ("Platform"). The Platform is owned and operated by NinetyPTE Education ("Company", "We", "Us", or "NinetyPTE"). By browsing, registering, or using the Platform, you acknowledge that you have read, understood, and agreed to be bound by these Terms.
             </p>
-            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              NinetyPTE provides educational practice resources, AI diagnostic scoring, and study aids. All subscriptions and voucher codes are licensed for individual preparation purposes only and may not be resold or duplicated without express authorization.
-            </p>
-            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              Users agree not to misuse automated scraping tools or attempt to bypass security layers. NinetyPTE reserves the right to terminate accounts that violate terms of use.
-            </p>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">1. Nature of the Service</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                NinetyPTE is an independent e-learning practice portal providing practice materials, diagnostic AI evaluation, and scored mock tests for candidates preparing for English proficiency exams. NinetyPTE is not an authorized test delivery center and does not administer official exams.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">2. NinetyPTE Responsibilities</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                Our commitments are limited to providing access to the online learning features, mock tests, and question banks as advertised, and offering technical customer support through official help channels.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">3. User Eligibility and Warranties</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                By creating an account or purchasing subscriptions, you represent and warrant that:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5 text-sm text-slate-700">
+                <li>You are at least 18 years of age, or have obtained explicit parental or legal guardian consent.</li>
+                <li>You are registering under your real legal identity and providing current, accurate contact information.</li>
+                <li>You will maintain the confidentiality and security of your account credentials.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">4. Permitted Use and Prohibitions</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                Users are granted a limited, personal, non-exclusive license to use the Platform for personal test preparation. You agree not to:
+              </p>
+              <ul className="list-disc pl-5 space-y-1.5 text-sm text-slate-700">
+                <li>Resell, share, sub-license, or redistribute your account access or practice content.</li>
+                <li>Use automated scripts, bots, spiders, or scrapers to copy content or harvest data.</li>
+                <li>Attempt to bypass security features, reverse-engineer proprietary algorithms, or disrupt server infrastructure.</li>
+                <li>Post defamatory, abusive, infringing, unlawful, or offensive material on our community forums.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">5. Account Security and Administration</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                You are solely responsible for all activities conducted under your user credentials. In the event of suspected unauthorized access, you must notify NinetyPTE immediately. NinetyPTE reserves the right to suspend or terminate accounts that breach these conditions without prior notice.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">6. Third-Party Links and Resources</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                The Platform may contain links to external educational resources, institutions, or partner websites. NinetyPTE does not endorse and assumes no legal responsibility for the practices or content of third-party platforms.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-lg font-bold text-slate-900">7. Electronic Communications & Inquiries</h2>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                By using NinetyPTE, you consent to receive electronic communications regarding account updates, system maintenance, and service notifications. For questions regarding these Terms, contact us at: <span className="font-semibold text-cyan-600">support@ninetypte.com</span>.
+              </p>
+              <p className="text-xs text-slate-400 pt-2">
+                Last updated: October 2026
+              </p>
+            </div>
           </div>
         )}
 
+        {/* PRIVACY POLICY VIEW */}
         {isPrivacy && (
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
@@ -86,6 +147,7 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
           </div>
         )}
 
+        {/* REFUND POLICY VIEW */}
         {isRefund && (
           <div className="space-y-6">
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
@@ -95,7 +157,7 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
               Due to the immediate digital provisioning of NinetyPTE online mock tests, question bank access, and automated AI scoring credits, digital subscriptions are non-refundable once activated.
             </p>
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              For PTE exam voucher bookings, cancellations and rescheduling are subject to official Pearson test center policies. If you experience an unresolvable technical disruption on our portal, contact support at info@ninetypte.com for investigation and credit adjustment.
+              For PTE exam voucher bookings, cancellations and rescheduling are subject to official Pearson test center policies. If you experience an unresolvable technical disruption on our portal, contact support at support@ninetypte.com for investigation and credit adjustment.
             </p>
           </div>
         )}
