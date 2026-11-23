@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ChevronRight, ShieldCheck, Users, BarChart3, Smartphone } from 'lucide-react';
 
 export default function InstituteSoftwareSection() {
@@ -59,13 +60,13 @@ export default function InstituteSoftwareSection() {
             </div>
 
             <div className="pt-2">
-              <a
-                href="#partner-program"
+              <Link
+                to="/business"
                 className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-xs shadow-md shadow-cyan-500/20 transition"
               >
                 <span>Request Institute Demo</span>
                 <ChevronRight className="w-3.5 h-3.5" />
-              </a>
+              </Link>
             </div>
           </div>
 

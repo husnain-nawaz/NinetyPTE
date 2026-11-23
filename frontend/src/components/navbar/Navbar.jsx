@@ -61,7 +61,7 @@ export default function Navbar() {
             </div>
 
             <Link to="/pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</Link>
-            <a href="#business" className="hover:text-cyan-200 transition font-semibold">Business</a>
+            <Link to="/business" className="hover:text-cyan-200 transition font-semibold">Business</Link>
             <Link to="/mobile-app" className="hover:text-cyan-200 transition font-semibold">Mobile App</Link>
             <Link to="/book-exam" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</Link>
           </div>
@@ -118,7 +118,7 @@ export default function Navbar() {
         <div className="lg:hidden absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 p-6 space-y-4 text-sm font-semibold">
           <a href="#pte-academic" className="block text-white hover:text-cyan-300">Products</a>
           <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Pricing</Link>
-          <a href="#business" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Business</a>
+          <Link to="/business" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Business</Link>
           <Link to="/mobile-app" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Mobile App</Link>
           <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">PTE Voucher</Link>
           

@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import PricingPage from './pages/PricingPage';
 import BookExamPage from './pages/BookExamPage';
 import MobileAppPage from './pages/MobileAppPage';
+import InstituteSoftwarePage from './pages/InstituteSoftwarePage';
 
 export default function App() {
   return (
@@ -23,6 +24,8 @@ export default function App() {
             <Route path="/book-exam" element={<BookExamPage />} />
             <Route path="/pte-voucher" element={<BookExamPage />} />
             <Route path="/mobile-app" element={<MobileAppPage />} />
+            <Route path="/business" element={<InstituteSoftwarePage />} />
+            <Route path="/institute-software" element={<InstituteSoftwarePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

@@ -127,9 +127,9 @@ export default function Footer() {
             <ul className="space-y-1.5 text-xs text-slate-500">
               <li><a href="#pricing" className="hover:text-cyan-600">VIP Subscription Pricing</a></li>
               <li><a href="#mock-pricing" className="hover:text-cyan-600">Scored Mock Test Packs</a></li>
-              <li><a href="#vouchers" className="hover:text-cyan-600">Discounted PTE Vouchers</a></li>
-              <li><a href="#institute-software" className="hover:text-cyan-600 font-bold text-cyan-700">For Coaching Institutes</a></li>
-              <li><a href="#train-the-trainer" className="hover:text-cyan-600">Train The Trainer Program</a></li>
+              <li><Link to="/book-exam" className="hover:text-cyan-600">Discounted PTE Vouchers</Link></li>
+              <li><Link to="/business" className="hover:text-cyan-600 font-bold text-cyan-700">For Coaching Institutes</Link></li>
+              <li><Link to="/business" className="hover:text-cyan-600">PTE Institute Software</Link></li>
               <li><a href="#blog" className="hover:text-cyan-600">PTE Strategy Blog</a></li>
               <li><a href="#contact" className="hover:text-cyan-600">Contact Us & Support</a></li>
             </ul>
