@@ -17,6 +17,7 @@ import PTEForGermanyPage from './pages/PTEForGermanyPage';
 import PTEForSingaporePage from './pages/PTEForSingaporePage';
 import PTEForIrelandPage from './pages/PTEForIrelandPage';
 import PTEForAustraliaPage from './pages/PTEForAustraliaPage';
+import PTEForNewZealandPage from './pages/PTEForNewZealandPage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -72,6 +73,8 @@ function AppContent() {
           <Route path="/pte-ireland" element={<PTEForIrelandPage />} />
           <Route path="/pte-for-australia" element={<PTEForAustraliaPage />} />
           <Route path="/pte-australia" element={<PTEForAustraliaPage />} />
+          <Route path="/pte-for-new-zealand" element={<PTEForNewZealandPage />} />
+          <Route path="/pte-new-zealand" element={<PTEForNewZealandPage />} />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />
