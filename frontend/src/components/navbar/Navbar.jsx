@@ -67,7 +67,7 @@ export default function Navbar() {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <ProductsMegaMenu />
+                    <ProductsMegaMenu onClose={() => setProductsOpen(false)} />
                   </div>
                 )}
               </div>
@@ -187,7 +187,7 @@ export default function Navbar() {
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <ProductsMegaMenu />
+                  <ProductsMegaMenu onClose={() => setProductsOpen(false)} />
                 </div>
               )}
             </div>

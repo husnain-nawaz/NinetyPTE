@@ -12,7 +12,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function ProductsMegaMenu() {
+export default function ProductsMegaMenu({ onClose }) {
   const [activeCategory, setActiveCategory] = useState('academic');
 
   const categories = [
@@ -141,6 +141,7 @@ export default function ProductsMegaMenu() {
                     <Link
                       key={idx}
                       to={link.href}
+                      onClick={() => { if (onClose) onClose(); }}
                       className="flex items-center gap-2.5 group/item text-slate-700 hover:text-cyan-600 transition"
                     >
                       {content}
@@ -149,6 +150,7 @@ export default function ProductsMegaMenu() {
                     <a
                       key={idx}
                       href={link.href}
+                      onClick={() => { if (onClose) onClose(); }}
                       className="flex items-center gap-2.5 group/item text-slate-700 hover:text-cyan-600 transition"
                     >
                       {content}

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ScrollToTop from './components/common/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
 import Footer from './components/landing/Footer';
 import FloatingWidgets from './components/landing/FloatingWidgets';
@@ -12,6 +13,9 @@ import AboutPTEPage from './pages/AboutPTEPage';
 export default function App() {
   return (
     <BrowserRouter>
+      {/* Scroll smoothly to top on every route navigation */}
+      <ScrollToTop />
+
       <div className="min-h-screen bg-white font-sans text-slate-800 antialiased selection:bg-cyan-500 selection:text-white relative flex flex-col justify-between">
         
         {/* Top Navbar */}
