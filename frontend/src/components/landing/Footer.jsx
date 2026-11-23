@@ -183,7 +183,7 @@ export default function Footer() {
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for New Zealand</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for Australia</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for Ireland</Link></li>
-                <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for Germany</Link></li>
+                <li><Link to="/pte-for-germany" className="hover:text-cyan-600 transition">PTE for Germany</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE for Singapore</Link></li>
               </ul>
             </div>
