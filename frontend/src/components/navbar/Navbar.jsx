@@ -6,7 +6,7 @@ export default function Navbar() {
   const [productsOpen, setProductsOpen] = useState(false);
 
   return (
-    <nav className="relative z-50 bg-transparent text-white px-4 sm:px-8 py-3.5">
+    <nav className="relative z-50 bg-gradient-to-r from-[#1e40af] via-[#0284c7] to-[#06b6d4] text-white px-4 sm:px-8 py-3.5 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Left Side: Brand Logo + Nav Links */}
@@ -20,11 +20,11 @@ export default function Navbar() {
           </a>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-medium text-white">
+          <div className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-white">
             <div className="relative">
               <button 
                 onClick={() => setProductsOpen(!productsOpen)}
-                className="flex items-center gap-1 hover:text-cyan-200 transition font-medium"
+                className="flex items-center gap-1 hover:text-cyan-200 transition font-semibold"
               >
                 <span>Products</span>
                 <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -48,10 +48,10 @@ export default function Navbar() {
               )}
             </div>
 
-            <a href="#pricing" className="hover:text-cyan-200 transition font-medium">Pricing</a>
-            <a href="#business" className="hover:text-cyan-200 transition font-medium">Business</a>
-            <a href="#mobile-app" className="hover:text-cyan-200 transition font-medium">Mobile App</a>
-            <a href="#voucher" className="hover:text-cyan-200 transition font-medium">PTE Voucher</a>
+            <a href="#pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</a>
+            <a href="#business" className="hover:text-cyan-200 transition font-semibold">Business</a>
+            <a href="#mobile-app" className="hover:text-cyan-200 transition font-semibold">Mobile App</a>
+            <a href="#voucher" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</a>
           </div>
         </div>
 
@@ -59,10 +59,10 @@ export default function Navbar() {
         <div className="hidden sm:flex items-center gap-4 xl:gap-5">
           {/* Headset Support Button (White Circle with Cyan Headset Icon) */}
           <button 
-            className="w-8 h-8 rounded-full bg-white hover:bg-slate-100 text-cyan-500 flex items-center justify-center shadow-xs transition" 
+            className="w-8 h-8 rounded-full bg-white hover:bg-slate-50 text-cyan-600 flex items-center justify-center shadow-xs transition" 
             title="Customer Support & Guidance"
           >
-            <Headphones className="w-4 h-4" />
+            <Headphones className="w-4 h-4 stroke-[2.5]" />
           </button>
 
           {/* Language / Translation Icon */}
@@ -70,7 +70,7 @@ export default function Navbar() {
             className="flex items-center gap-1 text-white hover:text-cyan-200 text-xs font-semibold transition" 
             title="Select Language"
           >
-            <span className="text-sm tracking-tighter font-serif">文A</span>
+            <span className="text-base tracking-tighter font-serif">文A</span>
           </button>
 
           {/* Log in > Link */}
@@ -85,10 +85,10 @@ export default function Navbar() {
           {/* Start Free Trial > Pill Button (White Background, Cyan Text) */}
           <a
             href="#trial"
-            className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-cyan-500 font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
+            className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
           >
             <span>Start Free Trial</span>
-            <ChevronRight className="w-3.5 h-3.5 stroke-[2.5] group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-3.5 h-3.5 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
           </a>
         </div>
 
@@ -124,7 +124,7 @@ export default function Navbar() {
             
             <a 
               href="#trial" 
-              className="w-full py-2.5 rounded-full bg-white text-cyan-500 font-bold text-center text-sm shadow-md"
+              className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md"
             >
               Start Free Trial &gt;
             </a>
