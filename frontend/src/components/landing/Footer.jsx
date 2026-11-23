@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { 
   Globe, 
   MapPin, 
@@ -59,20 +60,20 @@ export default function Footer() {
 
             {/* Mobile App Download Buttons */}
             <div className="flex flex-wrap gap-2 pt-2">
-              <a 
-                href="#app-store"
+              <Link 
+                to="/mobile-app"
                 className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-[11px]"
               >
                 <Apple className="w-4 h-4 fill-current" />
                 <span>App Store</span>
-              </a>
-              <a 
-                href="#google-play"
+              </Link>
+              <Link 
+                to="/mobile-app"
                 className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-[11px]"
               >
                 <span className="text-emerald-400 font-bold">▶</span>
                 <span>Google Play</span>
-              </a>
+              </Link>
             </div>
           </div>
 

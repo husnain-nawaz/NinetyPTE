@@ -5,6 +5,7 @@ import FloatingWidgets from './components/landing/FloatingWidgets';
 import LandingPage from './pages/LandingPage';
 import PricingPage from './pages/PricingPage';
 import BookExamPage from './pages/BookExamPage';
+import MobileAppPage from './pages/MobileAppPage';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/book-exam" element={<BookExamPage />} />
             <Route path="/pte-voucher" element={<BookExamPage />} />
+            <Route path="/mobile-app" element={<MobileAppPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
