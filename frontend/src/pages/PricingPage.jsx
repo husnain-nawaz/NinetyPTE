@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Check, 
   X, 
@@ -21,9 +22,22 @@ import {
 } from 'lucide-react';
 
 export default function PricingPage() {
-  const [activeTab, setActiveTab] = useState('subscription'); // 'subscription' | 'mock-test' | 'book-exam'
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('subscription'); // 'subscription' | 'mock-test'
   const [currency, setCurrency] = useState('PKR');
   const [openFaq, setOpenFaq] = useState(null);
+
+  // Sync tab with URL search params (e.g. /pricing?tab=mock-test)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    if (tabParam === 'mock-test' || tabParam === 'mocktest') {
+      setActiveTab('mock-test');
+    } else if (tabParam === 'subscription') {
+      setActiveTab('subscription');
+    }
+  }, [location.search]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -187,12 +201,9 @@ export default function PricingPage() {
                 Mock Test
               </button>
               <button
-                onClick={() => setActiveTab('book-exam')}
-                className={`px-6 py-2 rounded-full transition flex items-center gap-1.5 ${
-                  activeTab === 'book-exam'
-                    ? 'bg-cyan-500 text-white shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                onClick={() => navigate('/book-exam')}
+                className="px-6 py-2 rounded-full transition flex items-center gap-1.5 text-slate-600 hover:text-cyan-600 hover:bg-white"
+                title="Go to PTE Exam Voucher Booking"
               >
                 <span>Book Exam</span>
                 <span className="px-1.5 py-0.2 bg-emerald-500 text-white text-[10px] rounded font-black">

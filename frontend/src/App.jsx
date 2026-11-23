@@ -4,6 +4,7 @@ import Footer from './components/landing/Footer';
 import FloatingWidgets from './components/landing/FloatingWidgets';
 import LandingPage from './pages/LandingPage';
 import PricingPage from './pages/PricingPage';
+import BookExamPage from './pages/BookExamPage';
 
 export default function App() {
   return (
@@ -18,6 +19,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/book-exam" element={<BookExamPage />} />
+            <Route path="/pte-voucher" element={<BookExamPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

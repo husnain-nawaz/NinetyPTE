@@ -63,7 +63,7 @@ export default function Navbar() {
             <Link to="/pricing" className="hover:text-cyan-200 transition font-semibold">Pricing</Link>
             <a href="#business" className="hover:text-cyan-200 transition font-semibold">Business</a>
             <a href="#mobile-app" className="hover:text-cyan-200 transition font-semibold">Mobile App</a>
-            <a href="#voucher" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</a>
+            <Link to="/book-exam" className="hover:text-cyan-200 transition font-semibold">PTE Voucher</Link>
           </div>
         </div>
 
@@ -117,10 +117,10 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 w-full bg-slate-900/95 backdrop-blur-md border-b border-white/10 p-6 space-y-4 text-sm font-semibold">
           <a href="#pte-academic" className="block text-white hover:text-cyan-300">Products</a>
-          <a href="#pricing" className="block text-white hover:text-cyan-300">Pricing</a>
-          <a href="#business" className="block text-white hover:text-cyan-300">Business</a>
-          <a href="#mobile-app" className="block text-white hover:text-cyan-300">Mobile App</a>
-          <a href="#voucher" className="block text-white hover:text-cyan-300">PTE Voucher</a>
+          <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Pricing</Link>
+          <a href="#business" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Business</a>
+          <a href="#mobile-app" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">Mobile App</a>
+          <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block text-white hover:text-cyan-300">PTE Voucher</Link>
           
           <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
             <div className="flex items-center justify-between text-white">

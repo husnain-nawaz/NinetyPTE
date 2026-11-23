@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Info, 
   FileText, 
@@ -23,11 +24,11 @@ export default function ProductsMegaMenu() {
       links: [
         { title: 'About the Academic Exam', href: '#about-academic', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'About the Academic UKVI Exam', href: '#about-ukvi', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
-        { title: 'Mock Tests', href: '#mock-tests', icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
+        { title: 'Mock Tests', href: '/pricing?tab=mock-test', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'Exam Pattern', href: '#exam-pattern', icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
         { title: 'Strategies', href: '#strategies', icon: <div className="w-5 h-5 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">♞</div> },
         { title: 'Score Calculator', href: '#score-calculator', icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
-        { title: 'PTE Voucher', href: '#voucher', icon: <div className="w-5 h-5 rounded-md bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">🎟️</div> },
+        { title: 'PTE Voucher', href: '/book-exam', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">🎟️</div> },
       ]
     },
     {
@@ -38,10 +39,10 @@ export default function ProductsMegaMenu() {
       links: [
         { title: 'About the PTE Core Exam', href: '#about-core', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'CLB Score Calculator', href: '#clb-calculator', icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
-        { title: 'PTE Core Mock Tests', href: '#core-mocks', icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
+        { title: 'PTE Core Mock Tests', href: '/pricing?tab=mock-test', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'PTE Core Exam Pattern', href: '#core-pattern', icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
         { title: 'Write Email Strategies', href: '#email-strategies', icon: <div className="w-5 h-5 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">♞</div> },
-        { title: 'PTE Core Voucher', href: '#voucher', icon: <div className="w-5 h-5 rounded-md bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">🎟️</div> },
+        { title: 'PTE Core Voucher', href: '/book-exam', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">🎟️</div> },
       ]
     },
     {
@@ -52,7 +53,7 @@ export default function ProductsMegaMenu() {
       links: [
         { title: 'About the IELTS Exam', href: '#about-ielts', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'IELTS Band Score Calculator', href: '#ielts-calculator', icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
-        { title: 'IELTS Scored Mock Tests', href: '#ielts-mocks', icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
+        { title: 'IELTS Scored Mock Tests', href: '/pricing?tab=mock-test', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'IELTS Academic vs General', href: '#ielts-pattern', icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
         { title: 'Task 1 & Task 2 Templates', href: '#ielts-strategies', icon: <div className="w-5 h-5 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">♞</div> },
       ]
@@ -66,7 +67,7 @@ export default function ProductsMegaMenu() {
       links: [
         { title: 'About LanguageCert Exam', href: '#about-languagecert', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'CEFR Level Equivalency', href: '#cefr-guide', icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
-        { title: 'LanguageCert Practice Tests', href: '#languagecert-mocks', icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
+        { title: 'LanguageCert Practice Tests', href: '/pricing?tab=mock-test', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'Exam Pattern & Format', href: '#languagecert-pattern', icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
       ]
     }
@@ -124,20 +125,36 @@ export default function ProductsMegaMenu() {
             <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/60 h-full flex flex-col justify-between">
               
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                {current.links.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.href}
-                    className="flex items-center gap-2.5 group/item text-slate-700 hover:text-cyan-600 transition"
-                  >
-                    <div className="shrink-0 group-hover/item:scale-105 transition-transform">
-                      {link.icon}
-                    </div>
-                    <span className="text-xs font-bold leading-tight group-hover/item:text-cyan-600 transition-colors">
-                      {link.title}
-                    </span>
-                  </a>
-                ))}
+                {current.links.map((link, idx) => {
+                  const content = (
+                    <>
+                      <div className="shrink-0 group-hover/item:scale-105 transition-transform">
+                        {link.icon}
+                      </div>
+                      <span className="text-xs font-bold leading-tight group-hover/item:text-cyan-600 transition-colors">
+                        {link.title}
+                      </span>
+                    </>
+                  );
+
+                  return link.isRoute ? (
+                    <Link
+                      key={idx}
+                      to={link.href}
+                      className="flex items-center gap-2.5 group/item text-slate-700 hover:text-cyan-600 transition"
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <a
+                      key={idx}
+                      href={link.href}
+                      className="flex items-center gap-2.5 group/item text-slate-700 hover:text-cyan-600 transition"
+                    >
+                      {content}
+                    </a>
+                  );
+                })}
               </div>
 
               {/* Bottom Subtle Note */}
