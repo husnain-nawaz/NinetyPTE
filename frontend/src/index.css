@@ -7,3 +7,18 @@
     padding: 0;
   }
 }
+
+/* Custom Cyan Scrollbar for Language Dropdown matching reference */
+.cyan-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.cyan-scrollbar::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+.cyan-scrollbar::-webkit-scrollbar-thumb {
+  background: #00c2cb;
+  border-radius: 9999px;
+}
+.cyan-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00a8b5;
+}

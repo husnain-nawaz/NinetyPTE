@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Headphones, Menu, X } from 'lucide-react';
 import ProductsMegaMenu from './ProductsMegaMenu';
+import LanguageDropdown from './LanguageDropdown';
 
 export default function Navbar() {
   const location = useLocation();
@@ -88,13 +89,8 @@ export default function Navbar() {
               <Headphones className="w-4 h-4 stroke-[2.5]" />
             </Link>
 
-            {/* Language / Translation Icon in Cyan */}
-            <button 
-              className="flex items-center gap-1 text-cyan-500 hover:text-cyan-600 text-xs font-bold transition" 
-              title="Select Language"
-            >
-              <span className="text-base tracking-tighter font-serif">文A</span>
-            </button>
+            {/* Language / Translation Dropdown with 29 Languages */}
+            <LanguageDropdown variant="business" />
 
             {/* Get Free Trial Pill Button (Cyan Background, White Text) */}
             <button
@@ -131,10 +127,7 @@ export default function Navbar() {
                   <Headphones className="w-4 h-4" />
                   <span>Support</span>
                 </Link>
-                <button className="flex items-center gap-1 text-cyan-600 text-xs font-bold">
-                  <span className="font-serif">文A</span>
-                  <span>Language</span>
-                </button>
+                <LanguageDropdown variant="business" />
               </div>
               
               <button 
@@ -215,13 +208,8 @@ export default function Navbar() {
             <Headphones className="w-4 h-4 stroke-[2.5]" />
           </Link>
 
-          {/* Language / Translation Icon */}
-          <button 
-            className="flex items-center gap-1 text-white hover:text-cyan-200 text-xs font-semibold transition" 
-            title="Select Language"
-          >
-            <span className="text-base tracking-tighter font-serif">文A</span>
-          </button>
+          {/* Language / Translation Dropdown with 29 Languages */}
+          <LanguageDropdown variant="consumer" />
 
           {/* Log in > Link */}
           <a
@@ -266,10 +254,7 @@ export default function Navbar() {
                 <span>Log in</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </a>
-              <button className="flex items-center gap-1 text-white text-xs font-semibold">
-                <span className="font-serif">文A</span>
-                <span>Language</span>
-              </button>
+              <LanguageDropdown variant="consumer" />
             </div>
             
             <a 
