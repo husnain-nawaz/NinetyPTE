@@ -271,7 +271,7 @@ export default function Footer() {
                 <li><Link to="/business" className="hover:text-cyan-600 transition">PTE Institute Software</Link></li>
                 <li><Link to="/business" className="hover:text-cyan-600 transition">IELTS Institute Software</Link></li>
                 <li><Link to="/business" className="hover:text-cyan-600 transition">LANGUAGECERT Institute Software</Link></li>
-                <li><Link to="/business" className="hover:text-cyan-600 transition">Train The Trainer</Link></li>
+                <li><Link to="/train-the-trainer" className="hover:text-cyan-600 transition">Train The Trainer</Link></li>
               </ul>
             </div>
 
