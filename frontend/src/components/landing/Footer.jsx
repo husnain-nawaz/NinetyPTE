@@ -81,7 +81,7 @@ export default function Footer() {
           <div className="space-y-2.5">
             <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">PTE Academic / UKVI</h4>
             <ul className="space-y-1.5 text-xs text-slate-500">
-              <li><a href="#pte-academic-exam" className="hover:text-cyan-600">PTE Academic Exam</a></li>
+              <li><Link to="/about-pte" className="hover:text-cyan-600">PTE Academic Exam</Link></li>
               <li><a href="#pte-ukvi" className="hover:text-cyan-600">PTE Academic UKVI Exam</a></li>
               <li><a href="#pattern" className="hover:text-cyan-600">Exam Pattern & Format</a></li>
               <li><a href="#score-calculator" className="hover:text-cyan-600">PTE Score Calculator</a></li>

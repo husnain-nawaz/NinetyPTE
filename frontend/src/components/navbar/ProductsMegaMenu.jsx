@@ -22,7 +22,7 @@ export default function ProductsMegaMenu() {
       desc: 'Used for global university applications, Australian & New Zealand visas (immigration, work), and UK work or student visa applications.',
       activeColor: 'text-cyan-500',
       links: [
-        { title: 'About the Academic Exam', href: '#about-academic', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
+        { title: 'About the Academic Exam', href: '/about-pte', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'About the Academic UKVI Exam', href: '#about-ukvi', icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
         { title: 'Mock Tests', href: '/pricing?tab=mock-test', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'Exam Pattern', href: '#exam-pattern', icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
