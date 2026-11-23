@@ -72,7 +72,7 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link to="/book-exam" className="hover:text-cyan-600 transition font-semibold">About PTE</Link>
+              <Link to="/about-pte" className="hover:text-cyan-600 transition font-semibold">About PTE</Link>
               <Link to="/pricing?tab=mock-test" className="hover:text-cyan-600 transition font-semibold">Mock Tests</Link>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 p-6 space-y-4 text-sm font-semibold text-slate-800 shadow-xl">
             <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-600">Home</Link>
-            <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-600">About PTE</Link>
+            <Link to="/about-pte" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-600">About PTE</Link>
             <Link to="/pricing?tab=mock-test" onClick={() => setMobileMenuOpen(false)} className="block hover:text-cyan-600">Mock Tests</Link>
             
             <div className="pt-4 border-t border-slate-200 flex flex-col gap-3">
