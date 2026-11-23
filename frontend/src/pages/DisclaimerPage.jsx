@@ -135,14 +135,53 @@ export default function DisclaimerPage({ pageType = 'disclaimer' }) {
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-8">
               Privacy Policy
             </h1>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              At NinetyPTE, your privacy is paramount. This policy outlines how we collect, handle, and protect your personal information, practice audio recordings, and evaluation scorecards.
+              Unless restricted by applicable law, by using the Website, mobile applications, and services, you agree that personal data relating to you collected by us or provided by you from time to time may be used, processed, and disclosed in accordance with this Privacy Policy.
             </p>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              We collect user details (such as email, name, and study preferences) strictly to facilitate account access, sync mobile app performance, and deliver diagnostic test analytics. Audio responses recorded during practice are processed solely for speech recognition and acoustic scoring.
+              As part of our commitment to safeguarding user data, we regularly review our policies and security protocols. We may amend this Privacy Policy at any time by posting an updated version on the Website. Continued use of our platform or applications after changes become effective signifies your acknowledgment and acceptance of the revised terms.
             </p>
+
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
-              We do not sell personal data to third parties. All stored data is encrypted using standard cloud security protocols.
+              You may browse the Website without disclosing personal data. You are not required to provide personal information as a condition of browsing, except where necessary to provide personalized practice services, create accounts, process exam vouchers, or respond to direct support inquiries.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              When you use our services, we collect information relating to you, your devices, and your platform interactions. This includes directly identifiable information (such as your full name, email address, phone number, and profile details) as well as technical data (such as browser type, operating system, and IP address) utilized to protect network integrity.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              We compile aggregated, anonymized analytical insights regarding user demographics, module engagement, and test completion trends. This helps our academic and technical teams optimize portal performance, refine AI scoring algorithms, and improve learning usability.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              If you post reviews, submit messages, or provide feedback, we collect that information as necessary to troubleshoot issues, provide academic assistance, and maintain customer support records.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              We collect user details when you register an account. We may use your contact details to provide diagnostic score reports, subscription reminders, and practice tips. While you may opt out of promotional communications, essential transactional and account administrative notices will still be delivered.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              Users are responsible for ensuring that all submitted personal data is complete, accurate, and current. You may update your profile information at any time within your student account dashboard.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              We implement robust technical and organizational measures to prevent the unauthorized loss, alteration, or disclosure of personal data. Stored data is hosted on secure cloud servers utilizing industry-standard encryption protocols.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              You acknowledge that transmission of data across the public internet cannot be guaranteed 100% secure. While we take rigorous measures to safeguard your information, any online transmission is performed with appropriate user awareness. We advise choosing strong passwords and logging out when accessing services from shared workstations.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              NinetyPTE grants all users complete freedom to manage or delete their account data. Users may delete their profile and associated practice history through account settings or by contacting <span className="font-semibold text-cyan-600">support@ninetypte.com</span>. We will delete stored profile data from active systems and confirm completion upon verification.
+            </p>
+
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+              By accessing the platform, you consent to the collection and handling of your data in accordance with this Privacy Policy.
             </p>
           </div>
         )}
