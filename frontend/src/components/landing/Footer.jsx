@@ -238,7 +238,7 @@ export default function Footer() {
               <h4 className="font-extrabold text-slate-900 text-xs tracking-tight">NinetyPTE</h4>
               <ul className="space-y-1 text-xs text-slate-500">
                 <li><Link to="/about-us" className="hover:text-cyan-600 transition">About us</Link></li>
-                <li><a href="#events" className="hover:text-cyan-600 transition">Events</a></li>
+                <li><Link to="/events" className="hover:text-cyan-600 transition">Events</Link></li>
                 <li><Link to="/contact" className="hover:text-cyan-600 transition">Contact Us</Link></li>
               </ul>
             </div>
