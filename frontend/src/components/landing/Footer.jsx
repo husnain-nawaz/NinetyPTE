@@ -290,10 +290,10 @@ export default function Footer() {
             </p>
             
             <div className="flex flex-wrap gap-4 font-semibold text-slate-500">
-              <a href="#disclaimer" className="hover:text-cyan-600 transition">Disclaimer</a>
-              <a href="#terms" className="hover:text-cyan-600 transition">Terms & Conditions</a>
-              <a href="#privacy" className="hover:text-cyan-600 transition">Privacy Policy</a>
-              <a href="#refund" className="hover:text-cyan-600 transition">Refund / Cancellation Policy</a>
+              <Link to="/disclaimer" className="hover:text-cyan-600 transition">Disclaimer</Link>
+              <Link to="/terms-conditions" className="hover:text-cyan-600 transition">Terms & Conditions</Link>
+              <Link to="/privacy-policy" className="hover:text-cyan-600 transition">Privacy Policy</Link>
+              <Link to="/refund-policy" className="hover:text-cyan-600 transition">Refund / Cancellation Policy</Link>
             </div>
           </div>
 
