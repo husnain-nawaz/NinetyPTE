@@ -212,22 +212,22 @@ export default function Navbar() {
           <LanguageDropdown variant="consumer" />
 
           {/* Log in > Link */}
-          <a
-            href="#login"
+          <Link
+            to="/login"
             className="flex items-center gap-1 text-white hover:text-cyan-200 text-sm font-semibold transition"
           >
             <span>Log in</span>
             <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
-          </a>
+          </Link>
 
           {/* Start Free Trial > Pill Button (White Background, Cyan Text) */}
-          <a
-            href="#trial"
+          <Link
+            to="/signup"
             className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
           >
             <span>Start Free Trial</span>
             <ChevronRight className="w-3.5 h-3.5 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -250,19 +250,24 @@ export default function Navbar() {
           
           <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
             <div className="flex items-center justify-between text-white">
-              <a href="#login" className="flex items-center gap-1 text-white hover:text-cyan-300 font-bold text-sm">
+              <Link 
+                to="/login" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-1 text-white hover:text-cyan-300 font-bold text-sm"
+              >
                 <span>Log in</span>
                 <ChevronRight className="w-3.5 h-3.5" />
-              </a>
+              </Link>
               <LanguageDropdown variant="consumer" />
             </div>
             
-            <a 
-              href="#trial" 
-              className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md"
+            <Link 
+              to="/signup" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md block"
             >
               Start Free Trial &gt;
-            </a>
+            </Link>
           </div>
         </div>
       )}
