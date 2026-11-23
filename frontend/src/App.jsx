@@ -1,4 +1,4 @@
-import Navbar from './components/landing/Navbar';
+import Navbar from './components/navbar/Navbar';
 import HeroSection from './components/landing/HeroSection';
 import FeaturesSection from './components/landing/FeaturesSection';
 import GlobalStatsSection from './components/landing/GlobalStatsSection';
