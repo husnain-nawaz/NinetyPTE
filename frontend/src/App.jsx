@@ -104,9 +104,9 @@ function AppContent() {
           <Route path="/pte-academic-ukvi" element={<PTEAcademicUKVIExamPage />} />
           <Route path="/pte-ukvi-exam" element={<PTEAcademicUKVIExamPage />} />
           <Route path="/pte-ukvi" element={<PTEAcademicUKVIExamPage />} />
-          <Route path="/pte-academic-ukvi-exam-pattern" element={<PTEExamPatternPage />} />
-          <Route path="/pte-academic-exam-pattern" element={<PTEExamPatternPage />} />
-          <Route path="/pte-exam-pattern" element={<PTEExamPatternPage />} />
+          <Route path="/pte-academic-ukvi-exam-pattern" element={<Navigate to="/pte-speaking-practice" replace />} />
+          <Route path="/pte-academic-exam-pattern" element={<Navigate to="/pte-speaking-practice" replace />} />
+          <Route path="/pte-exam-pattern" element={<Navigate to="/pte-speaking-practice" replace />} />
           <Route path="/pte-speaking-practice" element={<PTESpeakingPracticePage />} />
           <Route path="/pte-writing-practice" element={<PTEWritingPracticePage />} />
           <Route path="/pte-reading-practice" element={<PTEReadingPracticePage />} />
