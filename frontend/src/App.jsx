@@ -25,6 +25,7 @@ import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
 import PTEExamPatternPage from './pages/PTEExamPatternPage';
 import PTEScoreCalculatorPage from './pages/PTEScoreCalculatorPage';
 import MockTestsPage from './pages/MockTestsPage';
+import PTEOnlineCoursePage from './pages/PTEOnlineCoursePage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
@@ -102,6 +103,10 @@ function AppContent() {
           <Route path="/pte-reading-practice" element={<PTEExamPatternPage />} />
           <Route path="/pte-listening-practice" element={<PTEExamPatternPage />} />
           <Route path="/pte-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-online-course" element={<PTEOnlineCoursePage />} />
+          <Route path="/pte-online-coaching" element={<PTEOnlineCoursePage />} />
+          <Route path="/online-course" element={<PTEOnlineCoursePage />} />
+          <Route path="/online-coaching" element={<PTEOnlineCoursePage />} />
           <Route path="/pte-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-ukvi-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-score-calculator" element={<PTEScoreCalculatorPage />} />

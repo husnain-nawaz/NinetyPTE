@@ -214,7 +214,7 @@ export default function Footer() {
             <div className="space-y-2.5 pt-2 border-t border-slate-100">
               <h4 className="font-extrabold text-slate-900 text-xs tracking-tight">Resources</h4>
               <ul className="space-y-1.5 text-xs text-slate-500">
-                <li><Link to="/pricing" className="hover:text-cyan-600 transition">PTE Online Course</Link></li>
+                <li><Link to="/pte-online-course" className="hover:text-cyan-600 transition">PTE Online Course</Link></li>
                 <li><Link to="/mobile-app" className="hover:text-cyan-600 transition">PTE Practice Mobile App</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE Material</Link></li>
                 <li><Link to="/book-exam" className="hover:text-cyan-600 transition">How to Book PTE Exam</Link></li>
