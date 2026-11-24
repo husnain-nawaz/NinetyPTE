@@ -62,6 +62,8 @@ function AppContent() {
           <Route path="/book-exam" element={<BookExamPage />} />
           <Route path="/pte-voucher" element={<BookExamPage />} />
           <Route path="/mobile-app" element={<MobileAppPage />} />
+          <Route path="/pte-practice-app" element={<MobileAppPage />} />
+          <Route path="/pte-mobile-app" element={<MobileAppPage />} />
           <Route path="/business" element={<InstituteSoftwarePage />} />
           <Route path="/institute-software" element={<InstituteSoftwarePage />} />
           <Route path="/pte-for-businesses" element={<InstituteSoftwarePage />} />
