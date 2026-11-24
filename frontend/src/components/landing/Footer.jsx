@@ -258,7 +258,7 @@ export default function Footer() {
               <ul className="space-y-1 text-xs text-slate-500">
                 <li><Link to="/book-exam" className="hover:text-cyan-600 transition">PTE Voucher</Link></li>
                 <li><Link to="/pte-jobs" className="hover:text-cyan-600 transition">PTE Jobs</Link></li>
-                <li><a href="#blog" className="hover:text-cyan-600 transition">Blog</a></li>
+                <li><Link to="/blog" className="hover:text-cyan-600 transition">Blog</Link></li>
                 <li><Link to="/mobile-app" className="hover:text-cyan-600 transition">Android App</Link></li>
                 <li><Link to="/mobile-app" className="hover:text-cyan-600 transition">iOS App</Link></li>
               </ul>

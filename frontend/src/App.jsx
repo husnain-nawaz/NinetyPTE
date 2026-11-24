@@ -29,6 +29,8 @@ import PTECoreWritingPracticePage from './pages/PTECoreWritingPracticePage';
 import PTECoreReadingPracticePage from './pages/PTECoreReadingPracticePage';
 import PTECoreListeningPracticePage from './pages/PTECoreListeningPracticePage';
 import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
+import BlogPage from './blog/BlogPage';
+import BlogDetailPage from './blog/BlogDetailPage';
 import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
 import PTEReadingPracticePage from './pages/PTEReadingPracticePage';
 import PTEListeningPracticePage from './pages/PTEListeningPracticePage';
@@ -133,6 +135,9 @@ function AppContent() {
           <Route path="/pte-core-writing-practice" element={<PTECoreWritingPracticePage />} />
           <Route path="/pte-core-reading-practice" element={<PTECoreReadingPracticePage />} />
           <Route path="/pte-core-listening-practice" element={<PTECoreListeningPracticePage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blogs" element={<Navigate to="/blog" replace />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
