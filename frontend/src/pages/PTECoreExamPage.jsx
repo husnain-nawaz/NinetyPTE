@@ -180,7 +180,7 @@ export default function PTECoreExamPage() {
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link 
-                  to="/pte-speaking-practice"
+                  to="/pte-core-speaking-practice"
                   className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c5cd] text-white font-bold text-xs shadow-xs transition"
                 >
                   Start Practice
@@ -257,7 +257,7 @@ export default function PTECoreExamPage() {
             PTE Core is tailored specifically for individuals seeking Canadian permanent residency (PR) through economic immigration programs, Canadian citizenship, or Post-Graduation Work Permits (PGWP). If your primary goal is Canadian university or college academic admission, you should opt for PTE Academic instead. PTE Core is accepted by Immigration, Refugees and Citizenship Canada (IRCC) across all economic visa categories.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <Link to="/pte-speaking-practice" className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c5cd] text-white font-bold text-xs shadow-xs transition">
+            <Link to="/pte-core-speaking-practice" className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c5cd] text-white font-bold text-xs shadow-xs transition">
               Practice PTE Core
             </Link>
             <Link to="/mock-tests" className="px-6 py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition">
@@ -1017,7 +1017,7 @@ export default function PTECoreExamPage() {
               )}
 
               <div className="flex items-center gap-3 pt-2">
-                <Link to="/pte-speaking-practice" className="px-5 py-2 rounded-full bg-[#f0854d] hover:bg-[#e0753d] text-white font-bold text-xs shadow-xs transition">
+                <Link to="/pte-core-speaking-practice" className="px-5 py-2 rounded-full bg-[#f0854d] hover:bg-[#e0753d] text-white font-bold text-xs shadow-xs transition">
                   View More Questions
                 </Link>
                 <Link to="/mock-tests" className="px-5 py-2 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-bold text-xs shadow-xs transition">

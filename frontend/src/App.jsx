@@ -23,7 +23,7 @@ import PTEForUKPage from './pages/PTEForUKPage';
 import PTEForCanadaPage from './pages/PTEForCanadaPage';
 import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
 import PTECoreExamPage from './pages/PTECoreExamPage';
-import PTEExamPatternPage from './pages/PTEExamPatternPage';
+import PTECoreSpeakingPracticePage from './pages/PTECoreSpeakingPracticePage';
 import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
 import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
 import PTEReadingPracticePage from './pages/PTEReadingPracticePage';
@@ -120,7 +120,8 @@ function AppContent() {
           <Route path="/pte-material" element={<PTEMaterialPage />} />
           <Route path="/pte-core" element={<PTECoreExamPage />} />
           <Route path="/pte-core-exam" element={<PTECoreExamPage />} />
-          <Route path="/pte-core-exam-pattern" element={<PTECoreExamPage />} />
+          <Route path="/pte-core-exam-pattern" element={<Navigate to="/pte-core-speaking-practice" replace />} />
+          <Route path="/pte-core-speaking-practice" element={<PTECoreSpeakingPracticePage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
