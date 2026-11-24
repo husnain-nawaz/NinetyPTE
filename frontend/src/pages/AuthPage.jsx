@@ -12,6 +12,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import LanguageDropdown from '../components/navbar/LanguageDropdown';
+import { authenticateUser } from '../utils/auth';
 
 export default function AuthPage({ initialMode = 'signin' }) {
   const navigate = useNavigate();
@@ -34,23 +35,38 @@ export default function AuthPage({ initialMode = 'signin' }) {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setAuthError('');
+
+    const result = authenticateUser({
+      mode,
+      email: formData.email,
+      password: formData.password,
+      name: formData.name,
+    });
+
+    if (result.error) {
+      setAuthError(result.error);
+      return;
+    }
+
     setSubmitted(true);
-    
-    // Save login session to localStorage
-    const userSession = {
-      email: formData.email || 'student@ninetypte.com',
-      name: formData.name || formData.email?.split('@')[0] || 'Student',
-      isLoggedIn: true,
-      loginTime: new Date().toISOString()
-    };
-    localStorage.setItem('ninetypte_user', JSON.stringify(userSession));
 
     setTimeout(() => {
       setSubmitted(false);
-      const destination = location.state?.from?.pathname || '/dashboard';
+      const requestedFrom = location.state?.from?.pathname;
+      const isSuperRoute =
+        requestedFrom?.startsWith('/super-dashboard') ||
+        requestedFrom?.startsWith('/superadmin');
+      const destination =
+        result.user.role === 'superadmin'
+          ? requestedFrom || result.redirectPath
+          : isSuperRoute
+            ? result.redirectPath
+            : requestedFrom || result.redirectPath;
       navigate(destination);
     }, 1200);
   };
@@ -92,7 +108,7 @@ export default function AuthPage({ initialMode = 'signin' }) {
           <div className="p-1 bg-slate-100/90 rounded-full border border-slate-200 flex text-xs font-bold">
             <button
               type="button"
-              onClick={() => { setMode('signin'); setSubmitted(false); }}
+              onClick={() => { setMode('signin'); setSubmitted(false); setAuthError(''); }}
               className={`flex-1 py-2.5 rounded-full transition-all text-center ${
                 !isSignUp
                   ? 'bg-[#00c2cb] text-white shadow-xs font-extrabold'
@@ -103,7 +119,7 @@ export default function AuthPage({ initialMode = 'signin' }) {
             </button>
             <button
               type="button"
-              onClick={() => { setMode('signup'); setSubmitted(false); }}
+              onClick={() => { setMode('signup'); setSubmitted(false); setAuthError(''); }}
               className={`flex-1 py-2.5 rounded-full transition-all text-center ${
                 isSignUp
                   ? 'bg-[#00c2cb] text-white shadow-xs font-extrabold'
@@ -113,6 +129,15 @@ export default function AuthPage({ initialMode = 'signin' }) {
               Sign Up
             </button>
           </div>
+
+          {authError && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-semibold text-red-700"
+            >
+              {authError}
+            </div>
+          )}
 
           {/* Form */}
           {submitted ? (
@@ -286,7 +311,7 @@ export default function AuthPage({ initialMode = 'signin' }) {
                     Already have an account?{' '}
                     <button
                       type="button"
-                      onClick={() => setMode('signin')}
+                      onClick={() => { setMode('signin'); setAuthError(''); }}
                       className="font-extrabold text-[#14324f] hover:text-cyan-600 underline"
                     >
                       Sign In
@@ -297,7 +322,7 @@ export default function AuthPage({ initialMode = 'signin' }) {
                     Don't have an account?{' '}
                     <button
                       type="button"
-                      onClick={() => setMode('signup')}
+                      onClick={() => { setMode('signup'); setAuthError(''); }}
                       className="font-extrabold text-[#14324f] hover:text-cyan-600 underline"
                     >
                       Sign Up

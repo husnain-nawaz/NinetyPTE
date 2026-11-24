@@ -1,19 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
+import { clearUserSession, getStoredUser } from '../frontend/src/utils/auth';
 
 export default function PTEDashboard() {
   const navigate = useNavigate();
-
-  // Retrieve stored user session (if any)
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem('ninetypte_user') || '{}');
-  } catch {
-    user = {};
-  }
+  const user = getStoredUser() || {};
 
   const handleLogout = () => {
-    localStorage.removeItem('ninetypte_user');
+    clearUserSession();
     navigate('/login');
   };
 
@@ -41,6 +35,7 @@ export default function PTEDashboard() {
           </div>
 
           <button
+            type="button"
             onClick={handleLogout}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50 text-xs font-semibold transition cursor-pointer"
             title="Log out"

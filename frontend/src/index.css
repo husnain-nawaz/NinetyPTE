@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../../PTEDashboard";
+@source "../../SuperDashboard";
 
 @layer base {
   body {

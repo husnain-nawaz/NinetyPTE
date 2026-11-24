@@ -43,8 +43,8 @@ import OnTestDayPage from './pages/OnTestDayPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
-import PTEDashboard from './PTEDashboard/PTEDashboard';
-import ProtectedRoute from './PTEDashboard/ProtectedRoute';
+import { PTEDashboard, ProtectedRoute } from '../../PTEDashboard';
+import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
 
 function AppContent() {
   const location = useLocation();
@@ -59,7 +59,11 @@ function AppContent() {
     '/refund-policy', 
     '/refund-cancellation'
   ].includes(location.pathname);
-  const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/pte-dashboard');
+  const isDashboard =
+    location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/pte-dashboard') ||
+    location.pathname.startsWith('/super-dashboard') ||
+    location.pathname.startsWith('/superadmin');
   const hideChrome = isAuthPage || isLegalPage || isDashboard;
 
   return (
@@ -138,6 +142,10 @@ function AppContent() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blogs" element={<Navigate to="/blog" replace />} />
           <Route path="/blog/:slug" element={<BlogDetailPage />} />
+          <Route path="/pte-core-listening-practice" element={<PTECoreListeningPracticePage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blogs" element={<Navigate to="/blog" replace />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
@@ -167,6 +175,22 @@ function AppContent() {
                 <PTEDashboard />
               </ProtectedRoute>
             } 
+          />
+          <Route
+            path="/super-dashboard"
+            element={
+              <SuperAdminRoute>
+                <SuperDashboard />
+              </SuperAdminRoute>
+            }
+          />
+          <Route
+            path="/superadmin"
+            element={
+              <SuperAdminRoute>
+                <SuperDashboard />
+              </SuperAdminRoute>
+            }
           />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />

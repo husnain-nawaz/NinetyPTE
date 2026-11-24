@@ -1,14 +1,17 @@
 import { useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Headphones, Menu, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Headphones, Menu, ShieldCheck, X } from 'lucide-react';
 import ProductsMegaMenu from './ProductsMegaMenu';
 import LanguageDropdown from './LanguageDropdown';
+import { getStoredUser, isSuperAdmin } from '../../utils/auth';
 
 export default function Navbar() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
   const hoverTimeoutRef = useRef(null);
+  const currentUser = getStoredUser();
+  const showSuperDashboard = isSuperAdmin(currentUser);
 
   // Check if on Business / Institute routes
   const isBusiness = 
@@ -217,14 +220,25 @@ export default function Navbar() {
           <LanguageDropdown variant="consumer" />
 
           {/* User Auth / Dashboard Button */}
-          {localStorage.getItem('ninetypte_user') ? (
-            <Link
-              to="/dashboard"
-              className="px-4 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5"
-            >
-              <span>Dashboard</span>
-              <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
-            </Link>
+          {currentUser ? (
+            <div className="flex items-center gap-2">
+              {showSuperDashboard && (
+                <Link
+                  to="/super-dashboard"
+                  className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-400/40 font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Super Dashboard</span>
+                </Link>
+              )}
+              <Link
+                to="/dashboard"
+                className="px-4 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5"
+              >
+                <span>Dashboard</span>
+                <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+              </Link>
+            </div>
           ) : (
             <>
               {/* Log in > */}
@@ -267,24 +281,52 @@ export default function Navbar() {
           
           <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
             <div className="flex items-center justify-between text-white">
-              <Link 
-                to="/login" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-1 text-white hover:text-cyan-300 font-bold text-sm"
-              >
-                <span>Log in</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+              {!currentUser ? (
+                <Link 
+                  to="/login" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-1 text-white hover:text-cyan-300 font-bold text-sm"
+                >
+                  <span>Log in</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              ) : (
+                <span className="text-xs text-cyan-300 font-semibold truncate pr-2">
+                  {currentUser.email}
+                </span>
+              )}
               <LanguageDropdown variant="consumer" />
             </div>
-            
-            <Link 
-              to="/signup" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md block"
-            >
-              Start Free Trial &gt;
-            </Link>
+
+            {currentUser ? (
+              <div className="flex flex-col gap-2">
+                {showSuperDashboard && (
+                  <Link
+                    to="/super-dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full py-2.5 rounded-full bg-slate-800 border border-cyan-400/50 text-cyan-300 font-extrabold text-center text-sm shadow-md flex items-center justify-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Super Dashboard</span>
+                  </Link>
+                )}
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md block"
+                >
+                  Dashboard &gt;
+                </Link>
+              </div>
+            ) : (
+              <Link 
+                to="/signup" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2.5 rounded-full bg-white text-[#00a8b5] font-extrabold text-center text-sm shadow-md block"
+              >
+                Start Free Trial &gt;
+              </Link>
+            )}
           </div>
         </div>
       )}
