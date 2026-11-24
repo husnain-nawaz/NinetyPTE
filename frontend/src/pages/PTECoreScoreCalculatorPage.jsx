@@ -669,7 +669,7 @@ export default function PTECoreScoreCalculatorPage() {
             </p>
             <div>
               <Link
-                to="/mock-tests"
+                to="/pte-core-mock-test"
                 className="inline-block px-7 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-bold text-xs shadow-md transition"
               >
                 Start PTE Core Mock Test
@@ -814,7 +814,7 @@ export default function PTECoreScoreCalculatorPage() {
 
           <div className="text-center pt-2">
             <Link
-              to="/mock-tests"
+              to="/pte-core-mock-test"
               className="inline-block px-7 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-bold text-xs shadow-sm transition"
             >
               Start PTE Core Mock Test

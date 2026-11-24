@@ -121,6 +121,8 @@ function AppContent() {
           <Route path="/pte-material" element={<PTEMaterialPage />} />
           <Route path="/pte-core" element={<PTECoreExamPage />} />
           <Route path="/pte-core-exam" element={<PTECoreExamPage />} />
+          <Route path="/pte-core-mock-test" element={<MockTestsPage variant="core" />} />
+          <Route path="/pte-core-mock-tests" element={<MockTestsPage variant="core" />} />
           <Route path="/pte-core-score-calculator" element={<PTECoreScoreCalculatorPage />} />
           <Route path="/clb-score-calculator" element={<PTECoreScoreCalculatorPage />} />
           <Route path="/pte-core-exam-pattern" element={<Navigate to="/pte-core-speaking-practice" replace />} />

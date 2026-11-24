@@ -1,38 +1,30 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Sparkles, 
-  Clock, 
-  Layers, 
-  CheckCircle2, 
-  ArrowRight, 
-  BarChart3, 
-  ShieldCheck, 
-  Play, 
-  Headphones, 
-  Mic, 
-  FileText, 
-  BookOpen, 
-  Cpu, 
-  Award, 
-  ChevronDown, 
-  ChevronUp, 
-  Star, 
-  Rocket, 
-  Check, 
-  UserCheck, 
+import {
+  Sparkles,
+  Clock,
+  Layers,
+  CheckCircle2,
+  ArrowRight,
+  BarChart3,
+  Headphones,
+  Mic,
+  FileText,
+  BookOpen,
+  Award,
+  ChevronDown,
+  ChevronUp,
+  UserCheck,
   Grid,
-  ChevronLeft,
-  ChevronRight,
   Info,
-  HelpCircle,
   RotateCcw,
   Sliders,
-  Zap,
-  Globe
+  Zap
 } from 'lucide-react';
 
-export default function MockTestsPage() {
+export default function MockTestsPage({ variant = 'academic' }) {
+  const isCore = variant === 'core';
+
   // Navigation Jump Links (Page 1)
   const quickNav = [
     { label: 'Mock Tests', href: '#mock-tests-list' },
@@ -57,161 +49,176 @@ export default function MockTestsPage() {
   const [builderFilterType, setBuilderFilterType] = useState('prediction'); // 'all' | 'prediction' | 'new'
 
   // Mock Test Cards Data (Pages 1 & 2)
+  const testDesc = isCore ? 'PTE Core Mock Test' : 'Complete PTE Mock Exam';
   const mockTestList = [
     {
       id: 0,
       title: 'Free Mock Test',
       badge: '✦ FREE ACCESS',
-      desc: 'Complete PTE Exam Mock Test',
+      desc: isCore ? 'PTE Core Mock Test' : 'Complete PTE Exam Mock Test',
       duration: 'Approx. 2 Hour Exam',
       sections: 'All 4 PTE Modules',
       btnText: 'Start Free Mock Test',
       isFree: true,
       category: 'full'
     },
-    {
-      id: 1,
-      title: 'Mock Test - 1',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    },
-    {
-      id: 2,
-      title: 'Mock Test - 2',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    },
-    {
-      id: 3,
-      title: 'Mock Test - 3',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    },
-    {
-      id: 4,
-      title: 'Mock Test - 4',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    },
-    {
-      id: 5,
-      title: 'Mock Test - 5',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    },
-    {
-      id: 6,
-      title: 'Mock Test - 6',
-      badge: '★ PREMIUM',
-      desc: 'Complete PTE Mock Exam',
-      duration: '2 hours duration',
-      sections: '4 Main sections',
-      btnText: 'Sign Up',
-      isFree: false,
-      category: 'full'
-    }
+    { id: 1, title: 'Mock Test - 1', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' },
+    { id: 2, title: 'Mock Test - 2', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' },
+    { id: 3, title: 'Mock Test - 3', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' },
+    { id: 4, title: 'Mock Test - 4', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' },
+    { id: 5, title: 'Mock Test - 5', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' },
+    { id: 6, title: 'Mock Test - 6', badge: '★ PREMIUM', desc: testDesc, duration: '2 hours duration', sections: '4 Main sections', btnText: 'Sign Up', isFree: false, category: 'full' }
   ];
 
   // 3 Student Scorecards (Page 6)
-  const scorecards = [
-    {
-      name: 'Mansi Patel',
-      testId: 'PTE-ACAD-78910',
-      overall: 86,
-      listening: 77,
-      reading: 84,
-      speaking: 88,
-      writing: 90,
-      center: 'Melbourne Center, VIC',
-      country: 'Australia'
-    },
-    {
-      name: 'Pooja Bansal',
-      testId: 'PTE-ACAD-90412',
-      overall: 90,
-      listening: 84,
-      reading: 90,
-      speaking: 88,
-      writing: 90,
-      center: 'Sydney Test Center, NSW',
-      country: 'Australia'
-    },
-    {
-      name: 'Wei Chen',
-      testId: 'PTE-ACAD-65123',
-      overall: 80,
-      listening: 77,
-      reading: 84,
-      speaking: 88,
-      writing: 90,
-      center: 'Adelaide Central, SA',
-      country: 'Australia'
-    }
-  ];
+  const scorecards = isCore
+    ? [
+        {
+          name: 'Diego Morales',
+          testId: 'PTE-CORE-34112',
+          overall: 79,
+          listening: 84,
+          reading: 86,
+          speaking: 87,
+          writing: 82,
+          center: 'Toronto Center, ON',
+          country: 'Canada PR'
+        },
+        {
+          name: 'Thandiwe Moyo',
+          testId: 'PTE-CORE-51908',
+          overall: 62,
+          listening: 67,
+          reading: 69,
+          speaking: 70,
+          writing: 65,
+          center: 'Vancouver Test Center, BC',
+          country: 'Canada PR'
+        },
+        {
+          name: 'Kemal Yilmaz',
+          testId: 'PTE-CORE-88241',
+          overall: 83,
+          listening: 88,
+          reading: 90,
+          speaking: 90,
+          writing: 87,
+          center: 'Calgary Center, AB',
+          country: 'Canada PR'
+        }
+      ]
+    : [
+        {
+          name: 'Mansi Patel',
+          testId: 'PTE-ACAD-78910',
+          overall: 86,
+          listening: 77,
+          reading: 84,
+          speaking: 88,
+          writing: 90,
+          center: 'Melbourne Center, VIC',
+          country: 'Australia'
+        },
+        {
+          name: 'Pooja Bansal',
+          testId: 'PTE-ACAD-90412',
+          overall: 90,
+          listening: 84,
+          reading: 90,
+          speaking: 88,
+          writing: 90,
+          center: 'Sydney Test Center, NSW',
+          country: 'Australia'
+        },
+        {
+          name: 'Wei Chen',
+          testId: 'PTE-ACAD-65123',
+          overall: 80,
+          listening: 77,
+          reading: 84,
+          speaking: 88,
+          writing: 90,
+          center: 'Adelaide Central, SA',
+          country: 'Australia'
+        }
+      ];
 
   // FAQs Data (Page 7)
-  const faqs = [
-    {
-      q: 'What are full and sectional PTE Exam Mock Tests?',
-      a: 'Full Mock Tests replicate the entire PTE exam experience with all four modules (Speaking, Writing, Reading, and Listening) evaluated under official timed conditions. Sectional Mock Tests focus exclusively on one specific module, allowing targeted practice for areas that need score enhancement.',
-      icon: <Info className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'How similar are NinetyPTE Exam Mock Tests to the real PTE exam?',
-      a: 'NinetyPTE mock tests strictly match the Pearson PTE Academic & UKVI format, screen layouts, countdown timers, microphone recording triggers, and difficulty distribution to ensure zero surprise on exam day.',
-      icon: <BookOpen className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'Are NinetyPTE Exam Mock Test scores accurate and how close are they to the actual PTE score?',
-      a: 'NinetyPTE utilizes proprietary machine learning algorithms trained on millions of official Pearson responses. Scores for Oral Fluency, Pronunciation, Grammar, and Vocabulary closely correlate with actual Pearson test scores within a ±2 to 3 point margin.',
-      icon: <BarChart3 className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'How quickly will I receive my mock test results and score reports?',
-      a: 'Score reports are generated instantly by our automated AI scoring engine upon test completion, typically available within 2 to 3 minutes on your student dashboard.',
-      icon: <CheckCircle2 className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'What analytics and feedback do NinetyPTE Exam Mock Tests provide?',
-      a: 'You receive granular diagnostic feedback including speech waveforms, pause analysis, oral fluency cadence, grammar and spelling error highlights, content keyword coverage, and tailored study recommendations.',
-      icon: <Zap className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'Can I reattempt mock tests and share my score reports?',
-      a: 'Yes! All your attempts are saved in your personal dashboard. You can reattempt tests, compare progression graphs over time, and download or share verified scorecards with your tutor or institution.',
-      icon: <Clock className="w-4 h-4 text-cyan-600" />
-    },
-    {
-      q: 'What is the "Create Your Own Mock Test" feature?',
-      a: 'This exclusive NinetyPTE capability allows you to build custom sectional or multi-task practice sessions. You can choose specific tasks, select prediction question pools, filter out previously practiced items, and set custom time parameters.',
-      icon: <RotateCcw className="w-4 h-4 text-cyan-600" />
-    }
-  ];
+  const faqs = isCore
+    ? [
+        {
+          q: 'What is the PTE Core Mock test and who is it designed for?',
+          a: 'The PTE Core Mock Test simulates the official Pearson PTE Core exam recognized by IRCC for Canadian permanent residency, work permits, and Canadian citizenship applications.',
+          icon: <Info className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'What types of PTE Core mock tests does NinetyPTE offer?',
+          a: 'NinetyPTE provides full 2-hour PTE Core mock exams covering all 4 modules, section-wise Speaking/Writing/Reading/Listening mocks, timed sectional tests, and a custom mock test builder.',
+          icon: <BookOpen className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: "How accurate is NinetyPTE's AI scoring for PTE Core Mock Test?",
+          a: 'Our AI engine mirrors official PTE Core scoring parameters—including Email Conventions, Form, Grammar, Oral Fluency, and Pronunciation—to give accurate CLB readiness predictions.',
+          icon: <BarChart3 className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'How quickly will I receive my PTE Core mock test results?',
+          a: 'Instant automated AI scorecards and diagnostic analytics are generated immediately upon submitting your completed mock exam.',
+          icon: <CheckCircle2 className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'What does the PTE Core Mock Test score report include?',
+          a: 'Your report displays an Overall Score alongside separate Listening, Reading, Speaking, and Writing scores calibrated to CLB benchmarks, plus task-by-task error analysis.',
+          icon: <Zap className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'Can I share my PTE Core mock test score report with my trainer?',
+          a: 'Yes, you can download or share your diagnostic score report card directly with trainers or study mentors to review weak skills.',
+          icon: <Clock className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'Can I reattempt PTE Core mock tests on NinetyPTE?',
+          a: 'Yes, you can retake mock tests, inspect score progression graphs across attempts, and isolate weak tasks such as Write Email or Respond to a Situation.',
+          icon: <RotateCcw className="w-4 h-4 text-cyan-600" />
+        }
+      ]
+    : [
+        {
+          q: 'What are full and sectional PTE Exam Mock Tests?',
+          a: 'Full Mock Tests replicate the entire PTE exam experience with all four modules (Speaking, Writing, Reading, and Listening) evaluated under official timed conditions. Sectional Mock Tests focus exclusively on one specific module, allowing targeted practice for areas that need score enhancement.',
+          icon: <Info className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'How similar are NinetyPTE Exam Mock Tests to the real PTE exam?',
+          a: 'NinetyPTE mock tests strictly match the Pearson PTE Academic & UKVI format, screen layouts, countdown timers, microphone recording triggers, and difficulty distribution to ensure zero surprise on exam day.',
+          icon: <BookOpen className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'Are NinetyPTE Exam Mock Test scores accurate and how close are they to the actual PTE score?',
+          a: 'NinetyPTE utilizes proprietary machine learning algorithms trained on millions of official Pearson responses. Scores for Oral Fluency, Pronunciation, Grammar, and Vocabulary closely correlate with actual Pearson test scores within a ±2 to 3 point margin.',
+          icon: <BarChart3 className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'How quickly will I receive my mock test results and score reports?',
+          a: 'Score reports are generated instantly by our automated AI scoring engine upon test completion, typically available within 2 to 3 minutes on your student dashboard.',
+          icon: <CheckCircle2 className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'What analytics and feedback do NinetyPTE Exam Mock Tests provide?',
+          a: 'You receive granular diagnostic feedback including speech waveforms, pause analysis, oral fluency cadence, grammar and spelling error highlights, content keyword coverage, and tailored study recommendations.',
+          icon: <Zap className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'Can I reattempt mock tests and share my score reports?',
+          a: 'Yes! All your attempts are saved in your personal dashboard. You can reattempt tests, compare progression graphs over time, and download or share verified scorecards with your tutor or institution.',
+          icon: <Clock className="w-4 h-4 text-cyan-600" />
+        },
+        {
+          q: 'What is the "Create Your Own Mock Test" feature?',
+          a: 'This exclusive NinetyPTE capability allows you to build custom sectional or multi-task practice sessions. You can choose specific tasks, select prediction question pools, filter out previously practiced items, and set custom time parameters.',
+          icon: <RotateCcw className="w-4 h-4 text-cyan-600" />
+        }
+      ];
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans relative selection:bg-cyan-500 selection:text-white pb-16">
@@ -226,16 +233,25 @@ export default function MockTestsPage() {
           <div className="text-center space-y-3 max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-50 text-[#00c2cb] text-xs font-bold border border-cyan-100">
               <Sparkles className="w-3.5 h-3.5 fill-[#00c2cb]" />
-              <span>✦ PTE Mock Test</span>
+              <span>{isCore ? '✦ PTE Core Mock Test' : '✦ PTE Mock Test'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.18]">
-              Free <span className="text-[#00c2cb]">PTE Academic / UKVI</span> Mock Tests <br />
-              Real Exam Experience with Instant Results!
-            </h1>
+            {isCore ? (
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.18]">
+                Free <span className="text-[#00c2cb]">PTE Core</span> Mock Tests with Instant <span className="text-[#00c2cb]">AI Scoring</span> <br />
+                Experience Real Exam Conditions &amp; Get Detailed Results Instantly
+              </h1>
+            ) : (
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.18]">
+                Free <span className="text-[#00c2cb]">PTE Academic / UKVI</span> Mock Tests <br />
+                Real Exam Experience with Instant Results!
+              </h1>
+            )}
 
             <p className="text-xs sm:text-sm font-semibold text-slate-600">
-              Take PTE Full & Sectional Mock Tests Online - Start Practicing Now!
+              {isCore
+                ? 'Take Full & Sectional Core Mock Tests Online - Start Practicing Now!'
+                : 'Take PTE Full & Sectional Mock Tests Online - Start Practicing Now!'}
             </p>
           </div>
 
@@ -329,7 +345,9 @@ export default function MockTestsPage() {
                 <span className="w-6 h-6 rounded-lg bg-cyan-100 text-[#00c2cb] flex items-center justify-center text-xs">
                   ✨
                 </span>
-                <span className="font-black text-xs text-slate-900">Create Your Own Mock Test</span>
+                <span className="font-black text-xs text-slate-900">
+                  {isCore ? 'Create Your Own Core Mock Test' : 'Create Your Own Mock Test'}
+                </span>
                 <span className="px-2 py-0.5 rounded-full bg-cyan-50 text-[#00c2cb] text-[9px] font-extrabold uppercase border border-cyan-200">
                   Unique Feature
                 </span>
@@ -347,7 +365,7 @@ export default function MockTestsPage() {
               href="#mock-tests-list"
               className="inline-block px-8 py-3 rounded-full bg-[#11223b] hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer"
             >
-              Take a PTE Free Mock Test Today
+              {isCore ? 'Take a Free Core Mock Test Today' : 'Take a PTE Free Mock Test Today'}
             </a>
           </div>
 
@@ -380,9 +398,15 @@ export default function MockTestsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 space-y-10">
           
           <div className="text-center space-y-2 max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              200+ Free PTE Exam Mock Tests – <span className="text-[#00c2cb]">Full & Sectional Online Practice</span>
-            </h2>
+            {isCore ? (
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Practice with 200+ Full &amp; Sectional <span className="text-[#00c2cb]">PTE Core Mock Tests</span>
+              </h2>
+            ) : (
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                200+ Free PTE Exam Mock Tests – <span className="text-[#00c2cb]">Full &amp; Sectional Online Practice</span>
+              </h2>
+            )}
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
               Get accurate AI scoring, detailed feedback, and exam-level practice in one platform.
             </p>
@@ -423,7 +447,9 @@ export default function MockTestsPage() {
                 </span>
                 <div>
                   <h3 className="font-black text-lg text-slate-900">Free Mock Test</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Complete PTE Exam Mock Test</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {isCore ? 'PTE Core Mock Test' : 'Complete PTE Exam Mock Test'}
+                  </p>
                 </div>
                 <div className="space-y-2 pt-2 text-xs text-slate-600 font-semibold">
                   <div className="flex items-center gap-2">
@@ -518,10 +544,12 @@ export default function MockTestsPage() {
             <div className="space-y-3 max-w-xl z-10">
               <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
                 Ready to take our <br />
-                <span className="text-[#00c2cb]">PTE Free Mock Test?</span>
+                <span className="text-[#00c2cb]">{isCore ? 'PTE Core Free Mock Test?' : 'PTE Free Mock Test?'}</span>
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Get access to comprehensive study materials, practice tests, and expert guidance to help you succeed in the PTE Academic/UKVI.
+                {isCore
+                  ? 'Get access to comprehensive study materials, practice tests, and expert guidance to help you succeed in the PTE Core exam.'
+                  : 'Get access to comprehensive study materials, practice tests, and expert guidance to help you succeed in the PTE Academic/UKVI.'}
               </p>
               <div className="pt-2">
                 <Link
@@ -541,7 +569,7 @@ export default function MockTestsPage() {
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-xs font-black text-white">
-                  <span>PTE Practice & Mock</span>
+                  <span>PTE Practice &amp; Mock</span>
                   <span>🚀</span>
                 </div>
                 <div className="text-[10px] text-slate-400">Authentic Scoring Algorithm</div>
@@ -560,10 +588,16 @@ export default function MockTestsPage() {
           
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Why take NinetyPTE's Mock tests for a <span className="text-[#00c2cb]">higher PTE score?</span>
+              {isCore ? (
+                <>Why Choose NinetyPTE&apos;s <span className="text-[#00c2cb]">PTE Core Mock Tests?</span></>
+              ) : (
+                <>Why take NinetyPTE&apos;s Mock tests for a <span className="text-[#00c2cb]">higher PTE score?</span></>
+              )}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
-              NinetyPTE's mock tests are designed to give you a realistic, targeted, and effective preparation experience.
+              {isCore
+                ? 'Practice realistic PTE Core exams, track your CLB progress, and build confidence for test day with instant AI scoring and detailed feedback.'
+                : "NinetyPTE's mock tests are designed to give you a realistic, targeted, and effective preparation experience."}
             </p>
           </div>
 
@@ -575,10 +609,16 @@ export default function MockTestsPage() {
                 <span>AUTHENTIC SIMULATION</span>
               </div>
               <h3 className="text-2xl font-black text-slate-900">
-                Real PTE <span className="text-[#00c2cb]">Exam Experience</span>
+                {isCore ? (
+                  <>Real PTE Core <span className="text-[#00c2cb]">Exam Experience</span></>
+                ) : (
+                  <>Real PTE <span className="text-[#00c2cb]">Exam Experience</span></>
+                )}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Mock tests at NinetyPTE replicate the exact official PTE exam interface, structure, and timings, allowing you to practice in a real-exam-like environment. This will help you build confidence, enabling you to reduce anxiety and perform better on test day.
+                {isCore
+                  ? 'Every PTE Core mock test on NinetyPTE is designed to match the real PTE Core exam, including the screen layout, timing, and question order so test takers get comfortable with the exact interface before exam day.'
+                  : "Mock tests at NinetyPTE replicate the exact official PTE exam interface, structure, and timings, allowing you to practice in a real-exam-like environment. This will help you build confidence, enabling you to reduce anxiety and perform better on test day."}
               </p>
               <div className="pt-2">
                 <Link
@@ -593,7 +633,7 @@ export default function MockTestsPage() {
             {/* Test UI Mockup */}
             <div className="lg:col-span-7 bg-slate-50 rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-md space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200 text-xs font-bold text-slate-600">
-                <span className="text-[#00c2cb]">NinetyPTE - Free Mock Test</span>
+                <span className="text-[#00c2cb]">{isCore ? 'NinetyPTE - Free Core Mock Test' : 'NinetyPTE - Free Mock Test'}</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-cyan-100 text-[#00c2cb] text-[10px]">TIME: 00:43</span>
               </div>
 
@@ -631,7 +671,7 @@ export default function MockTestsPage() {
             <div className="lg:col-span-7 order-2 lg:order-1 bg-white rounded-3xl p-6 border border-slate-200/90 shadow-md space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">NINETYPTE SCORE REPORT</span>
-                <span className="text-xs font-black text-[#00c2cb]">Target 79+</span>
+                <span className="text-xs font-black text-[#00c2cb]">{isCore ? 'CLB Target Ready' : 'Target 79+'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div>
@@ -673,7 +713,9 @@ export default function MockTestsPage() {
                 Highly <span className="text-[#00c2cb]">Accurate AI Scoring</span>
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                NinetyPTE's advanced AI scoring system for PTE mirrors Pearson's official algorithm, giving you an instant and reliable result. Every mock test score accurately reflects your performance across all 4 modules – helping you track your progress & improve effectively.
+                {isCore
+                  ? "NinetyPTE's scoring engine is built around the exact PTE Core scoring criteria, including Content, Form, Organization, Email Conventions, Grammar, Vocabulary, and Spelling for Writing, along with Oral Fluency and Pronunciation for Speaking."
+                  : "NinetyPTE's advanced AI scoring system for PTE mirrors Pearson's official algorithm, giving you an instant and reliable result. Every mock test score accurately reflects your performance across all 4 modules – helping you track your progress & improve effectively."}
               </p>
               <div className="pt-2">
                 <Link
@@ -698,7 +740,9 @@ export default function MockTestsPage() {
                 Master in <span className="text-[#00c2cb]">Time Management</span>
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                With NinetyPTE's mock test mimicking the exact timing structure of the real exam, you will develop your time management skills, ensuring that you complete all questions efficiently within the exam's strict time limits. You will learn to stay calm and focused even under pressure.
+                {isCore
+                  ? 'NinetyPTE mock tests follow the exact section timings as the real PTE Core exam—Speaking & Writing (50–65 minutes), Reading (27–37 minutes), and Listening (22–37 minutes), with a total time of about 2 hours—building pacing skills for tasks like Write Email and Write From Dictation.'
+                  : "With NinetyPTE's mock test mimicking the exact timing structure of the real exam, you will develop your time management skills, ensuring that you complete all questions efficiently within the exam's strict time limits. You will learn to stay calm and focused even under pressure."}
               </p>
               <div className="pt-2">
                 <Link
@@ -769,10 +813,12 @@ export default function MockTestsPage() {
                 <span>GAP ANALYSIS</span>
               </div>
               <h3 className="text-2xl font-black text-slate-900">
-                Identify your <span className="text-[#00c2cb]">Strengths & Weaknesses</span>
+                Identify your <span className="text-[#00c2cb]">Strengths &amp; Weaknesses</span>
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Comprehensive score breakdowns and analytics will make it easy for you to understand the areas in which you excelled and the areas where you need more focus. These insights will help you to plan your preparation strategically and improve faster.
+                {isCore
+                  ? 'NinetyPTE provides a detailed score report based on the exact key skills assessed in PTE Core, including Pronunciation, Oral Fluency, Grammar, Vocabulary, and Written Discourse—helping identify weaknesses before taking the official PTE Core exam for IRCC.'
+                  : 'Comprehensive score breakdowns and analytics will make it easy for you to understand the areas in which you excelled and the areas where you need more focus. These insights will help you to plan your preparation strategically and improve faster.'}
               </p>
               <div className="pt-2">
                 <Link
@@ -798,16 +844,16 @@ export default function MockTestsPage() {
                 <div className="p-2.5 rounded-xl bg-orange-50/50 border border-orange-100">
                   <div className="font-bold text-orange-700">Speaking</div>
                   <div className="text-[10px] text-slate-500 mt-1">Read Aloud (07/07) ✓</div>
-                  <div className="text-[10px] text-slate-500">Repeat Sentence ✓</div>
+                  <div className="text-[10px] text-slate-500">{isCore ? 'Respond to Situation ✓' : 'Repeat Sentence ✓'}</div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-cyan-50/50 border border-cyan-100">
                   <div className="font-bold text-cyan-700">Writing</div>
                   <div className="text-[10px] text-slate-500 mt-1">Summarize Text ✓</div>
-                  <div className="text-[10px] text-slate-500">Write Essay ✓</div>
+                  <div className="text-[10px] text-slate-500">{isCore ? 'Write Email ✓' : 'Write Essay ✓'}</div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
                   <div className="font-bold text-emerald-700">Reading</div>
-                  <div className="text-[10px] text-slate-500 mt-1">R&W Blanks (05/05) ✓</div>
+                  <div className="text-[10px] text-slate-500 mt-1">R&amp;W Blanks (05/05) ✓</div>
                   <div className="text-[10px] text-slate-500">Re-order Paras ✓</div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-blue-50/50 border border-blue-100">
@@ -854,7 +900,9 @@ export default function MockTestsPage() {
                 Create Your <span className="text-[#00c2cb]">Own Mock Test</span>
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Customize your preparation with NinetyPTE's unique "Create Your Own Mock Test" feature. You can select the questions you want in your mock test, allowing you to have a fully personalized test experience tailored to your preparation goals.
+                {isCore
+                  ? 'Instead of taking a full mock test every time, create a custom PTE Core practice set with targeted question types such as Write Email, Respond to a Situation, Summarize Written Text, and more.'
+                  : "Customize your preparation with NinetyPTE's unique \"Create Your Own Mock Test\" feature. You can select the questions you want in your mock test, allowing you to have a fully personalized test experience tailored to your preparation goals."}
               </p>
               <div className="pt-2">
                 <Link
@@ -863,6 +911,40 @@ export default function MockTestsPage() {
                 >
                   Join Now
                 </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Pre-defined Mock Tests Banner Strip (Page 4 Bottom) */}
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-6 space-y-2">
+              <h3 className="text-xl font-black text-slate-900">
+                Our <span className="text-[#00c2cb]">Pre-defined Mock test</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 font-normal">
+                101 Full Pre-made Mock Tests, 144 Sectional Mock Tests, 100 timed sectional mock tests ready for instant practice.
+              </p>
+              <div className="pt-2">
+                <Link
+                  to="/signup"
+                  className="inline-block px-6 py-2 rounded-full bg-[#11223b] hover:bg-slate-900 text-white font-bold text-xs transition"
+                >
+                  Join Now
+                </Link>
+              </div>
+            </div>
+            <div className="md:col-span-6 grid grid-cols-3 gap-3 text-center">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200">
+                <div className="text-lg font-black text-[#00c2cb]">101</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase">Full Mocks</div>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200">
+                <div className="text-lg font-black text-[#00c2cb]">144</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase">Sectional</div>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-slate-200">
+                <div className="text-lg font-black text-[#00c2cb]">100</div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase">Timed Section</div>
               </div>
             </div>
           </div>
@@ -878,7 +960,11 @@ export default function MockTestsPage() {
           
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              To Take Our PTE Academic / UKVI Mock Tests, <span className="text-[#00c2cb]">Follow These Simple Steps</span>
+              {isCore ? (
+                <>To Take Our PTE Core Mock Tests, <span className="text-[#00c2cb]">Follow These Simple Steps</span></>
+              ) : (
+                <>To Take Our PTE Academic / UKVI Mock Tests, <span className="text-[#00c2cb]">Follow These Simple Steps</span></>
+              )}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
               Get started in five simple steps and receive instant performance metrics.
@@ -949,10 +1035,14 @@ export default function MockTestsPage() {
           
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              How NinetyPTE AI Scoring <span className="text-[#00c2cb]">Works in the Mock tests</span>
+              {isCore ? (
+                <>How NinetyPTE AI Scoring <span className="text-[#00c2cb]">Works in the PTE Core Mock Tests?</span></>
+              ) : (
+                <>How NinetyPTE AI Scoring <span className="text-[#00c2cb]">Works in the Mock tests</span></>
+              )}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
-              Result = All checked PTE Defined Parameters & Logic
+              Result = All checked PTE Defined Parameters &amp; Logic
             </p>
           </div>
 
@@ -978,7 +1068,7 @@ export default function MockTestsPage() {
                 <h5 className="font-extrabold text-xs text-slate-900">Speaking Analysis</h5>
                 <div className="flex flex-wrap justify-center gap-1.5 pt-1 text-[10px]">
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Pronunciation</span>
-                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Fluency</span>
+                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Oral Fluency</span>
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Content</span>
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Accuracy</span>
                 </div>
@@ -996,6 +1086,9 @@ export default function MockTestsPage() {
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Spellings</span>
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Vocabulary</span>
                   <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Form</span>
+                  {isCore && (
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-50 text-[#00c2cb] font-bold">Email Convention</span>
+                  )}
                 </div>
               </div>
 
@@ -1004,7 +1097,7 @@ export default function MockTestsPage() {
                 <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
                   <Headphones className="w-5 h-5" />
                 </div>
-                <h5 className="font-extrabold text-xs text-slate-900">Reading & Listening</h5>
+                <h5 className="font-extrabold text-xs text-slate-900">Reading &amp; Listening</h5>
                 <p className="text-[11px] text-slate-500 pt-1">
                   Auto-scored for <strong className="text-cyan-700">Correctness, Logic</strong>, and Completeness.
                 </p>
@@ -1014,21 +1107,29 @@ export default function MockTestsPage() {
 
           </div>
 
-          {/* New Format Dark Blue Announcement Banner (Page 5) */}
+          {/* New Format Dark Blue Announcement Banner */}
           <div className="rounded-3xl bg-[#091b33] text-white p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
             <div className="space-y-2 max-w-xl">
               <span className="inline-block px-3 py-1 rounded-full bg-orange-500 text-white text-[10px] font-black uppercase tracking-wider">
-                ⚡ NEW
+                {isCore ? '✦ IRCC APPROVED' : '⚡ NEW'}
               </span>
               <h3 className="text-xl sm:text-2xl font-black tracking-tight">
-                New PTE Academic / UKVI Format – Mock Tests Now Available
+                {isCore
+                  ? 'PTE Core for Canada PR – CLB Calibrated Mock Tests Available'
+                  : 'New PTE Academic / UKVI Format – Mock Tests Now Available'}
               </h3>
               <p className="text-xs text-slate-300 font-normal leading-relaxed">
-                Prepare with full-length mock tests designed as per the latest PTE format, including the 2 newly added question types.
+                {isCore
+                  ? 'Prepare with full-length mock tests built around general workplace English, including Write Email and Respond to a Situation.'
+                  : 'Prepare with full-length mock tests designed as per the latest PTE format, including the 2 newly added question types.'}
               </p>
               <div className="flex items-center gap-2 pt-1 text-[11px] text-cyan-400 font-semibold">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Aligned with the changes effective 7th August 2025</span>
+                <span>
+                  {isCore
+                    ? 'Aligned with Canadian Language Benchmarks (CLB 3–10)'
+                    : 'Aligned with the changes effective 7th August 2025'}
+                </span>
               </div>
             </div>
 
@@ -1036,7 +1137,7 @@ export default function MockTestsPage() {
               to="/signup"
               className="px-7 py-3 rounded-full bg-white text-[#091b33] hover:bg-slate-100 font-extrabold text-xs shadow-md shrink-0 transition cursor-pointer"
             >
-              Take A New Format Mock Test Today →
+              {isCore ? 'Take A Core Mock Test Today →' : 'Take A New Format Mock Test Today →'}
             </Link>
           </div>
 
@@ -1051,30 +1152,34 @@ export default function MockTestsPage() {
           
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              How to Prepare with Our <span className="text-[#00c2cb]">PTE Free Mock Test?</span>
+              How to Prepare with Our <span className="text-[#00c2cb]">{isCore ? 'PTE Core Free Mock Test?' : 'PTE Free Mock Test?'}</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 font-normal">
-              To get the most out of our PTE full mock test with answers, we recommend that you:
+              {isCore
+                ? 'To get the most out of our PTE Core mock tests, we recommend that you:'
+                : 'To get the most out of our PTE full mock test with answers, we recommend that you:'}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* Student Photo Card (Page 6) */}
+            {/* Student Photo Card */}
             <div className="lg:col-span-6 rounded-3xl overflow-hidden shadow-lg border border-slate-200">
               <img
                 src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80"
-                alt="Student preparing for PTE Academic"
+                alt="Student preparing for PTE"
                 className="w-full h-80 object-cover"
               />
             </div>
 
-            {/* 5 Bullet Points with cyan dots (Page 6) */}
+            {/* 5 Bullet Points with cyan dots */}
             <div className="lg:col-span-6 space-y-4 text-xs sm:text-sm text-slate-600">
               {[
-                'Review the test format and instructions carefully before taking the PTE free mock test',
+                'Review the test format and instructions carefully before taking the test',
                 "Practice with authentic materials and sample questions from NinetyPTE's website & mobile app",
-                'Use a variety of resources and strategies to improve your English skills, such as reading newspapers, listening to podcasts, watching videos, writing essays, etc.',
+                isCore
+                  ? 'Use a variety of resources and strategies to improve your English skills, such as reading newspapers, listening to podcasts, watching videos, writing emails, etc.'
+                  : 'Use a variety of resources and strategies to improve your English skills, such as reading newspapers, listening to podcasts, watching videos, writing essays, etc.',
                 'Take advantage of our free practice tests and section-wise tests that cover each skill separately',
                 'Seek tailored feedback from our AI-based score analytics generator'
               ].map((bullet, idx) => (
@@ -1098,7 +1203,11 @@ export default function MockTestsPage() {
           
           <div className="text-center space-y-3 max-w-3xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Remarkable Success of <span className="text-[#00c2cb]">Our PTE Test Takers</span>
+              {isCore ? (
+                <>Remarkable Success Among <span className="text-[#00c2cb]">Our PTE Core Test Takers</span></>
+              ) : (
+                <>Remarkable Success of <span className="text-[#00c2cb]">Our PTE Test Takers</span></>
+              )}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
               Master the Pearson's Test of English with the most advanced <strong>PTE practice platform</strong> designed to mirror the actual exam environment. Our platform empowers students with AI-scored PTE Exam mock tests, real exam questions, and instant feedback.

@@ -1389,7 +1389,7 @@ export default function PTECoreSpeakingPracticePage() {
             </div>
 
             <Link
-              to="/mock-tests"
+              to="/pte-core-mock-test"
               className="inline-block px-7 py-2.5 rounded-full bg-[#0f172a] hover:bg-[#00c5cd] text-white font-bold text-xs shadow-sm transition"
             >
               Take a Full PTE Core Speaking Practice Test
@@ -1583,7 +1583,7 @@ export default function PTECoreSpeakingPracticePage() {
               <Link to="/dashboard" className="px-6 py-2.5 rounded-full bg-[#0f172a] hover:bg-[#00c5cd] text-white font-bold text-xs shadow-xs transition">
                 Start Free Practice
               </Link>
-              <Link to="/mock-tests" className="px-6 py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition">
+              <Link to="/pte-core-mock-test" className="px-6 py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition">
                 Take a Full Mock Test
               </Link>
             </div>

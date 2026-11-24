@@ -260,7 +260,7 @@ export default function PTECoreExamPage() {
             <Link to="/pte-core-speaking-practice" className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c5cd] text-white font-bold text-xs shadow-xs transition">
               Practice PTE Core
             </Link>
-            <Link to="/mock-tests" className="px-6 py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition">
+            <Link to="/pte-core-mock-test" className="px-6 py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition">
               Take PTE Core Tests
             </Link>
           </div>
@@ -685,7 +685,7 @@ export default function PTECoreExamPage() {
             </p>
             <div>
               <Link 
-                to="/mock-tests"
+                to="/pte-core-mock-test"
                 className="px-8 py-3 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-extrabold text-xs shadow-md transition inline-block cursor-pointer"
               >
                 Start Free Practice Test
@@ -1020,7 +1020,7 @@ export default function PTECoreExamPage() {
                 <Link to="/pte-core-speaking-practice" className="px-5 py-2 rounded-full bg-[#f0854d] hover:bg-[#e0753d] text-white font-bold text-xs shadow-xs transition">
                   View More Questions
                 </Link>
-                <Link to="/mock-tests" className="px-5 py-2 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-bold text-xs shadow-xs transition">
+                <Link to="/pte-core-mock-test" className="px-5 py-2 rounded-full bg-[#00c5cd] hover:bg-[#00b2ba] text-white font-bold text-xs shadow-xs transition">
                   Start Your Practice Test
                 </Link>
               </div>
