@@ -23,6 +23,10 @@ import PTEForUKPage from './pages/PTEForUKPage';
 import PTEForCanadaPage from './pages/PTEForCanadaPage';
 import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
 import PTEExamPatternPage from './pages/PTEExamPatternPage';
+import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
+import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
+import PTEReadingPracticePage from './pages/PTEReadingPracticePage';
+import PTEListeningPracticePage from './pages/PTEListeningPracticePage';
 import PTEScoreCalculatorPage from './pages/PTEScoreCalculatorPage';
 import MockTestsPage from './pages/MockTestsPage';
 import PTEOnlineCoursePage from './pages/PTEOnlineCoursePage';
@@ -103,11 +107,11 @@ function AppContent() {
           <Route path="/pte-academic-ukvi-exam-pattern" element={<PTEExamPatternPage />} />
           <Route path="/pte-academic-exam-pattern" element={<PTEExamPatternPage />} />
           <Route path="/pte-exam-pattern" element={<PTEExamPatternPage />} />
-          <Route path="/pte-speaking-practice" element={<PTEExamPatternPage />} />
-          <Route path="/pte-writing-practice" element={<PTEExamPatternPage />} />
-          <Route path="/pte-reading-practice" element={<PTEExamPatternPage />} />
-          <Route path="/pte-listening-practice" element={<PTEExamPatternPage />} />
-          <Route path="/pte-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-speaking-practice" element={<PTESpeakingPracticePage />} />
+          <Route path="/pte-writing-practice" element={<PTEWritingPracticePage />} />
+          <Route path="/pte-reading-practice" element={<PTEReadingPracticePage />} />
+          <Route path="/pte-listening-practice" element={<PTEListeningPracticePage />} />
+          <Route path="/pte-practice" element={<PTESpeakingPracticePage />} />
           <Route path="/pte-online-course" element={<PTEOnlineCoursePage />} />
           <Route path="/pte-online-coaching" element={<PTEOnlineCoursePage />} />
           <Route path="/online-course" element={<PTEOnlineCoursePage />} />
