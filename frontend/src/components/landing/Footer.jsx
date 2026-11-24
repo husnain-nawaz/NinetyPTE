@@ -165,7 +165,7 @@ export default function Footer() {
                 <li><Link to="/pte-academic-ukvi-exam" className="hover:text-cyan-600 transition">PTE Academic UKVI Exam</Link></li>
                 <li><Link to="/pte-academic-ukvi-exam-pattern" className="hover:text-cyan-600 transition">PTE Academic / UKVI Exam Pattern</Link></li>
                 <li><Link to="/pte-score-calculator" className="hover:text-cyan-600 transition">PTE Academic / UKVI Score Calculator</Link></li>
-                <li><Link to="/pricing?tab=mock-test" className="hover:text-cyan-600 transition">PTE Academic / UKVI Mock Test</Link></li>
+                <li><Link to="/pte-academic-ukvi-mock-test" className="hover:text-cyan-600 transition">PTE Academic / UKVI Mock Test</Link></li>
                 <li><Link to="/pte-speaking-practice" className="hover:text-cyan-600 transition">Speaking Practice</Link></li>
                 <li><Link to="/pte-writing-practice" className="hover:text-cyan-600 transition">Writing Practice</Link></li>
                 <li><Link to="/pte-reading-practice" className="hover:text-cyan-600 transition">Reading Practice</Link></li>

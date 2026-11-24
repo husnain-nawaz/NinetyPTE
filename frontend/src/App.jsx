@@ -125,6 +125,11 @@ function AppContent() {
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />
+          <Route path="/pte-academic-ukvi-mock-test" element={<MockTestsPage />} />
+          <Route path="/pte-academic-mock-test" element={<MockTestsPage />} />
+          <Route path="/pte-ukvi-mock-test" element={<MockTestsPage />} />
+          <Route path="/pte-full-mock-test" element={<MockTestsPage />} />
+          <Route path="/pte-sectional-mock-test" element={<MockTestsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/contact-us" element={<ContactPage />} />
           <Route path="/disclaimer" element={<DisclaimerPage pageType="disclaimer" />} />
