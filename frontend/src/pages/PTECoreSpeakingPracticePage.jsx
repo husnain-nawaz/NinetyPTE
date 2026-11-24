@@ -525,7 +525,7 @@ export default function PTECoreSpeakingPracticePage() {
               <span>Writing</span>
             </Link>
             <Link
-              to="/pte-reading-practice"
+              to="/pte-core-reading-practice"
               className="px-5 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white rounded-full flex items-center gap-1.5 transition"
             >
               <BookOpen className="w-3.5 h-3.5" />

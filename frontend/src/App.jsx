@@ -26,6 +26,7 @@ import PTECoreExamPage from './pages/PTECoreExamPage';
 import PTECoreScoreCalculatorPage from './pages/PTECoreScoreCalculatorPage';
 import PTECoreSpeakingPracticePage from './pages/PTECoreSpeakingPracticePage';
 import PTECoreWritingPracticePage from './pages/PTECoreWritingPracticePage';
+import PTECoreReadingPracticePage from './pages/PTECoreReadingPracticePage';
 import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
 import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
 import PTEReadingPracticePage from './pages/PTEReadingPracticePage';
@@ -129,6 +130,7 @@ function AppContent() {
           <Route path="/pte-core-exam-pattern" element={<Navigate to="/pte-core-speaking-practice" replace />} />
           <Route path="/pte-core-speaking-practice" element={<PTECoreSpeakingPracticePage />} />
           <Route path="/pte-core-writing-practice" element={<PTECoreWritingPracticePage />} />
+          <Route path="/pte-core-reading-practice" element={<PTECoreReadingPracticePage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
