@@ -21,6 +21,7 @@ import PTEForNewZealandPage from './pages/PTEForNewZealandPage';
 import PTEForUSAPage from './pages/PTEForUSAPage';
 import PTEForUKPage from './pages/PTEForUKPage';
 import PTEForCanadaPage from './pages/PTEForCanadaPage';
+import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -87,6 +88,10 @@ function AppContent() {
           <Route path="/pte-uk" element={<PTEForUKPage />} />
           <Route path="/pte-for-canada" element={<PTEForCanadaPage />} />
           <Route path="/pte-canada" element={<PTEForCanadaPage />} />
+          <Route path="/pte-academic-ukvi-exam" element={<PTEAcademicUKVIExamPage />} />
+          <Route path="/pte-academic-ukvi" element={<PTEAcademicUKVIExamPage />} />
+          <Route path="/pte-ukvi-exam" element={<PTEAcademicUKVIExamPage />} />
+          <Route path="/pte-ukvi" element={<PTEAcademicUKVIExamPage />} />
           <Route 
             path="/dashboard" 
             element={

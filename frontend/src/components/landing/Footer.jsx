@@ -162,7 +162,7 @@ export default function Footer() {
               <h4 className="font-extrabold text-slate-900 text-xs tracking-tight">PTE Academic / UKVI</h4>
               <ul className="space-y-1.5 text-xs text-slate-500">
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE Academic Exam</Link></li>
-                <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE Academic UKVI Exam</Link></li>
+                <li><Link to="/pte-academic-ukvi-exam" className="hover:text-cyan-600 transition">PTE Academic UKVI Exam</Link></li>
                 <li><Link to="/about-pte#exam-format" className="hover:text-cyan-600 transition">PTE Academic / UKVI Exam Pattern</Link></li>
                 <li><Link to="/about-pte#weightage" className="hover:text-cyan-600 transition">PTE Academic / UKVI Score Calculator</Link></li>
                 <li><Link to="/pricing?tab=mock-test" className="hover:text-cyan-600 transition">PTE Academic / UKVI Mock Test</Link></li>
