@@ -6,20 +6,34 @@ import {
   Clock, 
   Maximize2, 
   Volume2, 
-  ArrowRight
+  ArrowRight,
+  Play,
+  RotateCcw
 } from 'lucide-react';
 
 export default function PTEListeningPracticePage() {
   const [activeTask, setActiveTask] = useState('summarize-spoken-text');
-  const [textInput, setTextInput] = useState('');
+  const [sstInput, setSstInput] = useState('');
+  const [dictationInput, setDictationInput] = useState('');
+  const [fibAnswers, setFibAnswers] = useState({ 0: '', 1: '', 2: '' });
+  const [mcMultiple, setMcMultiple] = useState({ 0: true, 2: false });
+  const [mcSingle, setMcSingle] = useState('0');
+  const [summaryChoice, setSummaryChoice] = useState('1');
+  const [missingWordChoice, setMissingWordChoice] = useState('2');
+  const [highlightedIndices, setHighlightedIndices] = useState({ 4: true, 12: true });
   const [faqOpen, setFaqOpen] = useState({ 0: true });
 
-  const wordCount = textInput.trim() ? textInput.trim().split(/\s+/).length : 0;
+  const sstWordCount = sstInput.trim() ? sstInput.trim().split(/\s+/).length : 0;
+  const wfdWordCount = dictationInput.trim() ? dictationInput.trim().split(/\s+/).length : 0;
 
   const toggleFaq = (idx) => {
-    setFaqOpen(prev => ({
+    setFaqOpen(prev => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
+  const toggleWordHighlight = (index) => {
+    setHighlightedIndices(prev => ({
       ...prev,
-      [idx]: !prev[idx]
+      [index]: !prev[index]
     }));
   };
 
@@ -43,11 +57,11 @@ export default function PTEListeningPracticePage() {
         task: 'Listen to a recording and compose a 50 - 70 word summary',
         skills: 'Listening and Writing',
         promptLength: '60 - 90 seconds',
-        timeToAnswer: '10 minutes',
+        timeToAnswer: '10 minutes per question',
         questions: '1 - 2'
       },
       instruction: 'You will hear a short lecture. Write a summary for a fellow student who was not present at the lecture. You should write 50 - 70 words. You have 10 minutes to finish this task. Your response will be judged on the quality of your writing and on how well your response presents the key points in the lecture.',
-      samplePrompt: 'Academic Lecture: "Renewable energy storage systems and battery cell chemistry advancements in modern power grids."',
+      lectureTitle: 'Academic Lecture: "Oceanic Thermohaline Circulation & Climate Stability"',
       tips: [
         'Take concise notes on your erasable notepad while listening, capturing nouns and factual concepts.',
         'Keep your word count strictly between 50 and 70 words. Falling outside this boundary reduces Form marks.',
@@ -70,13 +84,14 @@ export default function PTEListeningPracticePage() {
         timeToAnswer: 'Collective timer',
         questions: '1 - 2'
       },
-      instruction: 'Listen to the recording and answer the question by selecting all the correct responses.',
-      samplePrompt: 'Audio Clip: "Environmental adaptations of boreal coniferous forest vegetation."',
+      instruction: 'Listen to the recording and answer the question by selecting all the correct responses. More than one response is correct.',
+      lectureTitle: 'Audio Clip: "Adaptations of Alpine Plant Communities Under Climate Shifts"',
       tips: [
-        'Negative marking applies (+1 for correct, -1 for incorrect). Only select answers you are certain about.'
+        'Negative marking applies (+1 for correct, -1 for incorrect). Only select answers you are certain about.',
+        'If only confident about one option, select just that one to preserve marks.'
       ],
       faqs: [
-        { q: 'Is there negative marking?', a: 'Yes, negative marking applies to incorrect selections down to 0.' }
+        { q: 'Is there negative marking?', a: 'Yes, negative marking applies to incorrect selections down to a minimum score of 0.' }
       ]
     },
     'listening-fib': {
@@ -91,9 +106,9 @@ export default function PTEListeningPracticePage() {
         questions: '2 - 3'
       },
       instruction: 'You will hear a recording. Type the missing words into each blank.',
-      samplePrompt: 'Transcript with 4 to 6 omitted words matching audio playback.',
+      lectureTitle: 'Recording: "Urban Acoustic Ecology and Avian Vocalization"',
       tips: [
-        'Follow along with your mouse cursor as the audio plays; type words or write them on your notepad.',
+        'Follow along with your mouse cursor as the audio plays; type words directly or note them on paper.',
         'Check plural forms (-s, -ed) and spelling immediately after the audio concludes.'
       ],
       faqs: [
@@ -112,9 +127,10 @@ export default function PTEListeningPracticePage() {
         questions: '1 - 2'
       },
       instruction: 'You will hear a recording. Click on the paragraph that best relates to the recording.',
-      samplePrompt: 'Audio Clip: "Historical developments in maritime navigation instruments."',
+      lectureTitle: 'Lecture: "Historical Origins of Planetary Orbital Mechanics"',
       tips: [
-        'Focus on the overall main conclusion rather than minor isolated details.'
+        'Focus on the overall main conclusion rather than minor isolated details.',
+        'Eliminate options that present factual details not discussed in the audio.'
       ],
       faqs: [
         { q: 'Is there negative marking in Highlight Correct Summary?', a: 'No, this task has no penalty marking.' }
@@ -132,12 +148,13 @@ export default function PTEListeningPracticePage() {
         questions: '1 - 2'
       },
       instruction: 'Listen to the recording and answer the multiple-choice question by selecting the correct response.',
-      samplePrompt: 'Audio Clip: "Principles of psychological behavioral conditioning."',
+      lectureTitle: 'Audio Clip: "Psychological Principles of Cognitive Framing"',
       tips: [
-        'Read the question prompt before the audio starts to know what specific fact to listen for.'
+        'Read the question prompt before the audio starts to know what specific fact to listen for.',
+        'Select the response promptly once audio finishes to conserve section time.'
       ],
       faqs: [
-        { q: 'How much time should I spend on this item?', a: 'Answer within 30 seconds after the audio finishes to conserve section time.' }
+        { q: 'How much time should I spend on this item?', a: 'Answer within 20 to 30 seconds after the audio finishes to conserve section time.' }
       ]
     },
     'select-missing-words': {
@@ -151,10 +168,11 @@ export default function PTEListeningPracticePage() {
         timeToAnswer: 'Collective timer',
         questions: '1 - 2'
       },
-      instruction: 'You will hear a recording about an academic subject. At the end of the recording the last word or group of words has been replaced by a beep. Select the correct option to complete the recording.',
-      samplePrompt: 'Audio Clip: "Trends in urban migration... [BEEP]"',
+      instruction: 'You will hear a recording about wildlife conservation corridors. At the end of the recording the last word or group of words has been replaced by a beep. Select the correct option to complete the recording.',
+      lectureTitle: 'Audio Track: "Habitat Fragmentation in Temperate Forest Reserves... [BEEP 🔔]"',
       tips: [
-        'Track the speaker’s argumentative trajectory toward the conclusion to anticipate the final concept.'
+        'Track the speaker’s argumentative trajectory toward the conclusion to anticipate the final concept.',
+        'Focus on grammatical conjunctions (such as "therefore", "however") leading into the beep.'
       ],
       faqs: [
         { q: 'Can the audio be replayed?', a: 'No, audio clips play only once across all PTE listening tasks.' }
@@ -172,10 +190,10 @@ export default function PTEListeningPracticePage() {
         questions: '2 - 3'
       },
       instruction: 'Below is a transcription of an audio recording. As you listen, click on the words that differ from what the speaker said.',
-      samplePrompt: 'Transcript text with subtle lexical alterations from audio track.',
+      lectureTitle: 'Audio Recording: "Paleontological Analysis of Fossilized Amber Deposits"',
       tips: [
         'Follow the words with your mouse pointer at the speaker’s exact pace.',
-        'Negative marking applies (+1 for correct word, -1 for false click). Do not guess randomly.'
+        'Negative marking applies (+1 for correct word, -1 for false click). Do not click unless certain.'
       ],
       faqs: [
         { q: 'Is there negative marking in HIW?', a: 'Yes, clicking a word that was actually spoken correctly deducts 1 mark.' }
@@ -193,7 +211,7 @@ export default function PTEListeningPracticePage() {
         questions: '3 - 4'
       },
       instruction: 'You will hear a sentence. Type the sentence in the box below exactly as you hear it. Write as much of the sentence as you can. You will hear the sentence only once.',
-      samplePrompt: '"The university library will remain open twenty-four hours during final examinations."',
+      lectureTitle: 'Spoken Audio: "The university library will remain open twenty-four hours during final examinations."',
       tips: [
         'Memorize the initial clause and note initial letters of remaining words on your notepad.',
         'Every correctly spelled word awards 1 point to both Listening and Writing scores.',
@@ -206,58 +224,62 @@ export default function PTEListeningPracticePage() {
     }
   };
 
+  const hiwWords = [
+    'Recent', 'scientific', 'surveys', 'indicate', 'substantial', 'alterations',
+    'in', 'subterranean', 'aquifer', 'levels', 'across', 'semi-arid',
+    'agricultural', 'territories.', 'Hydrogeologists', 'emphasize', 'the', 'critical',
+    'necessity', 'for', 'coordinated', 'management', 'to', 'prevent',
+    'systemic', 'resource', 'exhaustion.'
+  ];
+
   const current = taskData[activeTask] || taskData['summarize-spoken-text'];
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-sans relative selection:bg-[#00c2cb] selection:text-white pb-16">
+    <div className="min-h-screen bg-white text-slate-800 font-sans relative selection:bg-[#00c5cd] selection:text-white pb-16">
       
       {/* Sticky Right-Edge Tab: "Practice Now" */}
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 hidden lg:block">
         <Link 
           to="/dashboard"
-          className="bg-[#00c2cb] hover:bg-[#00a8b5] text-white px-3.5 py-6 rounded-l-2xl font-black text-xs shadow-2xl transition-all flex flex-col items-center gap-2 group cursor-pointer border-y border-l border-cyan-200/50"
+          className="bg-[#00c5cd] hover:bg-[#00b2ba] text-white px-3 py-6 rounded-l-xl font-bold text-xs shadow-xl transition-all flex flex-col items-center gap-1 group cursor-pointer"
           style={{ writingMode: 'vertical-rl' }}
           aria-label="Practice Now"
         >
-          <span className="tracking-widest uppercase text-[12px] group-hover:tracking-wider transition-all">
+          <span className="tracking-widest uppercase text-[11px] group-hover:tracking-wider transition-all">
             Practice Now
           </span>
-          <ArrowRight className="w-4 h-4 rotate-90 text-white stroke-[2.5]" />
         </Link>
       </div>
 
       {/* 1. HERO TITLE & MODULE SWITCHER */}
-      <section className="pt-10 sm:pt-14 pb-8 bg-gradient-to-b from-sky-50/50 via-white to-white">
+      <section className="pt-8 sm:pt-12 pb-6 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            PTE <span className="text-[#00c2cb]">Listening</span> Practice
-          </h1>
-          <p className="text-xs sm:text-sm font-bold text-slate-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
             Latest PTE Academic & UKVI Listening Questions
-          </p>
+          </h1>
 
-          <div className="flex items-center justify-center gap-2 sm:gap-3 pt-2">
-            <Link to="/pte-speaking-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Speaking</Link>
-            <Link to="/pte-writing-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Writing</Link>
-            <Link to="/pte-reading-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Reading</Link>
-            <Link to="/pte-listening-practice" className="px-6 py-2.5 rounded-full text-xs font-black bg-[#00c2cb] text-white shadow-sm transition">Listening</Link>
+          <div className="flex items-center justify-center gap-2 sm:gap-3 pt-1">
+            <Link to="/pte-speaking-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Speaking</Link>
+            <Link to="/pte-writing-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Writing</Link>
+            <Link to="/pte-reading-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Reading</Link>
+            <Link to="/pte-listening-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-bold bg-[#00c5cd] text-white shadow-xs transition">Listening</Link>
           </div>
 
-          <div className="pt-4 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal text-left max-w-4xl mx-auto">
+          <div className="pt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal text-center max-w-4xl mx-auto">
             <p>
-              The PTE Listening module is the concluding segment of PTE Academic / UKVI, evaluating comprehension across varied native and non-native international English accents. Covering eight distinct task formats, it tests listening memory, spelling precision, and analytical listening under unified section timing. Targeted preparation on NinetyPTE equips students with auditory discrimination and note-taking speed.
+              The Listening module is the final segment of the test, evaluating auditory comprehension, note-taking capability, and vocabulary across native and non-native international English accents. Covering eight unique question varieties, it tests short-term recall, academic transcription, and targeted analysis under unified section timings. Targeted preparation on NinetyPTE equips students with auditory discrimination and note-taking speed.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
             {tasks.map(t => (
               <button
                 key={t.id}
                 onClick={() => setActiveTask(t.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTask === t.id
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-indigo-400'
+                    ? 'bg-[#4f46e5] text-white shadow-xs'
+                    : 'bg-white text-slate-700 border border-slate-300 hover:border-slate-400'
                 }`}
               >
                 {t.label}
@@ -300,7 +322,7 @@ export default function PTEListeningPracticePage() {
             </div>
           </div>
 
-          {/* 3. SIMULATOR */}
+          {/* 3. PEARSON UI SIMULATOR */}
           <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-xl space-y-5">
             <div className="flex items-center justify-between text-xs text-slate-500 pb-2 border-b border-slate-100">
               <span className="font-bold text-rose-500 font-mono">Remaining Time - 09:42</span>
@@ -315,46 +337,263 @@ export default function PTEListeningPracticePage() {
               {current.instruction}
             </p>
 
-            {/* Audio Player Container */}
+            {/* SHARED AUDIO PLAYER BOX */}
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3 max-w-lg mx-auto text-center">
               <div className="flex items-center justify-between text-xs font-bold text-slate-600">
-                <span>Audio Player</span>
-                <span className="text-emerald-600">Completed</span>
+                <span className="flex items-center gap-1.5">
+                  <Volume2 className="w-4 h-4 text-indigo-600" />
+                  Audio Status
+                </span>
+                <span className="text-emerald-600 font-extrabold flex items-center gap-1">
+                  <Play className="w-3 h-3 fill-emerald-600" /> Playing
+                </span>
               </div>
               <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div className="w-full h-full bg-[#00c2cb] rounded-full" />
+                <div className="w-3/4 h-full bg-[#00c5cd] rounded-full transition-all" />
               </div>
-              <p className="text-xs text-slate-500 italic">{current.samplePrompt}</p>
+              <p className="text-xs text-slate-500 italic font-medium">{current.lectureTitle}</p>
             </div>
 
-            <div className="space-y-1">
-              <div className="flex items-center justify-between bg-slate-100 px-3 py-1.5 rounded-t-xl border border-slate-300 text-xs">
-                <div className="flex items-center gap-2 text-slate-600 font-semibold">
-                  <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Cut</span>
-                  <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Copy</span>
-                  <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Paste</span>
+            {/* TASK INTERFACE 1: Summarize Spoken Text */}
+            {activeTask === 'summarize-spoken-text' && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between bg-slate-100 px-3 py-1.5 rounded-t-xl border border-slate-300 text-xs">
+                  <div className="flex items-center gap-2 text-slate-600 font-semibold">
+                    <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Cut</span>
+                    <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Copy</span>
+                    <span className="px-2 py-0.5 rounded hover:bg-slate-200 cursor-pointer">Paste</span>
+                  </div>
+                  <div className="font-mono font-bold text-slate-700">{sstWordCount} words (Target: 50 - 70)</div>
                 </div>
-                <div className="font-mono font-bold text-slate-700">{wordCount} words</div>
-              </div>
 
-              <textarea
-                rows={4}
-                placeholder="Type your response summary here..."
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                className="w-full p-3 rounded-b-xl border border-t-0 border-slate-300 focus:outline-hidden focus:border-[#00c2cb] text-xs font-sans leading-relaxed resize-none"
-              />
-            </div>
+                <textarea
+                  rows={5}
+                  placeholder="Draft your lecture summary here in 50 to 70 words..."
+                  value={sstInput}
+                  onChange={(e) => setSstInput(e.target.value)}
+                  className="w-full p-3 rounded-b-xl border border-t-0 border-slate-300 focus:outline-hidden focus:border-[#00c5cd] text-xs font-sans leading-relaxed resize-none"
+                />
+              </div>
+            )}
+
+            {/* TASK INTERFACE 2: Multiple Choice, Multiple Answers */}
+            {activeTask === 'mc-multiple' && (
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="text-xs font-bold text-slate-800">
+                  Which two of the following ecological factors were mentioned as primary causes of altitudinal vegetation migration?
+                </div>
+                <div className="space-y-2.5">
+                  {[
+                    'Gradual increases in mean annual temperatures at higher elevations.',
+                    'Reduction in total atmospheric nitrogen precipitation rates.',
+                    'Prolonged seasonal drought periods disrupting seed germination.',
+                    'Sudden surges in local herbivore predation populations.'
+                  ].map((opt, i) => (
+                    <label key={i} className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs cursor-pointer">
+                      <input 
+                        type="checkbox"
+                        checked={!!mcMultiple[i]}
+                        onChange={() => setMcMultiple({ ...mcMultiple, [i]: !mcMultiple[i] })}
+                        className="rounded text-indigo-600 focus:ring-indigo-600 w-4 h-4 mt-0.5"
+                      />
+                      <span className="text-slate-700 leading-snug">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TASK INTERFACE 3: Listening Fill in the Blanks */}
+            {activeTask === 'listening-fib' && (
+              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-loose max-w-2xl mx-auto">
+                <span>Ecologists investigating vocal adjustments in songbirds noted that ambient traffic rumble compels urban species to increase their vocal </span>
+                <input 
+                  type="text" 
+                  value={fibAnswers[0]}
+                  onChange={(e) => setFibAnswers({ ...fibAnswers, 0: e.target.value })}
+                  placeholder="type word 1"
+                  className="w-28 mx-1 px-2 py-0.5 border-b-2 border-slate-400 focus:border-[#00c5cd] bg-white rounded font-medium text-xs text-center focus:outline-hidden"
+                />
+                <span>. This acoustic adaptation ensures that critical mating calls remain </span>
+                <input 
+                  type="text" 
+                  value={fibAnswers[1]}
+                  onChange={(e) => setFibAnswers({ ...fibAnswers, 1: e.target.value })}
+                  placeholder="type word 2"
+                  className="w-28 mx-1 px-2 py-0.5 border-b-2 border-slate-400 focus:border-[#00c5cd] bg-white rounded font-medium text-xs text-center focus:outline-hidden"
+                />
+                <span> despite substantial background interference. Over multiple generations, such environmental pressures foster distinct acoustic </span>
+                <input 
+                  type="text" 
+                  value={fibAnswers[2]}
+                  onChange={(e) => setFibAnswers({ ...fibAnswers, 2: e.target.value })}
+                  placeholder="type word 3"
+                  className="w-28 mx-1 px-2 py-0.5 border-b-2 border-slate-400 focus:border-[#00c5cd] bg-white rounded font-medium text-xs text-center focus:outline-hidden"
+                />
+                <span> within isolated metropolitan populations.</span>
+              </div>
+            )}
+
+            {/* TASK INTERFACE 4: Highlight Correct Summary */}
+            {activeTask === 'highlight-correct-summary' && (
+              <div className="space-y-3 max-w-2xl mx-auto">
+                {[
+                  'Early astronomers developed mathematical models that mistakenly placed mechanical gear mechanisms at the center of orbital trajectories before empirical telescope observations disproved them.',
+                  'Johannes Kepler revolutionized celestial navigation by demonstrating that planetary orbits follow elliptical paths rather than circular geometry, laying foundations for Newton’s universal gravitation laws.',
+                  'Historical maritime navigation relied solely on lunar observations until nineteenth-century clockmakers designed marine chronometers capable of measuring precise longitude at sea.',
+                  'Galileo’s telescopic observations established that planetary velocities remain constant throughout their entire orbital circuits around the sun.'
+                ].map((summary, idx) => (
+                  <label 
+                    key={idx} 
+                    className={`flex items-start gap-3 p-3.5 rounded-xl border text-xs cursor-pointer transition ${
+                      summaryChoice === String(idx)
+                        ? 'border-indigo-500 bg-indigo-50/40 text-slate-900 shadow-2xs'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                    }`}
+                  >
+                    <input 
+                      type="radio" 
+                      name="hcs-option"
+                      value={String(idx)}
+                      checked={summaryChoice === String(idx)}
+                      onChange={(e) => setSummaryChoice(e.target.value)}
+                      className="text-indigo-600 focus:ring-indigo-600 w-4 h-4 mt-0.5"
+                    />
+                    <span className="leading-relaxed">{summary}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {/* TASK INTERFACE 5: Multiple Choice, Single Answer */}
+            {activeTask === 'mc-single' && (
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="text-xs font-bold text-slate-800">
+                  What primary conclusion does the speaker convey regarding cognitive framing in decision-making?
+                </div>
+                <div className="space-y-2.5">
+                  {[
+                    'Human choices are substantially influenced by how risks and gains are verbally characterized.',
+                    'Analytical individuals make completely objective judgments irrespective of contextual wording.',
+                    'Framing effects are entirely confined to financial and commercial consumer environments.',
+                    'Visual charts eliminate cognitive biases far more effectively than descriptive statements.'
+                  ].map((opt, i) => (
+                    <label key={i} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs cursor-pointer">
+                      <input 
+                        type="radio"
+                        name="mcsa-option"
+                        value={String(i)}
+                        checked={mcSingle === String(i)}
+                        onChange={(e) => setMcSingle(e.target.value)}
+                        className="text-indigo-600 focus:ring-indigo-600 w-4 h-4"
+                      />
+                      <span className="text-slate-700">{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TASK INTERFACE 6: Select Missing Words */}
+            {activeTask === 'select-missing-words' && (
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between text-xs text-amber-900 font-semibold">
+                  <span>Audio waveform completed with concluding sound effect:</span>
+                  <span className="bg-amber-200 text-amber-950 font-black px-2 py-0.5 rounded animate-pulse">[ 🔔 BEEP ]</span>
+                </div>
+                <div className="text-xs font-bold text-slate-800">
+                  Select the option that best completes the audio recording:
+                </div>
+                <div className="space-y-2">
+                  {[
+                    'isolated geographic enclaves with no ecological connectivity',
+                    'interconnected green corridors to maintain gene flow',
+                    'artificial concrete barriers along major highway borders',
+                    'unmonitored industrial extraction zones across the valley'
+                  ].map((phrase, i) => (
+                    <label key={i} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs cursor-pointer">
+                      <input 
+                        type="radio"
+                        name="smw-option"
+                        value={String(i)}
+                        checked={missingWordChoice === String(i)}
+                        onChange={(e) => setMissingWordChoice(e.target.value)}
+                        className="text-indigo-600 focus:ring-indigo-600 w-4 h-4"
+                      />
+                      <span className="text-slate-700">{phrase}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TASK INTERFACE 7: Highlight Incorrect Words */}
+            {activeTask === 'highlight-incorrect-words' && (
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="text-xs text-slate-500 font-medium">
+                  Click on words in the passage below that differ from the auditory lecture (highlighted in yellow):
+                </div>
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 text-xs sm:text-sm leading-loose">
+                  {hiwWords.map((word, idx) => {
+                    const isHighlighted = !!highlightedIndices[idx];
+                    return (
+                      <span
+                        key={idx}
+                        onClick={() => toggleWordHighlight(idx)}
+                        className={`inline-block mr-1.5 px-1 py-0.5 rounded cursor-pointer transition select-none ${
+                          isHighlighted
+                            ? 'bg-yellow-200 text-amber-950 font-bold ring-1 ring-yellow-400 shadow-2xs'
+                            : 'hover:bg-slate-200/70 text-slate-800'
+                        }`}
+                      >
+                        {word}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>Highlighted words: {Object.values(highlightedIndices).filter(Boolean).length}</span>
+                  <button 
+                    onClick={() => setHighlightedIndices({})}
+                    className="flex items-center gap-1 text-slate-600 hover:text-rose-500 text-xs cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Clear Highlights
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* TASK INTERFACE 8: Write From Dictation */}
+            {activeTask === 'write-from-dictation' && (
+              <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-semibold px-1">
+                    <span>Type exact sentence:</span>
+                    <span className="font-mono text-slate-700 font-bold">{wfdWordCount} words</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={dictationInput}
+                    onChange={(e) => setDictationInput(e.target.value)}
+                    placeholder="Type the sentence you heard here..."
+                    className="w-full p-3.5 rounded-xl border border-slate-300 focus:outline-hidden focus:border-[#00c5cd] text-xs font-sans shadow-2xs"
+                  />
+                  <div className="text-[11px] text-slate-500 italic">
+                    Tip: Ensure capitalization of the first letter and full stop at the end. Spelling accuracy is vital.
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-between pt-2">
               <button className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">Save & Exit</button>
-              <button className="px-7 py-2 rounded-xl bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-extrabold shadow-sm transition">Next &gt;</button>
+              <button className="px-7 py-2 rounded-xl bg-[#00c5cd] hover:bg-[#00a8b5] text-white text-xs font-extrabold shadow-sm transition">Next &gt;</button>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button className="px-5 py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">PTE Listening {current.title}</button>
-            <button className="px-5 py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">{current.title} Sample Questions</button>
+            <button className="px-5 py-2.5 rounded-full bg-[#00c5cd] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">PTE Listening {current.title}</button>
+            <button className="px-5 py-2.5 rounded-full bg-[#00c5cd] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">{current.title} Sample Questions</button>
           </div>
         </div>
       </section>
@@ -365,21 +604,21 @@ export default function PTEListeningPracticePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                How to <span className="text-[#00c2cb]">Respond to</span> This Task?
+                How to <span className="text-[#00c5cd]">Respond to</span> This Task?
               </h2>
 
               <div className="space-y-3 pt-1">
                 {current.tips.map((tip, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
-                    <span className="text-[#00c2cb] font-bold mt-0.5">✦</span>
+                    <span className="text-[#00c5cd] font-bold mt-0.5">✦</span>
                     <span>{tip}</span>
                   </div>
                 ))}
               </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-4">
-                <Link to="/pte-online-course" className="px-6 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition">Detailed Question-wise Page</Link>
-                <Link to="/pte-exam-pattern" className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c2cb] text-white font-extrabold text-xs shadow-sm transition">Sample Questions</Link>
+                <Link to="/pte-online-course" className="px-6 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition">Detailed Question-wise Page</Link>
+                <Link to="/pte-exam-pattern" className="px-6 py-2.5 rounded-full bg-slate-900 hover:bg-[#00c5cd] text-white font-extrabold text-xs shadow-sm transition">Sample Questions</Link>
               </div>
             </div>
 
@@ -409,9 +648,9 @@ export default function PTEListeningPracticePage() {
               const isOpen = faqOpen[idx];
               return (
                 <div key={idx} className="bg-[#f8fafc] rounded-2xl border border-slate-200/80 overflow-hidden">
-                  <button onClick={() => toggleFaq(idx)} className="w-full p-4 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900 hover:text-[#00c2cb] transition-colors cursor-pointer">
+                  <button onClick={() => toggleFaq(idx)} className="w-full p-4 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900 hover:text-[#00c5cd] transition-colors cursor-pointer">
                     <span>{faq.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180 text-[#00c2cb]' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180 text-[#00c5cd]' : ''}`} />
                   </button>
                   {isOpen && <div className="px-4 pb-4 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-200/50">{faq.a}</div>}
                 </div>
@@ -425,18 +664,18 @@ export default function PTEListeningPracticePage() {
       <section className="py-8 space-y-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl overflow-hidden shadow-md border border-slate-200 p-8 text-center space-y-4 bg-gradient-to-r from-sky-50 via-white to-sky-50">
           <h3 className="text-lg sm:text-xl font-black text-slate-900">Prepare for PTE & give a free mock test today.</h3>
-          <div><Link to="/mock-tests" className="px-8 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">Join Now</Link></div>
+          <div><Link to="/mock-tests" className="px-8 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">Join Now</Link></div>
         </div>
 
         <div className="rounded-3xl p-6 sm:p-8 text-center space-y-4 border border-slate-200 bg-white shadow-2xs">
           <h3 className="text-sm sm:text-base font-black text-slate-900 max-w-2xl mx-auto leading-relaxed">Want to understand how PTE score calculation works? Check our PTE score calculator guide & understand the academic integrated scoring system.</h3>
-          <div><Link to="/pte-score-calculator" className="px-8 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">Learn More</Link></div>
+          <div><Link to="/pte-score-calculator" className="px-8 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">Learn More</Link></div>
         </div>
 
         <div className="rounded-3xl p-8 text-center space-y-3 bg-[#f0f9fa] border border-cyan-100">
           <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Ready to boost your listening score?</h3>
           <p className="text-xs text-slate-600">Watch our strategy videos to improve your Listening proficiency</p>
-          <div className="pt-2"><Link to="/pte-online-course" className="px-8 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">View Now</Link></div>
+          <div className="pt-2"><Link to="/pte-online-course" className="px-8 py-2.5 rounded-full bg-[#00c5cd] hover:bg-[#00a8b5] text-white font-extrabold text-xs shadow-sm transition inline-block">View Now</Link></div>
         </div>
       </section>
 

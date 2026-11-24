@@ -24,8 +24,7 @@ export default function PTEWritingPracticePage() {
 
   const tasks = [
     { id: 'summarize-written-text', label: 'Summarize Written Text', badge: 'SWT' },
-    { id: 'write-essay', label: 'Write Essay', badge: 'WE' },
-    { id: 'write-email', label: 'Write Email (PTE Core)', badge: 'WEM' }
+    { id: 'write-essay', label: 'Write Essay', badge: 'WE' }
   ];
 
   const taskData = {
@@ -83,28 +82,6 @@ Consequently, comprehensive green urban planning is no longer regarded as an opt
         { q: 'What is the mandatory length for the essay?', a: 'The essay must contain between 200 and 300 words to obtain full Form marks.' },
         { q: 'Can I follow a standardized essay structure?', a: 'Yes, adhering to proven logical paragraph frameworks ensures coherence and optimal time management.' }
       ]
-    },
-    'write-email': {
-      title: 'Write Email (PTE Core)',
-      badge: 'WEM',
-      desc: 'For Canadian immigration candidates sitting PTE Core, this task assesses pragmatic professional written correspondence within a 9-minute interval.',
-      specs: {
-        task: 'Compose a functional written email based on a scenario',
-        skills: 'Writing',
-        promptLength: 'Scenario summary',
-        timeToAnswer: '9 minutes',
-        questions: '1'
-      },
-      instruction: 'Review the situation below. You have 9 minutes to draft an email response of approximately 100 words adhering to the appropriate communicative register.',
-      passage: `"You are participating in an executive committee project, but an unforeseen logistical complication requires rescheduling the upcoming milestone review. Write an email to the project coordinator explaining the rationale, proposing two alternative dates, and confirming the deliverables status."`,
-      tips: [
-        'Select an appropriate greeting and sign-off consistent with formal workplace correspondence.',
-        'Explicitly address every directive outlined in the prompt instructions.',
-        'Target an exact range of 85 to 115 words.'
-      ],
-      faqs: [
-        { q: 'Does Write Email feature in PTE Academic?', a: 'No, this task is exclusive to the PTE Core examination.' }
-      ]
     }
   };
 
@@ -117,49 +94,45 @@ Consequently, comprehensive green urban planning is no longer regarded as an opt
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 hidden lg:block">
         <Link 
           to="/dashboard"
-          className="bg-[#00c2cb] hover:bg-[#00a8b5] text-white px-3.5 py-6 rounded-l-2xl font-black text-xs shadow-2xl transition-all flex flex-col items-center gap-2 group cursor-pointer border-y border-l border-cyan-200/50"
+          className="bg-[#00c5cd] hover:bg-[#00b2ba] text-white px-3 py-6 rounded-l-xl font-bold text-xs shadow-xl transition-all flex flex-col items-center gap-1 group cursor-pointer"
           style={{ writingMode: 'vertical-rl' }}
           aria-label="Practice Now"
         >
-          <span className="tracking-widest uppercase text-[12px] group-hover:tracking-wider transition-all">
+          <span className="tracking-widest uppercase text-[11px] group-hover:tracking-wider transition-all">
             Practice Now
           </span>
-          <ArrowRight className="w-4 h-4 rotate-90 text-white stroke-[2.5]" />
         </Link>
       </div>
 
       {/* 1. HERO TITLE & MODULE SWITCHER */}
-      <section className="pt-10 sm:pt-14 pb-8 bg-gradient-to-b from-sky-50/50 via-white to-white">
+      <section className="pt-8 sm:pt-12 pb-6 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
-            PTE <span className="text-[#00c2cb]">Writing</span> Practice
-          </h1>
-          <p className="text-xs sm:text-sm font-bold text-slate-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
             Latest PTE Academic & UKVI Writing Questions
-          </p>
+          </h1>
 
-          <div className="flex items-center justify-center gap-2 sm:gap-3 pt-2">
-            <Link to="/pte-speaking-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Speaking</Link>
-            <Link to="/pte-writing-practice" className="px-6 py-2.5 rounded-full text-xs font-black bg-[#00c2cb] text-white shadow-sm transition">Writing</Link>
-            <Link to="/pte-reading-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Reading</Link>
-            <Link to="/pte-listening-practice" className="px-6 py-2.5 rounded-full text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition">Listening</Link>
+          <div className="flex items-center justify-center gap-2 sm:gap-3 pt-1">
+            <Link to="/pte-speaking-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Speaking</Link>
+            <Link to="/pte-writing-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-bold bg-[#00c5cd] text-white shadow-xs transition">Writing</Link>
+            <Link to="/pte-reading-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Reading</Link>
+            <Link to="/pte-listening-practice" className="px-7 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition">Listening</Link>
           </div>
 
-          <div className="pt-4 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal text-left max-w-4xl mx-auto">
+          <div className="pt-2 text-xs sm:text-sm text-slate-600 leading-relaxed font-normal text-center max-w-4xl mx-auto">
             <p>
-              The PTE Writing module of PTE Academic / UKVI assesses candidates' analytical fluency and written English syntax in rigorous academic settings. Questions test structured synthesis and essay development under automated algorithmic marking systems measuring grammatical precision, lexical range, coherence, and orthographic accuracy. Consistent practice on NinetyPTE sharpens these skills for superior band attainment.
+              The Writing module tests analytical synthesis and formal essay composition in academic English. Test-takers produce a single-sentence summary of an academic passage and compose a persuasive 200-300 word essay under strict time limits. Practice on NinetyPTE sharpens syntax, lexical diversity, and time-saving writing structures.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
             {tasks.map(t => (
               <button
                 key={t.id}
                 onClick={() => setActiveTask(t.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTask === t.id
-                    ? 'bg-sky-500 text-white shadow-md'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-sky-400'
+                    ? 'bg-[#0284c7] text-white shadow-xs'
+                    : 'bg-white text-slate-700 border border-slate-300 hover:border-slate-400'
                 }`}
               >
                 {t.label}
