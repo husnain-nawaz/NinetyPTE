@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Eye, 
   EyeOff, 
@@ -15,6 +15,7 @@ import LanguageDropdown from '../components/navbar/LanguageDropdown';
 
 export default function AuthPage({ initialMode = 'signin' }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mode, setMode] = useState(initialMode); // 'signin' | 'signup'
   
   // Form states
@@ -37,10 +38,21 @@ export default function AuthPage({ initialMode = 'signin' }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
+    
+    // Save login session to localStorage
+    const userSession = {
+      email: formData.email || 'student@ninetypte.com',
+      name: formData.name || formData.email?.split('@')[0] || 'Student',
+      isLoggedIn: true,
+      loginTime: new Date().toISOString()
+    };
+    localStorage.setItem('ninetypte_user', JSON.stringify(userSession));
+
     setTimeout(() => {
       setSubmitted(false);
-      navigate('/');
-    }, 2000);
+      const destination = location.state?.from?.pathname || '/dashboard';
+      navigate(destination);
+    }, 1200);
   };
 
   const isSignUp = mode === 'signup';

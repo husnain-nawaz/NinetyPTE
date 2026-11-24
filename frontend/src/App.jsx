@@ -25,6 +25,8 @@ import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
+import PTEDashboard from './PTEDashboard/PTEDashboard';
+import ProtectedRoute from './PTEDashboard/ProtectedRoute';
 
 function AppContent() {
   const location = useLocation();
@@ -39,7 +41,8 @@ function AppContent() {
     '/refund-policy', 
     '/refund-cancellation'
   ].includes(location.pathname);
-  const hideChrome = isAuthPage || isLegalPage;
+  const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/pte-dashboard');
+  const hideChrome = isAuthPage || isLegalPage || isDashboard;
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-800 antialiased selection:bg-cyan-500 selection:text-white relative flex flex-col justify-between">
@@ -84,6 +87,22 @@ function AppContent() {
           <Route path="/pte-uk" element={<PTEForUKPage />} />
           <Route path="/pte-for-canada" element={<PTEForCanadaPage />} />
           <Route path="/pte-canada" element={<PTEForCanadaPage />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <PTEDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pte-dashboard" 
+            element={
+              <ProtectedRoute>
+                <PTEDashboard />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/mock-tests" element={<MockTestsPage />} />
           <Route path="/pte-mock-test" element={<MockTestsPage />} />
           <Route path="/free-mock-test" element={<MockTestsPage />} />

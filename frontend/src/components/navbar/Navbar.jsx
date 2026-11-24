@@ -216,23 +216,36 @@ export default function Navbar() {
           {/* Language / Translation Dropdown */}
           <LanguageDropdown variant="consumer" />
 
-          {/* Log in > */}
-          <Link
-            to="/login"
-            className="flex items-center gap-1 text-white hover:text-cyan-200 text-sm font-semibold transition"
-          >
-            <span>Log in</span>
-            <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
-          </Link>
+          {/* User Auth / Dashboard Button */}
+          {localStorage.getItem('ninetypte_user') ? (
+            <Link
+              to="/dashboard"
+              className="px-4 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5"
+            >
+              <span>Dashboard</span>
+              <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+            </Link>
+          ) : (
+            <>
+              {/* Log in > */}
+              <Link
+                to="/login"
+                className="flex items-center gap-1 text-white hover:text-cyan-200 text-sm font-semibold transition"
+              >
+                <span>Log in</span>
+                <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </Link>
 
-          {/* Start Free Trial > Pill Button (White Background, Cyan Text) */}
-          <Link
-            to="/signup"
-            className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
-          >
-            <span>Start Free Trial</span>
-            <ChevronRight className="w-3.5 h-3.5 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+              {/* Start Free Trial > Pill Button (White Background, Cyan Text) */}
+              <Link
+                to="/signup"
+                className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1 group"
+              >
+                <span>Start Free Trial</span>
+                <ChevronRight className="w-3.5 h-3.5 stroke-[3] group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
