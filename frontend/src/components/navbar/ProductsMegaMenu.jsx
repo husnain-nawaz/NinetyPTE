@@ -39,7 +39,7 @@ export default function ProductsMegaMenu({ onClose }) {
       activeColor: 'text-cyan-500',
       links: [
         { title: 'About the PTE Core Exam', href: '/pte-core', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center text-[11px] font-serif font-black italic">i</div> },
-        { title: 'CLB Score Calculator', href: '/pte-score-calculator', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
+        { title: 'CLB Score Calculator', href: '/pte-core-score-calculator', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
         { title: 'PTE Core Mock Tests', href: '/mock-tests', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'PTE Core Exam Pattern', href: '/pte-core-speaking-practice', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
         { title: 'Speaking Practice', href: '/pte-core-speaking-practice', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">🎙️</div> },
