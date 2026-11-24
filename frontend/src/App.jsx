@@ -22,6 +22,7 @@ import PTEForUSAPage from './pages/PTEForUSAPage';
 import PTEForUKPage from './pages/PTEForUKPage';
 import PTEForCanadaPage from './pages/PTEForCanadaPage';
 import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
+import PTEExamPatternPage from './pages/PTEExamPatternPage';
 import MockTestsPage from './pages/MockTestsPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
@@ -92,6 +93,14 @@ function AppContent() {
           <Route path="/pte-academic-ukvi" element={<PTEAcademicUKVIExamPage />} />
           <Route path="/pte-ukvi-exam" element={<PTEAcademicUKVIExamPage />} />
           <Route path="/pte-ukvi" element={<PTEAcademicUKVIExamPage />} />
+          <Route path="/pte-academic-ukvi-exam-pattern" element={<PTEExamPatternPage />} />
+          <Route path="/pte-academic-exam-pattern" element={<PTEExamPatternPage />} />
+          <Route path="/pte-exam-pattern" element={<PTEExamPatternPage />} />
+          <Route path="/pte-speaking-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-writing-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-reading-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-listening-practice" element={<PTEExamPatternPage />} />
+          <Route path="/pte-practice" element={<PTEExamPatternPage />} />
           <Route 
             path="/dashboard" 
             element={
