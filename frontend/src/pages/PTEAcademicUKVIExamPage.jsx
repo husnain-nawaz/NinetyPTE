@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Sparkles, 
   CheckCircle2, 
   Clock, 
   Play, 
@@ -9,20 +8,16 @@ import {
   ArrowRight, 
   Check, 
   Globe, 
-  Award, 
   ShieldCheck, 
   BookOpen, 
   HelpCircle,
   Volume2,
   Mic,
-  FileText,
   Layers,
-  Send,
   Zap,
-  RotateCcw,
   Headphones,
   CheckCircle,
-  ExternalLink
+  GraduationCap
 } from 'lucide-react';
 
 export default function PTEAcademicUKVIExamPage() {
@@ -33,7 +28,6 @@ export default function PTEAcademicUKVIExamPage() {
   const [activeQuestionTab, setActiveQuestionTab] = useState('situation');
   const [alignmentMode, setAlignmentMode] = useState('ielts'); // 'ielts' | 'cefr'
   const [selectedIeltsBand, setSelectedIeltsBand] = useState('7.5');
-  const [selectedCefr, setSelectedCefr] = useState('B2');
   const [openFaq, setOpenFaq] = useState(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
