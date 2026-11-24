@@ -4,6 +4,8 @@ import {
   Clock, 
   RotateCcw, 
   ChevronDown, 
+  ChevronRight,
+  ChevronLeft,
   Maximize2, 
   Mic, 
   Lightbulb, 
@@ -11,7 +13,10 @@ import {
   Sparkles,
   CheckCircle,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  GripVertical,
+  ArrowRight,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function PTEExamPatternPage() {
@@ -43,6 +48,20 @@ export default function PTEExamPatternPage() {
   const [writingWordCount, setWritingWordCount] = useState(0);
   const [writingTimeLeft, setWritingTimeLeft] = useState(484); // 08:04 for SWT initial
 
+  // Reading Simulators state
+  const [readingSeconds, setReadingSeconds] = useState(63); // 01:03 initial
+  const [readingDropdowns, setReadingDropdowns] = useState({});
+  const [readingCheckboxes, setReadingCheckboxes] = useState([]);
+  const [readingRadio, setReadingRadio] = useState(null);
+  
+  // Re-Order Paragraphs state
+  const [reorderSource, setReorderSource] = useState([]);
+  const [reorderTarget, setReorderTarget] = useState([]);
+  const [reorderSelected, setReorderSelected] = useState(null);
+
+  // Drag & Drop Blanks state
+  const [dragSlots, setDragSlots] = useState({});
+
   // Update active module when route changes
   useEffect(() => {
     const mod = getInitialModule();
@@ -61,11 +80,34 @@ export default function PTEExamPatternPage() {
     setIsCompleted(false);
     setWritingText('');
     setWritingWordCount(0);
+    setReadingDropdowns({});
+    setReadingCheckboxes([]);
+    setReadingRadio(null);
+    setDragSlots({});
 
     if (activeTaskId === 'write-essay') {
       setWritingTimeLeft(1196); // 19:56 matching Pearson mock screenshot
     } else if (activeTaskId === 'summarize-written-text') {
       setWritingTimeLeft(484);  // 08:04 matching Pearson mock screenshot
+    } else if (activeTaskId === 'rw-fill-in-blanks') {
+      setReadingSeconds(63); // 01:03
+    } else if (activeTaskId === 'mcq-multiple') {
+      setReadingSeconds(89); // 01:29
+    } else if (activeTaskId === 'reorder-paragraphs') {
+      setReadingSeconds(117); // 01:57
+      setReorderSource([
+        { id: '1', text: "Nehru's idea of secularism was equally indifferent to all religions and bothering about none of them." },
+        { id: '2', text: "Instead of doing any good, such secularism can do harm." },
+        { id: '3', text: "There is a difference between Gandhiji's concept of secularism and that of Nehru's." },
+        { id: '4', text: "Such secularism which means the rejection of all religions is contrary to our culture and tradition." },
+        { id: '5', text: "In Gandhiji's view, secularism stands for equal respect for all religions." }
+      ]);
+      setReorderTarget([]);
+      setReorderSelected(null);
+    } else if (activeTaskId === 'reading-fill-in-blanks') {
+      setReadingSeconds(137); // 02:17
+    } else if (activeTaskId === 'mcq-single') {
+      setReadingSeconds(283); // 04:43
     }
   }, [activeTaskId, activeModule]);
 
@@ -78,9 +120,18 @@ export default function PTEExamPatternPage() {
     return () => clearInterval(timer);
   }, [activeModule, activeTaskId]);
 
+  // Reading forward timer effect
+  useEffect(() => {
+    if (activeModule !== 'reading') return;
+    const timer = setInterval(() => {
+      setReadingSeconds(prev => (prev < 1740 ? prev + 1 : 1740)); // up to 29:00
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [activeModule, activeTaskId]);
+
   // Speaking countdown timer effect
   useEffect(() => {
-    if (activeModule === 'writing') return;
+    if (activeModule === 'writing' || activeModule === 'reading') return;
     let timer;
     if (simCountdown > 0 && !isRecording && !isCompleted) {
       timer = setInterval(() => {
@@ -175,6 +226,39 @@ export default function PTEExamPatternPage() {
       textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
       textarea.focus();
     }, 0);
+  };
+
+  // Re-order paragraphs move item to Target
+  const handleMoveToTarget = (item) => {
+    setReorderSource(prev => prev.filter(i => i.id !== item.id));
+    setReorderTarget(prev => [...prev, item]);
+    setReorderSelected(null);
+  };
+
+  // Re-order paragraphs move item back to Source
+  const handleMoveToSource = (item) => {
+    setReorderTarget(prev => prev.filter(i => i.id !== item.id));
+    setReorderSource(prev => [...prev, item]);
+    setReorderSelected(null);
+  };
+
+  // Drag & drop blanks: toggle placing word
+  const handleBankWordClick = (word) => {
+    // Find first empty slot among 4 slots (0, 1, 2, 3)
+    for (let i = 0; i < 4; i++) {
+      if (!dragSlots[i]) {
+        setDragSlots(prev => ({ ...prev, [i]: word }));
+        break;
+      }
+    }
+  };
+
+  const handleSlotWordClick = (slotIdx) => {
+    setDragSlots(prev => {
+      const next = { ...prev };
+      delete next[slotIdx];
+      return next;
+    });
   };
 
   // ---------------------------------------------------------------------------
@@ -340,97 +424,6 @@ export default function PTEExamPatternPage() {
               a: 'Aim for 32 to 36 seconds. This provides sufficient content depth while avoiding the risk of being cut off mid-sentence when the 40-second timer elapses.'
             }
           ]
-        },
-        {
-          id: 'retell-lecture',
-          code: 'RL',
-          title: 'Re-Tell Lecture',
-          tagline:
-            'Re-Tell Lecture tests your ability to synthesize information from a spoken academic lecture and deliver an organized spoken summary.',
-          table: {
-            taskDesc: 'Listen to an audio lecture and verbally summarize the key arguments and conclusions',
-            skills: 'Speaking & Listening',
-            promptLength: 'Up to 90 seconds audio / video',
-            prepTime: '10 seconds',
-            answerTime: '40 seconds',
-            questionCount: '1 - 2',
-            prepSeconds: 10
-          },
-          mockQuestions: [
-            {
-              instruction: 'You will hear a lecture. After listening to the lecture, in 10 seconds, please speak into the microphone and retell what you have just heard from the lecture in your own words. You will have 40 seconds to give your response.',
-              prompt: 'Audio Lecture Excerpt: "Urban planning in the twenty-first century increasingly revolves around sustainable transit systems. By transitioning metropolitan centers from private automobile dependency to high-capacity electric light rails and active cycling corridors, municipalities achieve measurable reductions in greenhouse gas emissions while simultaneously enhancing community public health metrics."',
-              tips: 'Write down 4-5 key content phrases during listening, then deliver them within a smooth lecture template.',
-              modelScore: '90/90 - Full coverage of core lecture arguments with smooth academic cadence'
-            }
-          ],
-          howToRespond: {
-            bullets: [
-              'Note down core themes and keywords (nouns, verbs, specific findings) while the lecture plays.',
-              'Use your 10-second prep window to organize your notes into a coherent flow.',
-              'Begin with a strong topic statement: "The speaker discussed..."',
-              'Link points with transitions: "Furthermore, the lecture highlighted..."',
-              'Conclude smoothly: "In conclusion, the presentation demonstrated that..."'
-            ],
-            note: 'Microphone opens after a short tone following the 10-second preparation countdown.',
-            grading: 'Content, Oral Fluency, and Pronunciation.',
-            tipsBadge: 'Re-Tell Lecture TIPS'
-          },
-          faqs: [
-            {
-              q: 'How many questions of Re-Tell Lecture appear in the exam?',
-              a: 'Typically 1 to 2 questions appear in the current 2-hour PTE Academic / UKVI test format.'
-            },
-            {
-              q: 'Can I use a template for Re-Tell Lecture?',
-              a: 'Yes, a standard structural template helps maintain high oral fluency and confidence while inserting the specific lecture keywords.'
-            }
-          ]
-        },
-        {
-          id: 'answer-short-question',
-          code: 'ASQ',
-          title: 'Answer Short Question',
-          tagline:
-            'Answer Short Question evaluates your vocabulary knowledge and immediate audio comprehension with single-word or short-phrase spoken responses.',
-          table: {
-            taskDesc: 'Listen to a question and reply with a single word or brief phrase',
-            skills: 'Speaking & Listening',
-            promptLength: '3 - 9 seconds audio',
-            prepTime: 'None',
-            answerTime: '10 seconds',
-            questionCount: '5 - 6',
-            prepSeconds: 2
-          },
-          mockQuestions: [
-            {
-              instruction: 'You will hear a question. Please give a simple and short answer. Often just one or a few words is enough.',
-              prompt: 'Audio Question: "What instrument is used by astronomers to view distant stars and galaxies?"',
-              tips: 'Speak immediately when microphone turns on. Acceptable answers: "Telescope" or "A telescope".',
-              modelScore: '90/90 - Precise vocabulary response'
-            }
-          ],
-          howToRespond: {
-            bullets: [
-              'Listen attentively to the short audio question.',
-              'Speak a concise answer (usually 1 to 3 words) as soon as the mic opens.',
-              'Do not speak in full sentences; e.g., say "Thermometer", not "The instrument used is a thermometer".',
-              'If uncertain, guess an educated synonym related to the academic domain.'
-            ],
-            note: 'There is no prep time; answer immediately upon audio completion.',
-            grading: 'Vocabulary accuracy (1 point for correct term, 0 for incorrect).',
-            tipsBadge: 'Short Question TIPS'
-          },
-          faqs: [
-            {
-              q: 'Do I need to answer in a complete sentence?',
-              a: 'No. Single word or short phrase answers are ideal and preferred.'
-            },
-            {
-              q: 'Are articles like "a" or "the" required?',
-              a: 'Either is acceptable. Saying "telescope" or "a telescope" receives full marks.'
-            }
-          ]
         }
       ]
     },
@@ -574,87 +567,316 @@ export default function PTEExamPatternPage() {
       title: 'PTE Reading Practice',
       subtitle: 'Latest PTE Academic & UKVI Reading Questions',
       overview:
-        "The PTE Reading section tests your ability to comprehend written academic texts, determine syntactic collocations, analyze logical discourse relationships, and interpret scholarly arguments. It features question types that evaluate both reading comprehension and integrated writing skills.",
+        "The Reading module of PTE Academic / UKVI is the third part of the test which assesses the test takers' ability to read and understand English texts in academic context. The PTE Reading test module consists of five item types and the test takers have to select, drag and drop, or type their responses using a mouse and a keyboard. There is a collective timer for all questions, so time management is extremely important. The responses are scored by an automated system based on various criteria such as comprehension, analysis, and vocabulary. PTE Reading practice is an important aspect of PTE preparation, and regular PTE Practice helps test takers improve accuracy, speed, and overall exam performance on NinetyPTE.",
       tasks: [
         {
           id: 'rw-fill-in-blanks',
-          code: 'R&W FIB',
-          title: 'Reading & Writing: Fill in the Blanks',
+          code: 'RWB',
+          title: 'Fill in the Blanks (Drop-down)',
           tagline:
-            'The highest-scoring reading task where you select the appropriate word from drop-down menus within an academic passage.',
+            'There is a passage with some missing words. Beside each gap, there is a button with a drop-down list. Left-click on this button to reveal the drop-down list of options for that gap. Select the option you think best fills the gap. Use your knowledge of grammar and vocabulary to solve this question.',
           table: {
-            taskDesc: 'A passage with missing words is displayed. Select the correct option from drop-downs',
-            skills: 'Reading & Writing',
-            promptLength: 'Up to 300 words with 4 - 5 blanks',
-            prepTime: 'Integrated module timing (~2 mins per question)',
-            answerTime: 'Timer shared across Reading section',
-            questionCount: '5 - 6',
-            prepSeconds: 5
+            taskDesc: 'A text appears on the screen with several gaps. Select the correct option from drop-down menus within the passage',
+            skills: 'Reading and Writing',
+            promptLength: 'Text up to 350 words',
+            suggestedTime: '2-2.5 minutes per question',
+            questionCount: '5 - 6'
           },
           mockQuestions: [
             {
               instruction: 'Below is a text with blanks. Click on each blank, a list of choices will appear. Select the appropriate answer choice for each blank.',
-              prompt: 'Text: "Behavioral economists have long recognized that human financial choices frequently deviate from classical rationality. When evaluated under conditions of acute uncertainty, consumers consistently exhibit risk [aversion / hostility / prevention / resistance] rather than calculating objective probability matrices."',
-              tips: 'Look at preposition collocations: "risk aversion" is the standard economic collocation.',
-              modelScore: '90/90 - Complete accuracy in academic collocations'
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '1 of 14',
+              timerDisplay: '01:03 / 29:00',
+              blanksData: [
+                { id: 0, options: ['select', 'attractive', 'raised', 'adjusted'], answer: 'raised' },
+                { id: 1, options: ['select', 'or', 'similarly', 'consequently'], answer: 'or' },
+                { id: 2, options: ['select', 'lower', 'modify', 'elevate'], answer: 'lower' },
+                { id: 3, options: ['select', 'usually', 'hardly', 'rarely'], answer: 'usually' }
+              ],
+              tips: 'Examine preceding and succeeding prepositions and syntactic collocations. In economics, prices are "raised" or "lowered", not "adjusted" or "elevated" in this context.',
+              modelScore: '90/90 - Full accuracy in all 4 drop-down blanks'
             }
           ],
           howToRespond: {
             bullets: [
-              'Read the sentence surrounding the blank to determine parts of speech needed (verb, noun, adjective).',
-              'Check immediate prepositions before and after the gap.',
-              'Eliminate options that conflict with grammatical tense or number agreement.',
-              'Ensure the selected word fits the overall semantic tone of the scholarly passage.'
+              'For this type of question, you need to pick the right words from a list to finish the sentence.',
+              'The text is missing some words. Each blank has a button with a list of choices. Click the button to see the choices and pick the one that fits the gap the best.',
+              'Just click on a different choice if you change your mind.'
             ],
-            note: 'This task contributes significant marks to your Writing score as well as Reading.',
-            grading: '1 mark for each correctly selected blank.',
-            tipsBadge: 'R&W Blanks TIPS'
+            grading: 'Whether the answer is right or incorrect (1 mark per correct blank).',
+            tipsBadge: 'PTE Reading & Writing: Fill in the Blanks Practice Task'
           },
           faqs: [
             {
-              q: 'How many marks is each blank worth?',
-              a: 'Each correctly identified drop-down choice awards 1 point toward both Reading and Writing modules.'
+              q: 'What is this task?',
+              a: 'Reading & Writing: Fill in the Blanks displays an academic text with 4-5 missing words. Each blank contains a drop-down menu with 4 word choices. It evaluates both reading comprehension and contextual lexical selection.'
+            },
+            {
+              q: 'How is it scored?',
+              a: 'Each correctly selected blank earns 1 point toward both your Reading and Writing module scores. There is no negative marking.'
+            },
+            {
+              q: 'How can I practice this task?',
+              a: 'Practice identifying grammatical word categories (verbs, nouns, adjectives) and mastering Academic Collocations on NinetyPTE.'
+            },
+            {
+              q: 'How much time do I have?',
+              a: 'The Reading section shares a single pooled timer of 29-30 minutes. We recommend spending 2 to 2.5 minutes per drop-down question.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Choosing words solely based on translation rather than English preposition collocations, and spending more than 3 minutes on a single passage.'
+            }
+          ]
+        },
+        {
+          id: 'mcq-multiple',
+          code: 'MCM',
+          title: 'Multiple Choice, Multiple Answers',
+          tagline:
+            'After reading a text, answer a multiple-choice question on the content or tone of the text by selecting more than one response. This question carries a negative marking & hence, a student will get penalized if chosen a wrong answer.',
+          table: {
+            taskDesc: 'After reading a text, answer a multiple-choice question on the content or tone of the text by selecting more than one response',
+            skills: 'Reading',
+            promptLength: 'Text up to 300 words',
+            suggestedTime: '2-2.5 minutes per question',
+            questionCount: '2 - 3'
+          },
+          mockQuestions: [
+            {
+              instruction: 'Read the text and answer the question by selecting all the correct responses. You will need to select more than one response.',
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '6 of 14',
+              timerDisplay: '01:29 / 29:00',
+              passage:
+                "During Jackson's second term, his opponents had gradually come together to form the Whig party. Whigs and Democrats held different attitudes toward the changes brought about by the market, banks, and commerce. The Democrats tended to view society as a continuing conflict between \"the people\"—farmers, planters, and workers—and a set of greedy aristocrats. This \"paper money aristocracy\" of bankers and investors manipulated the banking system for their own profit, Democrats claimed, and sapped the nation's virtue by encouraging speculation and the desire for sudden, unearned wealth. The Democrats wanted the rewards of the market without sacrificing the features of a simple agrarian republic. They wanted the wealth that the market offered without the competitive, changing society; the complex dealing; the dominance of urban centers; and the loss of independence that came with it.",
+              question: 'The author mentions bankers and investors in the passage as an example of which of the following?',
+              options: [
+                "The Democratic Party's main source of support",
+                "The people that Democrats claimed were unfairly becoming rich",
+                "The people most interested in a return to a simple agrarian republic",
+                "One of the groups might be not in favor of Whig party and Democrats"
+              ],
+              tips: 'Only check options that are explicitly substantiated by passage text. When in doubt, do not guess since negative marking applies.',
+              modelScore: '90/90 - Selected exact verified options (2nd and 4th)'
+            }
+          ],
+          howToRespond: {
+            bullets: [
+              'Read the question and identify the specific target concept before reading the whole passage.',
+              'Read the passage carefully to analyze the author’s stance and supporting examples.',
+              'Check multiple answers that are unequivocally true according to the text.',
+              'Remember: incorrect options subtract 1 mark (negative marking). If you are only confident in 1 answer, tick only that 1 answer!'
+            ],
+            grading: 'Partial credit with negative marking (+1 for correct, -1 for incorrect, minimum score 0).',
+            tipsBadge: 'Multiple Choice, Multiple Answers Practice Task'
+          },
+          faqs: [
+            {
+              q: 'What is this task?',
+              a: 'Multiple Choice, Multiple Answers presents an academic passage and a question where two or more options are correct. You must select all accurate options.'
+            },
+            {
+              q: 'How is it scored?',
+              a: 'Scoring uses partial credit with negative marking: +1 mark for each correct checkbox, -1 mark for each incorrect checkbox. The minimum score for the question is 0.'
+            },
+            {
+              q: 'How can I practice this task?',
+              a: 'Practice verifying each option against direct passage sentences. If uncertain about a second option, leave it unselected to safeguard your positive point.'
+            },
+            {
+              q: 'How much time do I have?',
+              a: 'Aim for 2 to 2.5 minutes per question within your overall 29-minute Reading section budget.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Selecting too many options and wiping out points due to negative marking penalty.'
             }
           ]
         },
         {
           id: 'reorder-paragraphs',
           code: 'RO',
-          title: 'Re-order Paragraphs',
+          title: 'Re-Order Paragraphs',
           tagline:
-            'Test your understanding of academic text cohesion by organizing jumbled sentences into their original logical sequence.',
+            'For this item type in Reorder Paragraph PTE, several text boxes appear on the screen in random order. Put the text boxes in the correct order. A Student is judged on the ability to understand the organization and cohesion of an academic text. It tests a candidate\'s ability to evaluate logical relationships between paragraphs, as well as examine grammatical relationships within the text. The sentences must be arranged logically in the correct order.',
           table: {
-            taskDesc: 'Drag and drop jumbled text boxes into their correct chronological or logical order',
+            taskDesc: 'Several text boxes appear on the screen in random order. Put the text boxes in the correct order',
             skills: 'Reading',
-            promptLength: '4 - 5 text boxes (up to 150 words)',
-            prepTime: 'Integrated section timing (~2 mins)',
-            answerTime: 'Shared section timer',
-            questionCount: '2 - 3',
-            prepSeconds: 5
+            promptLength: 'Text up to 150 words',
+            suggestedTime: '1-1.5 minutes per question',
+            questionCount: '2 - 3'
           },
           mockQuestions: [
             {
-              instruction: 'The text boxes in the left panel have been deliberately jumbled. Order them by dragging the text boxes into the right panel.',
-              prompt: 'Items: [A: These sensors transmit telemetric data to ground monitors.] [B: Modern satellites rely on sophisticated atmospheric sensors.] [C: The ground systems then process the incoming metrics.] [D: Consequently, meteorologists can anticipate severe weather anomalies.]',
-              tips: 'Identify the standalone topic sentence first (B), then follow referential pronouns (These sensors -> A), consequence (C), and conclusion (D).',
-              modelScore: '90/90 - Perfect pair linking: B-A, A-C, C-D'
+              instruction: 'The text boxes in the left panel have been placed in random order. Restore the original order by dragging the text boxes from the left panel to the right panel.',
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '8 of 14',
+              timerDisplay: '01:57 / 29:00',
+              correctOrder: ['3', '5', '1', '4', '2'],
+              tips: 'Find the independent topic sentence that introduces both concepts (Gandhiji and Nehru). Then group each philosophy before presenting consequences.',
+              modelScore: '90/90 - Full marks on all adjacent pairs: 3-5, 5-1, 1-4, 4-2'
             }
           ],
           howToRespond: {
             bullets: [
-              'Identify the independent topic sentence that introduces the subject without pronouns or transition words.',
-              'Locate anaphoric references (e.g., "these instruments", "this method").',
-              'Score is awarded for contiguous correct pairs (e.g., Pair 1-2, Pair 2-3).',
-              'Read the reconstructed passage from beginning to end to check logical flow.'
+              'You need to drag and drop the sentences to get the text back in the right order.',
+              'There are two ways to change the text: Left-click on a sentence to drag it to the right target panel, or use the arrow buttons to move and order sentences.',
+              'To deselect a box, just click somewhere else on the screen.'
             ],
-            note: 'Marks are given per correct adjacent pair, not individual placement.',
-            grading: '1 point per correct contiguous adjacent pair.',
-            tipsBadge: 'Re-order TIPS'
+            grading: '"Correct" or "incorrect" and "partial credit" system (1 mark per correct contiguous pair).',
+            tipsBadge: 'Re-order Paragraphs Practice Task'
           },
           faqs: [
             {
-              q: 'How does pair scoring work in Re-order Paragraphs?',
-              a: 'If the correct order is A-B-C-D, there are 3 possible pairs: (A-B), (B-C), (C-D). Each correct adjacent pair earns 1 mark.'
+              q: 'What is this task?',
+              a: 'Re-Order Paragraphs displays 4 to 5 jumbled sentences in the Source column. You must arrange them into their original logical progression in the Target column.'
+            },
+            {
+              q: 'How is it scored?',
+              a: 'Scoring is awarded per correct contiguous pair (e.g. Pair 1-2, Pair 2-3). If the correct order is A-B-C-D, there are 3 possible pair points.'
+            },
+            {
+              q: 'How can I practice this task?',
+              a: 'Look for referring pronouns (e.g., "such secularism", "these findings"), definite articles ("the concept"), and transition signposts.'
+            },
+            {
+              q: 'How much time do I have?',
+              a: 'Spend approximately 1.5 to 2 minutes per Re-Order task.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Failing to identify the standalone topic sentence first, or leaving items in the Source box.'
+            }
+          ]
+        },
+        {
+          id: 'reading-fill-in-blanks',
+          code: 'RB',
+          title: 'Fill in the Blanks (Drag & Drop)',
+          tagline:
+            'For this item type PTE Reading Fill in the blanks, you need to drag and drop words across the screen to correctly fill in the gaps in the text. You have to select the correct words and drag and drop them into the gaps using your knowledge of grammar, collocations, and vocabulary.',
+          table: {
+            taskDesc: 'A text appears on the screen with several gaps. Drag words from the box below to fill the gaps',
+            skills: 'Reading',
+            promptLength: 'Text up to 80 words',
+            suggestedTime: '2 minutes per question',
+            questionCount: '4 - 5'
+          },
+          mockQuestions: [
+            {
+              instruction: 'In the text below some words are missing. Drag words from the box below to the appropriate place in the text. To undo an answer choice, drag the word back to the box below the text.',
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '11 of 14',
+              timerDisplay: '02:17 / 29:00',
+              passageParts: [
+                "What is a country, and how is a country defined? When people ask how many countries there are in the world, they expect a simple answer. After ",
+                ", we've explored the whole planet, we have international travel, satellite navigation, and plenty of global organizations like the United Nations, so we ",
+                " really know how many countries there are! However, the answer to the question varies according to whom you ask. Most people say there are 192 countries, but others point out that there could be more like 260 of them. So why isn't there a straightforward answer? The problem ",
+                " because there isn't a universally agreed definition of 'country' and because, for political reasons, some countries ",
+                " it convenient to recognize or not recognize other countries."
+              ],
+              bankWords: ['a', 'all', 'should', 'find', 'arises', 'have'],
+              correctSlots: { 0: 'all', 1: 'should', 2: 'arises', 3: 'find' },
+              tips: 'Examine common idioms: "After all" is a set phrase. "Problem arises" matches singular agreement. "Countries find it convenient" matches active transitive structure.',
+              modelScore: '90/90 - All 4 gaps correctly placed: all, should, arises, find'
+            }
+          ],
+          howToRespond: {
+            bullets: [
+              'In this task, you drag words from the bottom pool into the dashed gaps within the passage.',
+              'There are more words in the pool than gaps, so several words will not be used.',
+              'To replace or return a word, click or drag the word back to the bottom word bank.'
+            ],
+            grading: '1 point for each correctly placed word in a gap; 0 for empty or incorrect gaps.',
+            tipsBadge: 'Reading : Fill in the Blanks Practice Task'
+          },
+          faqs: [
+            {
+              q: 'What is this task?',
+              a: 'Reading Fill in the Blanks (Drag & Drop) presents a short academic text with 3 to 5 blank gaps. Beneath the text is a word bank with extra distractor words.'
+            },
+            {
+              q: 'How is it scored?',
+              a: 'Each correctly filled gap awards 1 mark toward Reading. Unfilled or incorrect gaps score 0.'
+            },
+            {
+              q: 'How can I practice this task?',
+              a: 'Focus on grammatical word categories (e.g. auxiliary verb needed before main verb, singular verb for singular subjects).'
+            },
+            {
+              q: 'How much time do I have?',
+              a: 'Aim for 1.5 to 2 minutes per drag-and-drop question.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Leaving any blank empty. There is no negative marking, so ensure all gaps are filled before proceeding.'
+            }
+          ]
+        },
+        {
+          id: 'mcq-single',
+          code: 'MCS',
+          title: 'Multiple Choice, Single Answer',
+          tagline:
+            'After reading the text, students will have to answer a multiple-choice question on the content or tone of the text by selecting one response.',
+          table: {
+            taskDesc: 'After reading a text, answer a multiple-choice question on the content or tone of the text by selecting one response',
+            skills: 'Reading',
+            promptLength: 'Text up to 300 words',
+            suggestedTime: '1 minutes per question',
+            questionCount: '2 - 3'
+          },
+          mockQuestions: [
+            {
+              instruction: 'Read the text and answer the multiple-choice question by selecting the correct response. Only one response is correct.',
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '14 of 14',
+              timerDisplay: '04:43 / 29:00',
+              passage:
+                "The name \"United Nations\", originally suggested by the North American president Franklin D. Roosevelt, was first used on January 1, 1942, when the representatives of 26 countries fighting against Italy, Germany, and Japan began cooperating in winning the Second World War. The signatories of the Declaration by United Nations also subscribed to a common program of purposes and principles embodied in an official document which visualized providing peace to all peoples, security from aggression, freedom to choose their own government, access on equal terms to the trade and raw materials of the world, improved labor standards, freedom from fear and want, and freedom of the seas.",
+              question: 'Which of the following most accurately summarizes the opinion of the author in the text?',
+              options: [
+                'The United Nations was founded by Franklin D. Roosevelt.',
+                'The origin of the United Nations came about as a response to Italy, Germany, and Japan.',
+                'The Declaration by the United Nations was difficult to follow at first because it was unwritten.',
+                'The Declaration by United Nations included visualizing making sure that all peoples were free from fearing the seas.'
+              ],
+              correctIdx: 1,
+              tips: 'Focus on the explicit historical context: the text describes representatives cooperating in winning the war as the origin.',
+              modelScore: '90/90 - Correct option chosen (Option 2)'
+            }
+          ],
+          howToRespond: {
+            bullets: [
+              'Read the question prompt first to understand the objective.',
+              'Scan the text for keywords and supporting evidence.',
+              'Select the single radio button that best answers the question. There is no penalty for an incorrect guess.'
+            ],
+            grading: '1 point for the correct answer; 0 for an incorrect answer (no negative marking).',
+            tipsBadge: 'Multiple Choice, Single Answer Practice Task'
+          },
+          faqs: [
+            {
+              q: 'What is this task?',
+              a: 'Multiple Choice, Single Answer presents a text passage followed by a single-select question with 4 options.'
+            },
+            {
+              q: 'How is it scored?',
+              a: '1 point is awarded for the correct option; 0 points for incorrect answers. There is no negative marking.'
+            },
+            {
+              q: 'How can I practice this task?',
+              a: 'Read the question prompt and choices first to guide your scanning, then locate the specific sentence that answers it.'
+            },
+            {
+              q: 'How much time do I have?',
+              a: 'Spend approximately 1 to 1.5 minutes on this task.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Over-allocating time. Because this question is worth only 1 mark, do not spend more than 1.5 minutes on it.'
             }
           ]
         }
@@ -759,10 +981,25 @@ export default function PTEExamPatternPage() {
   const currentMock = currentTask.mockQuestions?.[simQuestionIdx] || currentTask.mockQuestions?.[0];
 
   const isWriting = activeModule === 'writing';
-  const tableHeaderBg = isWriting ? 'bg-[#58b4f8]' : 'bg-[#f1784b]';
-  const tableBorderColor = isWriting ? 'border-sky-400/50' : 'border-[#ea6b3c]/50';
-  const taskBadgeBg = isWriting ? 'bg-[#58b4f8]' : 'bg-[#f1784b]';
-  const taskTitleColor = isWriting ? 'text-[#58b4f8]' : 'text-[#f1784b]';
+  const isReading = activeModule === 'reading';
+
+  // Theme colors per module
+  let themeColorBg = 'bg-[#f1784b]';
+  let themeColorText = 'text-[#f1784b]';
+  let tableHeaderBg = 'bg-[#f1784b]';
+  let tableBorderColor = 'border-[#ea6b3c]/50';
+
+  if (isWriting) {
+    themeColorBg = 'bg-[#58b4f8]';
+    themeColorText = 'text-[#58b4f8]';
+    tableHeaderBg = 'bg-[#58b4f8]';
+    tableBorderColor = 'border-sky-400/50';
+  } else if (isReading) {
+    themeColorBg = 'bg-[#22c55e]';
+    themeColorText = 'text-[#22c55e]';
+    tableHeaderBg = 'bg-[#22c55e]';
+    tableBorderColor = 'border-emerald-400/50';
+  }
 
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 font-sans relative selection:bg-cyan-500 selection:text-white pb-20">
@@ -786,7 +1023,9 @@ export default function PTEExamPatternPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            PTE <span className="text-[#00c2cb]">{isWriting ? 'Writing' : activeModule === 'reading' ? 'Reading' : activeModule === 'listening' ? 'Listening' : 'Speaking'}</span> Practice
+            PTE <span className="text-[#00c2cb]">
+              {isWriting ? 'Writing' : isReading ? 'Reading' : activeModule === 'listening' ? 'Listening' : 'Speaking'}
+            </span> Practice
           </h1>
           <p className="mt-2 text-sm sm:text-base font-semibold text-slate-500">
             {currentModule.subtitle}
@@ -829,9 +1068,13 @@ export default function PTEExamPatternPage() {
               const isTaskActive = activeTaskId === task.id;
               let pillClasses = '';
               if (isTaskActive) {
-                pillClasses = isWriting 
-                  ? 'bg-[#58b4f8] text-white shadow-xs font-bold' 
-                  : 'bg-white border-2 border-[#e77342] text-[#e77342] shadow-xs font-bold';
+                if (isWriting) {
+                  pillClasses = 'bg-[#58b4f8] text-white shadow-xs font-bold';
+                } else if (isReading) {
+                  pillClasses = 'bg-[#22c55e] text-white shadow-xs font-bold';
+                } else {
+                  pillClasses = 'bg-white border-2 border-[#e77342] text-[#e77342] shadow-xs font-bold';
+                }
               } else {
                 pillClasses = 'bg-white border border-slate-300 text-slate-700 hover:border-slate-400 font-medium';
               }
@@ -858,11 +1101,11 @@ export default function PTEExamPatternPage() {
         
         {/* Task Title Header with circular badge */}
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full ${taskBadgeBg} text-white font-black text-sm flex items-center justify-center shadow-xs`}>
+          <div className={`w-10 h-10 rounded-full ${themeColorBg} text-white font-black text-sm flex items-center justify-center shadow-xs`}>
             {currentTask.code}
           </div>
           <div>
-            <h2 className={`text-xl sm:text-2xl font-bold ${taskTitleColor}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold ${themeColorText}`}>
               {currentTask.title}
             </h2>
           </div>
@@ -881,10 +1124,14 @@ export default function PTEExamPatternPage() {
                 <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Task</th>
                 <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Skills assessed</th>
                 <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Prompt length</th>
-                {!isWriting && currentTask.table.prepTime && (
+                {isReading ? (
+                  <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Suggested time</th>
+                ) : !isWriting && currentTask.table.prepTime ? (
                   <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Preparation time</th>
+                ) : null}
+                {!isReading && (
+                  <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Time to answer</th>
                 )}
-                <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Time to answer</th>
                 <th className="py-3 px-4 text-xs font-semibold">Number of questions</th>
               </tr>
             </thead>
@@ -899,14 +1146,20 @@ export default function PTEExamPatternPage() {
                 <td className="py-4 px-4 text-xs border-r border-slate-100 whitespace-nowrap">
                   {currentTask.table.promptLength}
                 </td>
-                {!isWriting && currentTask.table.prepTime && (
+                {isReading ? (
+                  <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
+                    {currentTask.table.suggestedTime}
+                  </td>
+                ) : !isWriting && currentTask.table.prepTime ? (
                   <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
                     {currentTask.table.prepTime}
                   </td>
+                ) : null}
+                {!isReading && (
+                  <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
+                    {currentTask.table.answerTime}
+                  </td>
                 )}
-                <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
-                  {currentTask.table.answerTime}
-                </td>
                 <td className="py-4 px-4 text-xs font-bold text-slate-900 whitespace-nowrap">
                   {currentTask.table.questionCount}
                 </td>
@@ -926,16 +1179,32 @@ export default function PTEExamPatternPage() {
           {/* Top Simulator Header Bar */}
           <div className="border-t-4 border-[#0284c7] bg-white border-b border-slate-200 px-5 py-3 flex items-center justify-between text-xs font-semibold text-slate-700">
             <div className="text-slate-800 font-bold">
-              {isWriting ? `Remaining Time - ${formatTime(writingTimeLeft)}` : 'Mock Test - 1'}
+              {isWriting ? (
+                `Remaining Time - ${formatTime(writingTimeLeft)}`
+              ) : isReading ? (
+                <div className="w-24 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-[#0284c7] h-full w-1/3" />
+                </div>
+              ) : (
+                'Mock Test - 1'
+              )}
             </div>
             <div className="text-slate-800 font-bold">
-              {isWriting ? 'Mock Test - 1' : `${simQuestionIdx + 1} of ${currentTask.mockQuestions?.length || 29}`}
+              Mock Test - 1
             </div>
             <div className="flex items-center gap-3">
               {isWriting ? (
                 <span className="text-slate-600 font-bold">
                   {currentTask.id === 'write-essay' ? '29 of 29' : '28 of 29'}
                 </span>
+              ) : isReading ? (
+                <div className="flex items-center gap-3 font-semibold text-slate-700">
+                  <span>{currentMock.questionProgress}</span>
+                  <span className="flex items-center gap-1 font-mono">
+                    <Clock className="w-3.5 h-3.5 text-slate-500" />
+                    {formatTime(readingSeconds)} / 29:00
+                  </span>
+                </div>
               ) : (
                 <span className="flex items-center gap-1 font-mono text-slate-700">
                   <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -960,10 +1229,282 @@ export default function PTEExamPatternPage() {
               {currentMock.instruction}
             </p>
 
-            {/* CONDITIONAL RENDER: Writing Editor Simulator vs Audio Recorder */}
-            {isWriting ? (
+            {/* CONDITIONAL RENDER: Reading Simulators vs Writing Simulator vs Audio Recorder */}
+            {isReading ? (
+              <div className="space-y-6">
+                
+                {/* 1. Fill in the Blanks (Drop-down) */}
+                {currentTask.id === 'rw-fill-in-blanks' && (
+                  <div className="border border-slate-200 rounded-lg p-6 bg-white text-xs sm:text-sm text-slate-800 leading-loose font-sans shadow-2xs space-y-4">
+                    <p>
+                      The supply of a thing, in the phrase "supply and demand," is the amount that will be offered for sale at each of a series of prices; the demand is the amount that will be bought at each of a series of prices. The principle that value depends on supply and demand means that in the case of nearly every commodity, more will be bought if the price is lowered, less will be bought if the price is{' '}
+                      <select
+                        value={readingDropdowns[0] || 'select'}
+                        onChange={(e) => setReadingDropdowns({ ...readingDropdowns, 0: e.target.value })}
+                        className="inline-block mx-1 px-2.5 py-1 text-xs border border-slate-300 rounded bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer"
+                      >
+                        <option value="select">select ▼</option>
+                        <option value="attractive">attractive</option>
+                        <option value="raised">raised</option>
+                        <option value="adjusted">adjusted</option>
+                      </select>
+                      . Therefore sellers, if they wish to induce buyers to take more of a commodity than they are already doing,{' '}
+                      <select
+                        value={readingDropdowns[1] || 'select'}
+                        onChange={(e) => setReadingDropdowns({ ...readingDropdowns, 1: e.target.value })}
+                        className="inline-block mx-1 px-2.5 py-1 text-xs border border-slate-300 rounded bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer"
+                      >
+                        <option value="select">select ▼</option>
+                        <option value="or">or</option>
+                        <option value="similarly">similarly</option>
+                        <option value="consequently">consequently</option>
+                      </select>{' '}
+                      if they raise its price, they will sell less. If there is a general falling off in demand due, say, to trade depression, sellers must either have to{' '}
+                      <select
+                        value={readingDropdowns[2] || 'select'}
+                        onChange={(e) => setReadingDropdowns({ ...readingDropdowns, 2: e.target.value })}
+                        className="inline-block mx-1 px-2.5 py-1 text-xs border border-slate-300 rounded bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer"
+                      >
+                        <option value="select">select ▼</option>
+                        <option value="lower">lower</option>
+                        <option value="modify">modify</option>
+                        <option value="elevate">elevate</option>
+                      </select>{' '}
+                      prices or put less on the market; they will not be able to sell the same quantity as before at the same price. Similarly with supply. At a certain price, a certain amount will be offered for sale, at a higher price more will be offered, at a lower priceless. If consumers want more, they must offer a higher price; if they want less, they will{' '}
+                      <select
+                        value={readingDropdowns[3] || 'select'}
+                        onChange={(e) => setReadingDropdowns({ ...readingDropdowns, 3: e.target.value })}
+                        className="inline-block mx-1 px-2.5 py-1 text-xs border border-slate-300 rounded bg-slate-50 text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer"
+                      >
+                        <option value="select">select ▼</option>
+                        <option value="usually">usually</option>
+                        <option value="hardly">hardly</option>
+                        <option value="rarely">rarely</option>
+                      </select>{' '}
+                      be able to force prices down. That is the first result of a change in demand or supply.
+                    </p>
+                  </div>
+                )}
+
+                {/* 2. Multiple Choice, Multiple Answers */}
+                {currentTask.id === 'mcq-multiple' && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                    {/* Left Column: Passage */}
+                    <div className="md:col-span-7 border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-700 leading-relaxed font-sans shadow-2xs max-h-96 overflow-y-auto">
+                      <p>{currentMock.passage}</p>
+                    </div>
+
+                    {/* Right Column: Question & Multi-Select Checkboxes */}
+                    <div className="md:col-span-5 space-y-4">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
+                        {currentMock.question}
+                      </h4>
+                      <div className="space-y-2.5 pt-1">
+                        {currentMock.options?.map((option, idx) => {
+                          const isChecked = readingCheckboxes.includes(idx);
+                          return (
+                            <label
+                              key={idx}
+                              onClick={() => {
+                                if (isChecked) {
+                                  setReadingCheckboxes(readingCheckboxes.filter(i => i !== idx));
+                                } else {
+                                  setReadingCheckboxes([...readingCheckboxes, idx]);
+                                }
+                              }}
+                              className={`flex items-start gap-3 p-3 rounded-lg border text-xs sm:text-sm transition cursor-pointer ${
+                                isChecked 
+                                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-900' 
+                                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {}}
+                                className="mt-0.5 rounded text-cyan-600 focus:ring-cyan-500"
+                              />
+                              <span className="leading-snug">{option}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Re-Order Paragraphs */}
+                {currentTask.id === 'reorder-paragraphs' && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                      
+                      {/* Left: Source Panel */}
+                      <div className="md:col-span-5 border border-slate-300 rounded-lg overflow-hidden shadow-xs">
+                        <div className="bg-[#00c2cb] px-4 py-2 font-bold text-white text-xs text-center tracking-wide">
+                          Source
+                        </div>
+                        <div className="p-3 min-h-[260px] bg-white space-y-2.5">
+                          {reorderSource.length === 0 ? (
+                            <p className="text-xs text-slate-400 italic text-center py-10">All items placed in Target</p>
+                          ) : (
+                            reorderSource.map(item => (
+                              <div
+                                key={item.id}
+                                onClick={() => handleMoveToTarget(item)}
+                                className="p-2.5 rounded border border-slate-200 bg-slate-50 hover:border-cyan-500 hover:bg-cyan-50/40 text-xs text-slate-800 transition cursor-pointer flex items-center justify-between gap-2"
+                              >
+                                <span className="leading-relaxed">{item.text}</span>
+                                <span className="text-cyan-600 text-xs font-bold shrink-0">→</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Middle: Move buttons */}
+                      <div className="md:col-span-2 flex flex-row md:flex-col items-center justify-center gap-2">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center">
+                          Click to move
+                        </span>
+                      </div>
+
+                      {/* Right: Target Panel */}
+                      <div className="md:col-span-5 border border-slate-300 rounded-lg overflow-hidden shadow-xs">
+                        <div className="bg-[#00c2cb] px-4 py-2 font-bold text-white text-xs text-center tracking-wide">
+                          Target
+                        </div>
+                        <div className="p-3 min-h-[260px] bg-slate-50/50 space-y-2.5 border-2 border-dashed border-slate-200">
+                          {reorderTarget.length === 0 ? (
+                            <p className="text-xs text-slate-400 italic text-center py-10">Click items from Source to place them here</p>
+                          ) : (
+                            reorderTarget.map((item, idx) => (
+                              <div
+                                key={item.id}
+                                onClick={() => handleMoveToSource(item)}
+                                className="p-2.5 rounded border border-cyan-400 bg-white text-xs text-slate-800 transition cursor-pointer flex items-center justify-between gap-2 shadow-2xs"
+                              >
+                                <span className="w-5 h-5 rounded-full bg-cyan-100 text-cyan-800 font-bold text-[10px] flex items-center justify-center shrink-0">
+                                  {idx + 1}
+                                </span>
+                                <span className="leading-relaxed flex-1">{item.text}</span>
+                                <span className="text-rose-500 text-xs font-bold shrink-0 hover:text-rose-700">✕</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. Fill in the Blanks (Drag & Drop) */}
+                {currentTask.id === 'reading-fill-in-blanks' && (
+                  <div className="space-y-6">
+                    {/* Passage with dashed drop slots */}
+                    <div className="border border-slate-200 rounded-lg p-6 bg-white text-xs sm:text-sm text-slate-800 leading-loose font-sans shadow-2xs">
+                      <p>
+                        {currentMock.passageParts?.[0]}
+                        <span
+                          onClick={() => handleSlotWordClick(0)}
+                          className="inline-flex items-center justify-center min-w-[70px] h-7 mx-1 px-3 rounded border-2 border-dashed border-slate-400 bg-slate-50 font-bold text-xs text-cyan-700 cursor-pointer hover:border-cyan-500"
+                        >
+                          {dragSlots[0] || ''}
+                        </span>
+                        {currentMock.passageParts?.[1]}
+                        <span
+                          onClick={() => handleSlotWordClick(1)}
+                          className="inline-flex items-center justify-center min-w-[70px] h-7 mx-1 px-3 rounded border-2 border-dashed border-slate-400 bg-slate-50 font-bold text-xs text-cyan-700 cursor-pointer hover:border-cyan-500"
+                        >
+                          {dragSlots[1] || ''}
+                        </span>
+                        {currentMock.passageParts?.[2]}
+                        <span
+                          onClick={() => handleSlotWordClick(2)}
+                          className="inline-flex items-center justify-center min-w-[70px] h-7 mx-1 px-3 rounded border-2 border-dashed border-slate-400 bg-slate-50 font-bold text-xs text-cyan-700 cursor-pointer hover:border-cyan-500"
+                        >
+                          {dragSlots[2] || ''}
+                        </span>
+                        {currentMock.passageParts?.[3]}
+                        <span
+                          onClick={() => handleSlotWordClick(3)}
+                          className="inline-flex items-center justify-center min-w-[70px] h-7 mx-1 px-3 rounded border-2 border-dashed border-slate-400 bg-slate-50 font-bold text-xs text-cyan-700 cursor-pointer hover:border-cyan-500"
+                        >
+                          {dragSlots[3] || ''}
+                        </span>
+                        {currentMock.passageParts?.[4]}
+                      </p>
+                    </div>
+
+                    {/* Word Bank Pool */}
+                    <div className="border border-slate-200 rounded-lg p-4 bg-slate-100 flex flex-wrap justify-center items-center gap-2.5">
+                      {currentMock.bankWords?.map((word, idx) => {
+                        const isUsed = Object.values(dragSlots).includes(word);
+                        return (
+                          <button
+                            key={idx}
+                            disabled={isUsed}
+                            onClick={() => handleBankWordClick(word)}
+                            className={`px-4 py-1.5 rounded-md text-xs font-semibold border transition ${
+                              isUsed 
+                                ? 'bg-slate-200 text-slate-400 border-slate-200 cursor-not-allowed' 
+                                : 'bg-white text-slate-800 border-slate-300 hover:border-cyan-500 hover:text-cyan-600 shadow-2xs cursor-pointer'
+                            }`}
+                          >
+                            {word}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. Multiple Choice, Single Answer */}
+                {currentTask.id === 'mcq-single' && (
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                    {/* Left Column: Passage */}
+                    <div className="md:col-span-7 border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-700 leading-relaxed font-sans shadow-2xs max-h-96 overflow-y-auto">
+                      <p>{currentMock.passage}</p>
+                    </div>
+
+                    {/* Right Column: Question & Radio Options */}
+                    <div className="md:col-span-5 space-y-4">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
+                        {currentMock.question}
+                      </h4>
+                      <div className="space-y-2.5 pt-1">
+                        {currentMock.options?.map((option, idx) => {
+                          const isSelected = readingRadio === idx;
+                          return (
+                            <label
+                              key={idx}
+                              onClick={() => setReadingRadio(idx)}
+                              className={`flex items-start gap-3 p-3 rounded-lg border text-xs sm:text-sm transition cursor-pointer ${
+                                isSelected 
+                                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-900' 
+                                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="mcq-single-option"
+                                checked={isSelected}
+                                onChange={() => {}}
+                                className="mt-0.5 text-cyan-600 focus:ring-cyan-500"
+                              />
+                              <span className="leading-snug">{option}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            ) : isWriting ? (
+              /* Writing Simulator */
               <div className="space-y-5">
-                {/* SWT Reading Passage or Essay Prompt Box */}
                 {currentMock.passage ? (
                   <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-700 leading-relaxed font-sans max-h-72 overflow-y-auto space-y-3 shadow-2xs">
                     {currentMock.passage.split('\n\n').map((para, i) => (
@@ -976,9 +1517,7 @@ export default function PTEExamPatternPage() {
                   </div>
                 )}
 
-                {/* Pearson Text Editor Container with Top Toolbar */}
                 <div className="border border-slate-300 rounded-lg overflow-hidden shadow-xs">
-                  {/* Top Cyan Toolbar */}
                   <div className="bg-[#00c2cb] px-4 py-2 flex items-center justify-between text-white text-xs">
                     <div className="flex items-center gap-1.5">
                       <button
@@ -1008,7 +1547,6 @@ export default function PTEExamPatternPage() {
                     </div>
                   </div>
 
-                  {/* Main Textarea */}
                   <textarea
                     ref={textareaRef}
                     value={writingText}
@@ -1034,7 +1572,6 @@ export default function PTEExamPatternPage() {
                     </span>
                   </div>
 
-                  {/* Progress visualizer */}
                   <div className="mt-3 flex items-center gap-3">
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isRecording ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-200 text-slate-600'}`}>
                       <Mic className="w-3.5 h-3.5" />
@@ -1046,7 +1583,6 @@ export default function PTEExamPatternPage() {
                     </div>
                   </div>
 
-                  {/* Interactive buttons */}
                   <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
                     <div className="flex items-center gap-2">
                       <button
@@ -1073,7 +1609,6 @@ export default function PTEExamPatternPage() {
                   </div>
                 </div>
 
-                {/* Prompt Content Card */}
                 <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-800 leading-relaxed font-serif shadow-2xs">
                   <p>{currentMock.prompt}</p>
                 </div>
@@ -1089,6 +1624,10 @@ export default function PTEExamPatternPage() {
                   setSimCountdown(35);
                   setIsRecording(false);
                   setIsCompleted(false);
+                  setReadingDropdowns({});
+                  setReadingCheckboxes([]);
+                  setReadingRadio(null);
+                  setDragSlots({});
                 }}
                 className="px-4 py-2 rounded-md border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition cursor-pointer"
               >
@@ -1105,6 +1644,10 @@ export default function PTEExamPatternPage() {
                   setSimCountdown(35);
                   setIsRecording(false);
                   setIsCompleted(false);
+                  setReadingDropdowns({});
+                  setReadingCheckboxes([]);
+                  setReadingRadio(null);
+                  setDragSlots({});
                 }}
                 className="px-6 py-2 rounded-md bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1"
               >
@@ -1122,12 +1665,12 @@ export default function PTEExamPatternPage() {
             onClick={() => setSampleModalOpen(true)}
             className="px-5 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-bold transition shadow-xs cursor-pointer"
           >
-            PTE {isWriting ? 'Writing' : currentModule.title.split(' ')[1]} {currentTask.title}
+            PTE {isWriting ? 'Writing' : isReading ? 'Reading' : currentModule.title.split(' ')[1]} {currentTask.title}
           </button>
           <button
             onClick={() => setSampleModalOpen(true)}
             className={`px-5 py-2.5 rounded-full text-xs font-bold transition cursor-pointer ${
-              isWriting 
+              isWriting || isReading 
                 ? 'bg-[#00c2cb] hover:bg-[#00a8b5] text-white shadow-xs' 
                 : 'bg-white border border-[#00c2cb] text-[#00c2cb] hover:bg-cyan-50'
             }`}
@@ -1218,8 +1761,8 @@ export default function PTEExamPatternPage() {
               {/* Floating "TIPS" Speech Card with Lightbulb */}
               <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-xl px-4 py-2.5 shadow-md flex items-center gap-3">
                 <div className="text-left">
-                  <div className="text-[11px] font-bold text-slate-700 tracking-tight">
-                    {currentTask.title === 'Essay' ? 'Write Essay' : currentTask.title}
+                  <div className="text-[11px] font-bold text-slate-700 tracking-tight max-w-[160px] line-clamp-1">
+                    {currentTask.howToRespond?.tipsBadge || currentTask.title}
                   </div>
                   <div className="text-base font-black text-slate-900 tracking-tight">
                     TIPS
@@ -1340,10 +1883,16 @@ export default function PTEExamPatternPage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-[#f0f9fa] rounded-2xl p-6 sm:p-8 border border-cyan-100 text-center space-y-2">
           <h4 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
-            {isWriting ? 'Struggling with PTE Writing?' : `Ready to boost your ${activeModule} score?`}
+            {isReading ? (
+              'Got any queries about PTE reading?'
+            ) : isWriting ? (
+              'Struggling with PTE Writing?'
+            ) : (
+              `Ready to boost your ${activeModule} score?`
+            )}
           </h4>
           <p className="text-xs sm:text-sm text-slate-500">
-            Watch our strategy videos to improve your {isWriting ? 'Writing' : activeModule} proficiency
+            Watch our strategy videos to improve your {isWriting ? 'Writing' : isReading ? 'Reading' : activeModule} proficiency
           </p>
           <div className="pt-2">
             <Link
@@ -1364,7 +1913,7 @@ export default function PTEExamPatternPage() {
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full ${taskBadgeBg} text-white font-bold text-xs flex items-center justify-center`}>
+                <div className={`w-8 h-8 rounded-full ${themeColorBg} text-white font-bold text-xs flex items-center justify-center`}>
                   {currentTask.code}
                 </div>
                 <h4 className="text-lg font-bold text-slate-900">
@@ -1382,16 +1931,14 @@ export default function PTEExamPatternPage() {
             <div className="mt-4 space-y-4 text-xs sm:text-sm text-slate-700">
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 font-sans leading-relaxed">
                 <p className="font-sans text-[11px] font-bold uppercase text-slate-400 mb-1">
-                  Practice Prompt:
+                  Practice Prompt / Question:
                 </p>
                 {currentMock.passage ? (
                   <div className="max-h-48 overflow-y-auto space-y-2 text-xs">
-                    {currentMock.passage.split('\n\n').map((p, idx) => (
-                      <p key={idx}>{p}</p>
-                    ))}
+                    <p>{currentMock.passage}</p>
                   </div>
                 ) : (
-                  <p>{currentMock.prompt}</p>
+                  <p>{currentMock.instruction || currentMock.prompt}</p>
                 )}
               </div>
 
