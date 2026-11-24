@@ -22,6 +22,7 @@ import PTEForUSAPage from './pages/PTEForUSAPage';
 import PTEForUKPage from './pages/PTEForUKPage';
 import PTEForCanadaPage from './pages/PTEForCanadaPage';
 import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
+import PTECoreExamPage from './pages/PTECoreExamPage';
 import PTEExamPatternPage from './pages/PTEExamPatternPage';
 import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
 import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
@@ -117,6 +118,9 @@ function AppContent() {
           <Route path="/online-course" element={<PTEOnlineCoursePage />} />
           <Route path="/online-coaching" element={<PTEOnlineCoursePage />} />
           <Route path="/pte-material" element={<PTEMaterialPage />} />
+          <Route path="/pte-core" element={<PTECoreExamPage />} />
+          <Route path="/pte-core-exam" element={<PTECoreExamPage />} />
+          <Route path="/pte-core-exam-pattern" element={<PTECoreExamPage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
