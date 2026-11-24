@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Mic, 
   Volume2, 
-  Play, 
   Clock, 
   Maximize2, 
-  Users, 
   GraduationCap, 
   ChevronDown, 
-  ArrowRight,
-  Sparkles,
-  BarChart2,
   Headphones
 } from 'lucide-react';
 
 export default function PTESpeakingPracticePage() {
   const [activeTask, setActiveTask] = useState('repeat-sentence');
   const [faqOpen, setFaqOpen] = useState({ 0: true });
-  const [isRecording, setIsRecording] = useState(false);
+  const [simStage, setSimStage] = useState('audio'); // 'audio' | 'record'
+
+  const handleSelectTask = (taskId) => {
+    setActiveTask(taskId);
+    if (taskId === 'read-aloud' || taskId === 'describe-image') {
+      setSimStage('record');
+    } else {
+      setSimStage('audio');
+    }
+  };
 
   const toggleFaq = (idx) => {
     setFaqOpen(prev => ({
@@ -266,7 +269,7 @@ export default function PTESpeakingPracticePage() {
               return (
                 <button
                   key={t.id}
-                  onClick={() => setActiveTask(t.id)}
+                  onClick={() => handleSelectTask(t.id)}
                   className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     active
                       ? 'bg-[#f0854d] text-white shadow-xs'
@@ -357,7 +360,7 @@ export default function PTESpeakingPracticePage() {
                 {current.instruction}
               </p>
 
-              {/* 1. DESCRIBE IMAGE: SHOW AUTHENTIC VECTOR CHART */}
+              {/* 1. DESCRIBE IMAGE: SHOW AUTHENTIC VECTOR CHART (No Audio Player!) */}
               {activeTask === 'describe-image' && (
                 <div className="space-y-4">
                   <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-200 text-center max-w-lg mx-auto">
@@ -391,119 +394,261 @@ export default function PTESpeakingPracticePage() {
                     <div className="text-[9px] text-slate-400 mt-2">Source: International Renewable Energy Agency (IRENA)</div>
                   </div>
 
-                  {/* Status Box */}
-                  <div className="border border-slate-200 rounded-md p-3.5 max-w-md mx-auto bg-white space-y-2">
-                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                  {/* Clean Pearson Recorded Answer Status Box */}
+                  <div className="border border-slate-200/90 rounded-lg p-3.5 max-w-md mx-auto bg-white shadow-2xs">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-800">
                       <span>Recorded Answer</span>
-                      <span className="text-rose-600 font-semibold">Beginning in 25 sec</span>
+                      <span className="text-[#00c5cd] font-semibold">Beginning in 25 sec</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-1/3" />
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* 2. READ ALOUD: PASSAGE CARD + RECORDED ANSWER BOX */}
+              {/* 2. READ ALOUD: PASSAGE CARD + RECORDED ANSWER BOX (No Audio Player!) */}
               {activeTask === 'read-aloud' && (
                 <div className="space-y-4 max-w-xl mx-auto">
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
                     {current.promptText}
                   </div>
-                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2">
-                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                  <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-800">
                       <span>Recorded Answer</span>
-                      <span className="text-rose-600 font-semibold">Beginning in 35 sec</span>
+                      <span className="text-[#00c5cd] font-semibold">Beginning in 35 sec</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-1/4" />
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* 3. RESPOND TO A SITUATION: SITUATION PROMPT CARD + AUDIO PLAYER */}
+              {/* 3. RE-TELL LECTURE: LECTURE SLIDE + AUTHENTIC AUDIO PLAYER (Matching Image 3) */}
+              {activeTask === 'retell-lecture' && (
+                <div className="space-y-4 max-w-xl mx-auto">
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center gap-4">
+                    <div className="w-24 h-20 bg-[#0f172a] rounded-lg flex flex-col items-center justify-center text-white shrink-0 shadow-inner">
+                      <GraduationCap className="w-6 h-6 text-[#00c5cd] mb-1" />
+                      <span className="text-[10px] font-semibold text-slate-300">Lecture Slide</span>
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-800">Atmospheric Chemistry & Thermal Inversion</h4>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        Key topics: Stratospheric temperature gradients, ozone layer absorption, and solar UV radiation buffering.
+                      </p>
+                    </div>
+                  </div>
+
+                  {simStage === 'audio' ? (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Audio Player</span>
+                        <span className="text-[#00c5cd] font-semibold">Playing</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-3/5" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Recorded Answer</span>
+                        <span className="text-[#00c5cd] font-semibold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#00c5cd] animate-pulse" />
+                          Recording
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-2/3" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 4. SUMMARIZE GROUP DISCUSSION: 3 SPEAKERS + AUTHENTIC AUDIO PLAYER (Matching Image 4) */}
+              {activeTask === 'summarize-group-discussion' && (
+                <div className="space-y-4 max-w-xl mx-auto">
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-center gap-8 sm:gap-12 py-6">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-12 h-12 rounded-full border-2 border-[#00c5cd] text-[#00c5cd] font-bold flex items-center justify-center bg-cyan-50/50 text-xs shadow-xs">
+                        Dr. A
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-600">Speaker 1</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-12 h-12 rounded-full border-2 border-emerald-500 text-emerald-600 font-bold flex items-center justify-center bg-emerald-50/50 text-xs shadow-xs">
+                        Prof. B
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-600">Speaker 2</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-12 h-12 rounded-full border-2 border-purple-500 text-purple-600 font-bold flex items-center justify-center bg-purple-50/50 text-xs shadow-xs">
+                        Eng. C
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-600">Speaker 3</span>
+                    </div>
+                  </div>
+
+                  {simStage === 'audio' ? (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Audio Player</span>
+                        <span className="text-[#00c5cd] font-semibold">Playing</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-1/2" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Recorded Answer</span>
+                        <span className="text-[#00c5cd] font-semibold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#00c5cd] animate-pulse" />
+                          Recording
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-2/3" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 5. REPEAT SENTENCE: CLEAN AUDIO STATUS & RECORDED ANSWER */}
+              {activeTask === 'repeat-sentence' && (
+                <div className="space-y-4 max-w-lg mx-auto">
+                  <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex items-center justify-center gap-3">
+                    <Headphones className="w-5 h-5 text-[#00c5cd]" />
+                    <span className="text-xs text-slate-600 font-medium">Listen carefully to the recording once.</span>
+                  </div>
+
+                  {simStage === 'audio' ? (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Audio Player</span>
+                        <span className="text-[#00c5cd] font-semibold">Playing</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-3/5" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Recorded Answer</span>
+                        <span className="text-[#00c5cd] font-semibold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#00c5cd] animate-pulse" />
+                          Recording
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-3/4" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 6. RESPOND TO A SITUATION */}
               {activeTask === 'respond-to-a-situation' && (
                 <div className="space-y-4 max-w-lg mx-auto">
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed">
-                    A colleague has asked you to participate in an extracurricular project. However, you have an urgent examination next week and need to focus entirely on your coursework. What would you say to your colleague?
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    Scenario: &ldquo;A colleague has asked you to participate in an extracurricular project. However, you have an urgent examination next week and need to focus entirely on your coursework. What would you say to your colleague?&rdquo;
                   </div>
-                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2.5">
-                    <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-                      <span>Audio Player</span>
-                      <span className="text-rose-600 font-bold">Playing</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <button className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                        <Play className="w-3.5 h-3.5 fill-slate-400" />
-                      </button>
-                      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#00c5cd] rounded-full w-1/3" />
+
+                  {simStage === 'audio' ? (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Audio Player</span>
+                        <span className="text-[#00c5cd] font-semibold">Playing</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-2/5" />
                       </div>
                     </div>
-                  </div>
-                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2">
-                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
-                      <span>Recorded Answer</span>
-                      <span className="text-rose-600 font-semibold">Beginning in 10 sec</span>
+                  ) : (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Recorded Answer</span>
+                        <span className="text-[#00c5cd] font-semibold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#00c5cd] animate-pulse" />
+                          Recording
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-1/2" />
+                      </div>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
 
-              {/* 4. REPEAT SENTENCE, RE-TELL LECTURE, SUMMARIZE GROUP DISCUSSION, ANSWER SHORT QUESTION */}
-              {['repeat-sentence', 'retell-lecture', 'summarize-group-discussion', 'answer-short-question'].includes(activeTask) && (
+              {/* 7. ANSWER SHORT QUESTION */}
+              {activeTask === 'answer-short-question' && (
                 <div className="space-y-4 max-w-lg mx-auto">
-                  {/* Clean Pearson Audio Player box matching PDF */}
-                  <div className="border border-slate-200 rounded-md p-4 bg-white space-y-3 shadow-2xs">
-                    <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
-                      <span>Audio Player</span>
-                      <span className="text-rose-600 font-bold">
-                        {activeTask === 'repeat-sentence' ? 'Beginning in 2 sec' : 'Playing'}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                        <Play className="w-3.5 h-3.5 fill-slate-400" />
-                      </button>
-                      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-[#00c5cd] rounded-full" 
-                          style={{ width: activeTask === 'repeat-sentence' ? '0%' : '45%' }}
-                        />
-                      </div>
-                    </div>
+                  <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200 flex items-center justify-center gap-3">
+                    <Volume2 className="w-5 h-5 text-[#00c5cd]" />
+                    <span className="text-xs text-slate-600 font-medium">Listening to short question audio prompt...</span>
                   </div>
 
-                  {/* Recorded Answer Status Box */}
-                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2 shadow-2xs">
-                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
-                      <span>Recorded Answer</span>
-                      <span className="text-rose-600 font-semibold">
-                        {activeTask === 'repeat-sentence' && 'Beginning in 2 sec'}
-                        {activeTask === 'retell-lecture' && 'Beginning in 10 sec'}
-                        {activeTask === 'summarize-group-discussion' && 'Beginning in 10 sec'}
-                        {activeTask === 'answer-short-question' && 'Beginning in 1 sec'}
-                      </span>
+                  {simStage === 'audio' ? (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Audio Player</span>
+                        <span className="text-[#00c5cd] font-semibold">Playing</span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-4/5" />
+                      </div>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                  ) : (
+                    <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                        <span>Recorded Answer</span>
+                        <span className="text-[#00c5cd] font-semibold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#00c5cd] animate-pulse" />
+                          Recording
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-1/2" />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
 
               {/* Mock Test Card Navigation Buttons */}
               <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                <button className="px-5 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-medium transition cursor-pointer">
+                <button className="px-5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer">
                   Save & Exit
                 </button>
-                <button className="px-6 py-1.5 rounded-lg bg-[#00c5cd] hover:bg-[#00b2ba] text-white text-xs font-bold shadow-xs transition cursor-pointer">
-                  Next &gt;
-                </button>
+                <div className="flex items-center gap-2">
+                  {['repeat-sentence', 'retell-lecture', 'summarize-group-discussion', 'respond-to-a-situation', 'answer-short-question'].includes(activeTask) && (
+                    <button
+                      onClick={() => setSimStage(prev => prev === 'audio' ? 'record' : 'audio')}
+                      className="px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                      title="Toggle simulated exam stage"
+                    >
+                      {simStage === 'audio' ? 'Preview Recording State' : 'Preview Audio State'}
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => {
+                      if (['repeat-sentence', 'retell-lecture', 'summarize-group-discussion', 'respond-to-a-situation', 'answer-short-question'].includes(activeTask)) {
+                        setSimStage(prev => prev === 'audio' ? 'record' : 'audio');
+                      }
+                    }}
+                    className="px-6 py-2 rounded-lg bg-[#00c5cd] hover:bg-[#00b2ba] text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  >
+                    Next &gt;
+                  </button>
+                </div>
               </div>
 
             </div>

@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Headphones, 
   ChevronDown, 
   Clock, 
   Maximize2, 
-  Volume2, 
-  ArrowRight,
-  Play,
   RotateCcw
 } from 'lucide-react';
 
@@ -351,21 +347,18 @@ export default function PTEListeningPracticePage() {
                 {current.instruction}
               </p>
 
-              {/* SHARED AUDIO PLAYER BOX (Clean Pearson style) */}
-              <div className="border border-slate-200 rounded-md p-4 bg-white space-y-3 shadow-2xs max-w-lg mx-auto">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+              {/* SHARED AUDIO PLAYER BOX (Authentic Pearson & AlfaPTE layout) */}
+              <div className="border border-slate-200/90 rounded-lg p-3.5 bg-white shadow-2xs max-w-lg mx-auto">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-800">
                   <span>Audio Player</span>
-                  <span className="text-rose-600 font-bold">Playing</span>
+                  <span className="text-[#00c5cd] font-semibold">Playing</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                    <Play className="w-3.5 h-3.5 fill-slate-400" />
-                  </button>
-                  <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00c5cd] rounded-full w-3/5" />
-                  </div>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-2.5">
+                  <div className="h-full bg-[#00c5cd] rounded-full w-3/5" />
                 </div>
-                <p className="text-[11px] text-slate-400 italic text-center">{current.lectureTitle}</p>
+                {current.lectureTitle && (
+                  <p className="text-[11px] text-slate-400 italic text-center mt-2">{current.lectureTitle}</p>
+                )}
               </div>
 
             {/* TASK INTERFACE 1: Summarize Spoken Text */}
