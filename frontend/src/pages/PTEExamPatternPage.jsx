@@ -1,24 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Clock, 
-  Play, 
-  Pause,
   RotateCcw, 
   ChevronDown, 
   Maximize2, 
   Mic, 
-  Volume2, 
-  Sparkles, 
-  CheckCircle, 
-  BookOpen, 
   Lightbulb, 
-  ArrowRight, 
-  ExternalLink,
-  HelpCircle,
   Award,
-  Layers,
-  FileText
+  Sparkles,
+  CheckCircle,
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
 
 export default function PTEExamPatternPage() {
@@ -37,13 +30,18 @@ export default function PTEExamPatternPage() {
   const [activeTaskId, setActiveTaskId] = useState('read-aloud');
   const [openFaq, setOpenFaq] = useState(0);
 
-  // Simulator state
+  // Audio Simulator state (Speaking / Listening)
   const [simQuestionIdx, setSimQuestionIdx] = useState(0);
   const [simCountdown, setSimCountdown] = useState(35);
   const [isRecording, setIsRecording] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [audioPlaying, setAudioPlaying] = useState(false);
   const [sampleModalOpen, setSampleModalOpen] = useState(false);
+
+  // Writing Text Editor Simulator state
+  const textareaRef = useRef(null);
+  const [writingText, setWritingText] = useState('');
+  const [writingWordCount, setWritingWordCount] = useState(0);
+  const [writingTimeLeft, setWritingTimeLeft] = useState(484); // 08:04 for SWT initial
 
   // Update active module when route changes
   useEffect(() => {
@@ -58,14 +56,31 @@ export default function PTEExamPatternPage() {
   // Reset simulator when switching task
   useEffect(() => {
     setSimQuestionIdx(0);
-    setSimCountdown(currentTask?.table?.prepSeconds || 35);
+    setSimCountdown(35);
     setIsRecording(false);
     setIsCompleted(false);
-    setAudioPlaying(false);
-  }, [activeTaskId]);
+    setWritingText('');
+    setWritingWordCount(0);
 
-  // Countdown timer effect
+    if (activeTaskId === 'write-essay') {
+      setWritingTimeLeft(1196); // 19:56 matching Pearson mock screenshot
+    } else if (activeTaskId === 'summarize-written-text') {
+      setWritingTimeLeft(484);  // 08:04 matching Pearson mock screenshot
+    }
+  }, [activeTaskId, activeModule]);
+
+  // Writing countdown timer effect
   useEffect(() => {
+    if (activeModule !== 'writing') return;
+    const timer = setInterval(() => {
+      setWritingTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [activeModule, activeTaskId]);
+
+  // Speaking countdown timer effect
+  useEffect(() => {
+    if (activeModule === 'writing') return;
     let timer;
     if (simCountdown > 0 && !isRecording && !isCompleted) {
       timer = setInterval(() => {
@@ -78,7 +93,6 @@ export default function PTEExamPatternPage() {
         });
       }, 1000);
     } else if (isRecording && !isCompleted) {
-      // Simulate 10-second recording period
       timer = setTimeout(() => {
         setIsRecording(false);
         setIsCompleted(true);
@@ -88,7 +102,80 @@ export default function PTEExamPatternPage() {
       clearInterval(timer);
       clearTimeout(timer);
     };
-  }, [simCountdown, isRecording, isCompleted]);
+  }, [simCountdown, isRecording, isCompleted, activeModule]);
+
+  // Helper to format seconds as MM:SS
+  const formatTime = (totalSeconds) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  // Textarea input handler with word counting
+  const handleWritingTextChange = (e) => {
+    const text = e.target.value;
+    setWritingText(text);
+    const words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+    setWritingWordCount(words);
+  };
+
+  // Cut handler for writing editor
+  const handleCut = () => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    if (start !== end) {
+      const selected = writingText.substring(start, end);
+      try {
+        navigator.clipboard?.writeText(selected);
+      } catch {}
+      const newText = writingText.substring(0, start) + writingText.substring(end);
+      setWritingText(newText);
+      const words = newText.trim() ? newText.trim().split(/\s+/).filter(Boolean).length : 0;
+      setWritingWordCount(words);
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start;
+        textarea.focus();
+      }, 0);
+    }
+  };
+
+  // Copy handler for writing editor
+  const handleCopy = () => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    if (start !== end) {
+      const selected = writingText.substring(start, end);
+      try {
+        navigator.clipboard?.writeText(selected);
+      } catch {}
+    }
+  };
+
+  // Paste handler for writing editor
+  const handlePaste = async () => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    let textToInsert = '';
+    try {
+      textToInsert = await navigator.clipboard.readText();
+    } catch {
+      textToInsert = '';
+    }
+    const newText = writingText.substring(0, start) + textToInsert + writingText.substring(end);
+    setWritingText(newText);
+    const words = newText.trim() ? newText.trim().split(/\s+/).filter(Boolean).length : 0;
+    setWritingWordCount(words);
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
+      textarea.focus();
+    }, 0);
+  };
 
   // ---------------------------------------------------------------------------
   // DATA STRUCTURE FOR ALL MODULES AND TASKS
@@ -104,7 +191,6 @@ export default function PTEExamPatternPage() {
           id: 'read-aloud',
           code: 'RA',
           title: 'Read Aloud',
-          badgeColor: 'bg-[#e77342]',
           tagline:
             'Read Aloud tests your speaking abilities to ensure that you can read the material aloud with the proper intonation and pronunciation. It requires good practice to keep your speaking scores up.',
           table: {
@@ -122,12 +208,6 @@ export default function PTEExamPatternPage() {
               prompt: "Whether you're climbing your way up the corporate ladder or overwhelmed with the organizational tasks of home and kids, a luxurious vacation to an exotic paradise may seem like an impossible dream. You can only fantasize about an outdoor massage among fragrant island flowers or a nap after enjoying a brunch ripe with fruits fresh from the vine.",
               tips: 'Maintain steady pace, articulate syllables clearly, and pause naturally at commas and periods.',
               modelScore: '90/90 - Full oral fluency & native pronunciation cadence'
-            },
-            {
-              instruction: 'Look at the text below. In 35 seconds, you must read this text aloud as naturally and clearly as possible. You have 35 seconds to read aloud.',
-              prompt: "Marine biology encompasses the study of organisms residing in salt water bodies, including oceans, coastal marshes, and estuarine habitats. Researchers investigate behavioral adaptations, metabolic physiology, and interspecies symbiotic relationships under shifting climatic conditions.",
-              tips: 'Stress polysyllabic academic terminology like metabolic and physiological accurately.',
-              modelScore: '90/90 - Exemplary content preservation and vocal projection'
             }
           ],
           howToRespond: {
@@ -169,7 +249,6 @@ export default function PTEExamPatternPage() {
           id: 'repeat-sentence',
           code: 'RS',
           title: 'Repeat Sentence',
-          badgeColor: 'bg-[#e77342]',
           tagline:
             'Repeat Sentence measures your instantaneous audio comprehension and short-term oral retention. It is one of the highest-scoring tasks for both Speaking and Listening.',
           table: {
@@ -220,7 +299,6 @@ export default function PTEExamPatternPage() {
           id: 'describe-image',
           code: 'DI',
           title: 'Describe Image',
-          badgeColor: 'bg-[#e77342]',
           tagline:
             'Describe Image assesses your ability to interpret graphical information (bar charts, line graphs, pie charts, flowcharts, maps) and speak coherently without notes.',
           table: {
@@ -267,7 +345,6 @@ export default function PTEExamPatternPage() {
           id: 'retell-lecture',
           code: 'RL',
           title: 'Re-Tell Lecture',
-          badgeColor: 'bg-[#e77342]',
           tagline:
             'Re-Tell Lecture tests your ability to synthesize information from a spoken academic lecture and deliver an organized spoken summary.',
           table: {
@@ -314,7 +391,6 @@ export default function PTEExamPatternPage() {
           id: 'answer-short-question',
           code: 'ASQ',
           title: 'Answer Short Question',
-          badgeColor: 'bg-[#e77342]',
           tagline:
             'Answer Short Question evaluates your vocabulary knowledge and immediate audio comprehension with single-word or short-phrase spoken responses.',
           table: {
@@ -355,90 +431,6 @@ export default function PTEExamPatternPage() {
               a: 'Either is acceptable. Saying "telescope" or "a telescope" receives full marks.'
             }
           ]
-        },
-        {
-          id: 'summarize-group-discussion',
-          code: 'SGD',
-          title: 'Summarize Group Discussion',
-          badgeColor: 'bg-[#e77342]',
-          tagline:
-            'A modern PTE task where you listen to a multi-speaker academic dialogue and synthesize distinct perspectives, agreements, and outcomes.',
-          table: {
-            taskDesc: 'Listen to an audio conversation between 2-3 speakers and provide a spoken summary of the consensus',
-            skills: 'Speaking & Listening',
-            promptLength: '90 - 120 seconds audio',
-            prepTime: '10 seconds',
-            answerTime: '120 seconds (2 minutes)',
-            questionCount: '1 - 2',
-            prepSeconds: 10
-          },
-          mockQuestions: [
-            {
-              instruction: 'You will hear three university researchers discussing budget allocation for a collaborative robotics laboratory. After the audio, summarize the main points of disagreement and final agreement reached.',
-              prompt: 'Audio Dialogue: "Dr. Chen emphasized prioritizing sensory micro-controllers, whereas Prof. Davis argued that funding should first expand clean-room safety protocols. Following deliberation, they agreed to partition the initial grant 60-40 toward sensors while seeking supplementary institutional backing."',
-              tips: 'Distinguish speaker stances and articulate the final resolution clearly.',
-              modelScore: '90/90 - Coherent synthesis of multi-party positions'
-            }
-          ],
-          howToRespond: {
-            bullets: [
-              'Note speaker initials and their distinct priorities or recommendations.',
-              'Identify the central point of friction or debate.',
-              'Record the final resolution or agreed next steps.',
-              'Deliver a structured summary: Context -> Divergent views -> Final consensus.'
-            ],
-            note: 'Ensure you address all major viewpoints raised in the dialogue.',
-            grading: 'Content synthesis, discourse structure, oral fluency, and pronunciation.',
-            tipsBadge: 'Group Discussion TIPS'
-          },
-          faqs: [
-            {
-              q: 'Is Summarize Group Discussion included in both PTE Academic and UKVI?',
-              a: 'Yes, it is incorporated across updated PTE testing versions alongside real-world communicative evaluations.'
-            }
-          ]
-        },
-        {
-          id: 'respond-to-situation',
-          code: 'RTS',
-          title: 'Respond to a Situation',
-          badgeColor: 'bg-[#e77342]',
-          tagline:
-            'Tests your practical communicative competence by presenting an everyday university or workplace scenario that requires a polite, spoken resolution.',
-          table: {
-            taskDesc: 'Read and listen to a scenario prompt, then record an appropriate oral response',
-            skills: 'Speaking',
-            promptLength: 'Brief text & audio prompt',
-            prepTime: '20 seconds',
-            answerTime: '40 seconds',
-            questionCount: '1 - 2',
-            prepSeconds: 20
-          },
-          mockQuestions: [
-            {
-              instruction: 'Listen to and read the situation below. You will have 20 seconds to prepare and 40 seconds to speak your response.',
-              prompt: 'Scenario: "You scheduled an appointment with your academic advisor for tomorrow at 2 PM, but you have an urgent medical emergency. Call or speak to your advisor to apologize, explain the reason, and request to reschedule for later this week."',
-              tips: 'Use polite, formal register: "Good afternoon Professor, I am calling to sincerely apologize, but unfortunately..."',
-              modelScore: '90/90 - Highly appropriate tone, clear explanation and courteous reschedule proposal'
-            }
-          ],
-          howToRespond: {
-            bullets: [
-              'Read the context, role, and objective carefully.',
-              'Determine the appropriate register: formal (professor/manager) vs. semi-formal (peer).',
-              'State your purpose immediately, provide the concise reason, and propose a practical solution.',
-              'Close with courteous gratitude.'
-            ],
-            note: 'Maintain natural conversational intonation and professional courtesy.',
-            grading: 'Appropriateness of language, fluency, pronunciation, and grammatical control.',
-            tipsBadge: 'Respond to Situation TIPS'
-          },
-          faqs: [
-            {
-              q: 'What register should I adopt for Respond to a Situation?',
-              a: 'Adopt the tone required by the prompt. Academic and professional scenarios require formal, respectful vocabulary and polite phrasing.'
-            }
-          ]
         }
       ]
     },
@@ -447,99 +439,131 @@ export default function PTEExamPatternPage() {
       title: 'PTE Writing Practice',
       subtitle: 'Latest PTE Academic & UKVI Writing Questions',
       overview:
-        "The PTE Writing module evaluates your capacity to compose clear, grammatically sound, and academically coherent written English. Spanning Summarize Written Text and Write Essay, this section tests concise synthesis, sentence boundary control, logical argument progression, and academic lexical range. Practice on NinetyPTE gives you instantaneous AI grading across grammar, vocabulary, spelling, and discourse structure.",
+        "The PTE Writing module of PTE Academic / UKVI is in the same section as Speaking (Section 1) but is the second part or module of the test. It tests the candidate's ability to write and express their opinion in accurate English and effectively in academic contexts. It has two types of questions and the test takers have to type their responses using a keyboard and a computer screen. The responses are scored by an automated system based on various criteria such as grammar, spelling, punctuation, coherence, and vocabulary. PTE Writing practice is an important aspect of PTE preparation & helps improve performance through consistent PTE practice on NinetyPTE.",
       tasks: [
         {
           id: 'summarize-written-text',
           code: 'SWT',
           title: 'Summarize Written Text',
-          badgeColor: 'bg-indigo-600',
           tagline:
-            'Summarize Written Text challenges you to condense an academic passage of up to 300 words into a single, comprehensive sentence of between 5 and 75 words.',
+            "Summarize Written Text PTE is a question type where a student is required to write a one-sentence summary of a provided passage within a maximum limit of 75 words. This question will check the student's Reading & Writing Skills. You have 10 minutes to write your summary. Make sure to include the main points of the reading passage in a full, single sentence of no more than 75 and no less than 5 words.",
           table: {
-            taskDesc: 'Read a passage and write a one-sentence summary containing the key ideas',
-            skills: 'Reading & Writing',
-            promptLength: 'Passage up to 300 words',
-            prepTime: 'Integrated (10 minutes total per task)',
+            taskDesc: 'After reading a text, write a one-sentence summary of the passage',
+            skills: 'Reading and Writing',
+            promptLength: 'Text up to 300 words',
+            prepTime: null,
             answerTime: '10 minutes',
-            questionCount: '1 - 2',
-            prepSeconds: 10
+            questionCount: '2'
           },
           mockQuestions: [
             {
-              instruction: 'Read the passage below and summarize it using one sentence. Type your response in the box at the bottom of the screen. You have 10 minutes to finish this task. Your response will be judged on the quality of your writing and on how well your response presents the key points in the passage.',
-              prompt: 'Passage: "Over the last century, advances in agricultural engineering and synthetic fertilizer deployment triggered exponential increases in global crop yields. However, persistent chemical runoff has precipitated widespread eutrophication in freshwater ecosystems, severely degrading aquatic biodiversity. Environmental scientists now advocate for precision regenerative farming practices that optimize nutrient distribution while safeguarding subterranean water tables."',
-              tips: 'Formulate a compound-complex sentence: [Although agricultural advances increased yields], [chemical runoff caused ecological degradation], [prompting scientists to advocate for precision regenerative practices].',
-              modelScore: '90/90 - Exactly 1 sentence, 38 words, perfect punctuation and core concept coverage'
+              instruction: 'Read the passage below and summarize it using one sentence. Type your response in the box at the bottom of the screen. You have 10 minutes to finish this task. Your response will be judged on the quality of your writing and on how well your response presents the key points in the passage',
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '28 of 29',
+              defaultRemainingTime: '08:04',
+              passage: 
+                "The product life cycle has 4 very clearly defined stages, each with its characteristics that mean different things for businesses that are trying to manage the life cycle of their particular products.\n\nIntroduction Stage – This stage of the cycle could be the most expensive for a company launching a new product. The size of the market for the product is small, which means sales are low, although they will be increasing. On the other hand, the cost of things like research and development, consumer testing, and the marketing needed to launch the product can be very high, especially if it's a competitive sector.\n\nGrowth Stage – The growth stage is typically characterized by strong growth in sales and profits, and because the company can start to benefit from economies of scale in production, the profit margins, as well as the overall amount of profit, will increase. This makes it possible for businesses to invest more money in promotional activity to maximize the potential of this growth stage.\n\nMaturity Stage – During the maturity stage, the product is established and the aim for the manufacturer is now to maintain the market share they have built up. This is probably the most competitive time for most products and businesses need to invest wisely in any marketing they undertake. They also need to consider any product modifications or improvements to the production process which might give them a competitive advantage.\n\nDecline Stage – Eventually, the market for a product will start to shrink, and this is what's known as the decline stage. This shrinkage could be due to the market becoming saturated (i.e. all the customers who will buy the product have already purchased it), or because the consumers are switching to a different type of product. While this decline may be inevitable, it may still be possible for companies to make some profit by switching to less expensive production methods and cheaper markets.",
+              tips: 'Formulate a compound-complex sentence: [Although products progress through four distinct lifecycle stages from costly introduction to eventual decline], [businesses can maximize commercial success and profitability by strategically adapting their marketing investments and production methodologies according to each phase].',
+              modelScore: '90/90 - Exactly 1 sentence (42 words), perfect syntax and comprehensive coverage of all 4 stages.'
             }
           ],
           howToRespond: {
             bullets: [
-              'Your summary must be strictly ONE sentence (ending with exactly one full stop).',
-              'Keep word count within 35 to 50 words for optimal grammatical safety.',
-              'Use appropriate coordinating and subordinating conjunctions (e.g., although, whereas, thereby).',
-              'Ensure all primary topic sentences from the passage are synthesized.',
-              'Proofread for subject-verb agreement and punctuation before the 10-minute timer finishes.'
+              'For this type of question, you need to sum up the text in one line.',
+              'The summary should be no longer than 75 words and should cover the key points of the passage. You can see the number of words you have written at the bottom of the screen. The cut, copy, and paste buttons can help you make changes to your answer quickly.'
             ],
-            note: 'Writing more than one sentence or exceeding 75 words yields a score of 0 for Form.',
-            grading: 'Content, Form (1 sentence, 5-75 words), Grammar, and Vocabulary.',
-            tipsBadge: 'Summarize Text TIPS'
+            editingInstructions: {
+              cut: 'Pick out the words you want to get rid of, then press "Cut."',
+              copy: 'Pick out the words you want to copy, then press "Copy."',
+              paste: 'Place the cursor where you want to put the text, then press "Paste."'
+            },
+            grading: 'Content, form, grammar, and vocabulary.',
+            guideText: 'Read this guide on PTE Summarize Written Text for more ways to do well:',
+            tipsBadge: 'Summarize Written Text TIPS'
           },
           faqs: [
             {
-              q: 'Can I use semicolons in Summarize Written Text?',
-              a: 'Yes, semicolons are permissible as long as the entire response constitutes a single grammatical sentence ending with one period.'
+              q: 'What is the Summarize Written Text task?',
+              a: 'Summarize Written Text PTE is a question type where a student is required to write a one-sentence summary of a provided passage within a maximum limit of 75 words. This question evaluates both Reading and Writing skills.'
             },
             {
-              q: 'What is the ideal word count for SWT?',
-              a: 'The sweet spot is 35 to 45 words. This allows complete coverage of key points while minimizing grammar and punctuation risks.'
+              q: 'How much time do I have to think and answer?',
+              a: 'You have exactly 10 minutes to read the passage, plan your sentence, write it into the text box, and proofread. The timer does not carry over to subsequent questions.'
+            },
+            {
+              q: 'How is this task scored?',
+              a: 'Scoring evaluates Content (retaining core ideas), Form (strictly 1 sentence between 5 and 75 words), Grammar (syntactic correctness), and Vocabulary (academic lexical range and spelling).'
+            },
+            {
+              q: 'How can I practice Summarize Written Text effectively?',
+              a: 'Practice on NinetyPTE with instantaneous AI feedback. Focus on finding key topic points and connecting them with subordinating conjunctions such as "although", "whereas", or "while". Aim for 35 to 45 words.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Writing more than one sentence (e.g., using a full stop prematurely), exceeding 75 words or writing fewer than 5 words, failing to capitalize the first letter, and copying long word strings without synthesis.'
             }
           ]
         },
         {
           id: 'write-essay',
           code: 'WE',
-          title: 'Write Essay',
-          badgeColor: 'bg-indigo-600',
+          title: 'Essay',
           tagline:
-            'Write Essay requires you to write a 200–300 word argumentative or analytical essay on an academic or societal issue within 20 minutes.',
+            "PTE Writing Essay is a question type where a student will have to construct an essay on a given topic in about 200 - 300 words & would be assessed on Writing skills. You have 20 minutes to write your essay. PTE essay samples can be found on NinetyPTE's website for a better understanding of how to attempt this question.",
           table: {
-            taskDesc: 'Write a persuasive essay of 200-300 words on the assigned prompt',
+            taskDesc: 'Write a 200 - 300 word essay on a given topic',
             skills: 'Writing',
-            promptLength: '2 - 3 sentences prompt',
-            prepTime: 'Integrated (20 minutes total)',
+            promptLength: '2 - 3 sentences',
+            prepTime: null,
             answerTime: '20 minutes',
-            questionCount: '1 - 2',
-            prepSeconds: 10
+            questionCount: '1'
           },
           mockQuestions: [
             {
               instruction: 'You will have 20 minutes to plan, write and revise an essay about the topic below. Your response will be judged on how well you develop a position, organize your ideas, present supporting details, and control the elements of standard written English. You should write 200-300 words.',
-              prompt: 'Essay Topic: "Some individuals believe that automated artificial intelligence will soon replace human educators in schools and universities. Others argue that emotional intelligence and mentorship make human teachers irreplaceable. Discuss both views and give your own opinion."',
-              tips: 'Structure: Paragraph 1 (Introduction & Thesis), Paragraph 2 (Arguments for AI benefits), Paragraph 3 (Arguments for human mentorship), Paragraph 4 (Conclusion & Personal Stance).',
-              modelScore: '90/90 - 265 words, rich vocabulary, cohesive transitions, zero spelling errors'
+              mockNumber: 'Mock Test - 1',
+              questionProgress: '29 of 29',
+              defaultRemainingTime: '19:56',
+              prompt: 'Do you agree that globalization is important? Give reasons.',
+              tips: 'Structure: Paragraph 1 (Introduction & Stance), Paragraph 2 (Primary benefits - trade & cultural exchange), Paragraph 3 (Challenges - local industry displacement), Paragraph 4 (Conclusion & Balanced Outlook).',
+              modelScore: '90/90 - 256 words: Coherent 4-paragraph structure, varied academic lexical items, clean discourse flow, zero spelling errors.'
             }
           ],
           howToRespond: {
             bullets: [
-              'Target 220 to 270 words to comfortably meet requirements without rushing.',
-              'Allocate 2 minutes for planning, 14 minutes for writing, and 4 minutes for rigorous proofreading.',
-              'Maintain a 4-paragraph academic essay architecture.',
-              'Use academic linking words: "Consequently", "On the other hand", "Furthermore".',
-              'Avoid colloquial language, abbreviations, and informal slang.'
+              'Write an argumentative essay of 200 to 300 words based on the topic given. You have 20 minutes to do this.',
+              'Your word count is shown at the bottom. Your essay should have at least 200 words and no more than 300 words.',
+              'To make changes to your writing, use the cut, copy, and paste buttons:'
             ],
-            note: 'Writing fewer than 120 words or more than 380 words receives 0 marks for Form.',
-            grading: 'Content, Development, Structure, Form, General Linguistic Range, Grammar, Spelling, and Vocabulary.',
+            editingInstructions: {
+              cut: 'To delete incorrect things, select them and click "Cut."',
+              copy: 'To copy text, select it and click "Copy."',
+              paste: 'Click where you want to put the words you copied or cut, then click "Paste."'
+            },
+            grading: 'Content, development, structure and consistency, form, general language range, grammar, vocabulary range, and spelling.',
+            guideText: 'Find out more about PTE essay writing to get even better at writing essays:',
             tipsBadge: 'Write Essay TIPS'
           },
           faqs: [
             {
-              q: 'Can I use NinetyPTE essay templates?',
-              a: 'Yes! Using NinetyPTE\'s tested academic essay frameworks guarantees proper paragraph progression, cohesive discourse markers, and time management.'
+              q: 'What is the Write Essay task?',
+              a: 'PTE Essay writing requires you to write a 200 to 300 word academic essay responding to a given prompt within 20 minutes.'
             },
             {
-              q: 'Does British vs. American spelling matter?',
-              a: 'You may use either British or American English, but you must remain consistent throughout the entire essay.'
+              q: 'How much time do I have to think and answer?',
+              a: 'You have 20 minutes in total. We recommend 2 minutes for planning your ideas, 14 minutes for typing, and 4 minutes for checking punctuation, spelling, and word count.'
+            },
+            {
+              q: 'How is this task scored?',
+              a: 'Automated scoring assesses Content, Development, Structure and Coherence, Form (200-300 words), General Linguistic Range, Grammar, Vocabulary Range, and Spelling.'
+            },
+            {
+              q: 'How can I practice Write Essay effectively?',
+              a: 'Practice using NinetyPTE\'s tested academic essay frameworks. Familiarize yourself with typing under timed pressure while tracking your live word count in our realistic Pearson test simulator.'
+            },
+            {
+              q: 'What are common mistakes to avoid?',
+              a: 'Writing fewer than 200 or more than 300 words, straying from the topic prompt, mixing UK and US spelling inconsistently, using informal abbreviations, and not reserving time for final proofreading.'
             }
           ]
         }
@@ -550,13 +574,12 @@ export default function PTEExamPatternPage() {
       title: 'PTE Reading Practice',
       subtitle: 'Latest PTE Academic & UKVI Reading Questions',
       overview:
-        "The PTE Reading section tests your ability to comprehend written academic texts, determine syntactic collocations, analyze logical discourse relationships, and interpret scholarly arguments. It features five question types that evaluate both reading comprehension and integrated writing skills.",
+        "The PTE Reading section tests your ability to comprehend written academic texts, determine syntactic collocations, analyze logical discourse relationships, and interpret scholarly arguments. It features question types that evaluate both reading comprehension and integrated writing skills.",
       tasks: [
         {
           id: 'rw-fill-in-blanks',
           code: 'R&W FIB',
           title: 'Reading & Writing: Fill in the Blanks',
-          badgeColor: 'bg-emerald-600',
           tagline:
             'The highest-scoring reading task where you select the appropriate word from drop-down menus within an academic passage.',
           table: {
@@ -598,7 +621,6 @@ export default function PTEExamPatternPage() {
           id: 'reorder-paragraphs',
           code: 'RO',
           title: 'Re-order Paragraphs',
-          badgeColor: 'bg-emerald-600',
           tagline:
             'Test your understanding of academic text cohesion by organizing jumbled sentences into their original logical sequence.',
           table: {
@@ -649,7 +671,6 @@ export default function PTEExamPatternPage() {
           id: 'summarize-spoken-text',
           code: 'SST',
           title: 'Summarize Spoken Text',
-          badgeColor: 'bg-amber-600',
           tagline:
             'Summarize Spoken Text requires listening to an audio recording and writing a 50–70 word summary capturing all primary arguments.',
           table: {
@@ -691,7 +712,6 @@ export default function PTEExamPatternPage() {
           id: 'write-from-dictation',
           code: 'WFD',
           title: 'Write From Dictation',
-          badgeColor: 'bg-amber-600',
           tagline:
             'Write From Dictation is the most heavily weighted question type in the entire PTE exam, contributing massive scores to both Listening and Writing.',
           table: {
@@ -738,11 +758,17 @@ export default function PTEExamPatternPage() {
   const currentTask = currentModule.tasks.find(t => t.id === activeTaskId) || currentModule.tasks[0];
   const currentMock = currentTask.mockQuestions?.[simQuestionIdx] || currentTask.mockQuestions?.[0];
 
+  const isWriting = activeModule === 'writing';
+  const tableHeaderBg = isWriting ? 'bg-[#58b4f8]' : 'bg-[#f1784b]';
+  const tableBorderColor = isWriting ? 'border-sky-400/50' : 'border-[#ea6b3c]/50';
+  const taskBadgeBg = isWriting ? 'bg-[#58b4f8]' : 'bg-[#f1784b]';
+  const taskTitleColor = isWriting ? 'text-[#58b4f8]' : 'text-[#f1784b]';
+
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 font-sans relative selection:bg-cyan-500 selection:text-white pb-20">
       
       {/* --------------------------------------------------------------------- */}
-      {/* Sticky Right "Practice Now" Action Pill (Matching Page 1 screenshot)   */}
+      {/* Sticky Right "Practice Now" Action Pill                               */}
       {/* --------------------------------------------------------------------- */}
       <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40 hidden md:block">
         <Link
@@ -760,7 +786,7 @@ export default function PTEExamPatternPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
-            PTE <span className="text-[#00c2cb]">Speaking</span> Practice
+            PTE <span className="text-[#00c2cb]">{isWriting ? 'Writing' : activeModule === 'reading' ? 'Reading' : activeModule === 'listening' ? 'Listening' : 'Speaking'}</span> Practice
           </h1>
           <p className="mt-2 text-sm sm:text-base font-semibold text-slate-500">
             {currentModule.subtitle}
@@ -799,36 +825,44 @@ export default function PTEExamPatternPage() {
 
           {/* Sub-Task Horizontal Pills Switcher */}
           <div className="mt-8 flex flex-wrap justify-center gap-2 sm:gap-2.5 max-w-5xl mx-auto">
-            {currentModule.tasks.map((task) => (
-              <button
-                key={task.id}
-                onClick={() => setActiveTaskId(task.id)}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ${
-                  activeTaskId === task.id
-                    ? 'bg-white border-2 border-[#e77342] text-[#e77342] shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900'
-                }`}
-              >
-                {task.title}
-              </button>
-            ))}
+            {currentModule.tasks.map((task) => {
+              const isTaskActive = activeTaskId === task.id;
+              let pillClasses = '';
+              if (isTaskActive) {
+                pillClasses = isWriting 
+                  ? 'bg-[#58b4f8] text-white shadow-xs font-bold' 
+                  : 'bg-white border-2 border-[#e77342] text-[#e77342] shadow-xs font-bold';
+              } else {
+                pillClasses = 'bg-white border border-slate-300 text-slate-700 hover:border-slate-400 font-medium';
+              }
+
+              return (
+                <button
+                  key={task.id}
+                  onClick={() => setActiveTaskId(task.id)}
+                  className={`px-4 sm:px-5 py-1.5 rounded-full text-xs transition cursor-pointer ${pillClasses}`}
+                >
+                  {task.title}
+                </button>
+              );
+            })}
           </div>
 
         </div>
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* Active Task Detail & Specification Table (Page 1)                     */}
+      {/* Active Task Detail & Specification Table                              */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         
         {/* Task Title Header with circular badge */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#f1784b] text-white font-black text-sm flex items-center justify-center shadow-xs">
+          <div className={`w-10 h-10 rounded-full ${taskBadgeBg} text-white font-black text-sm flex items-center justify-center shadow-xs`}>
             {currentTask.code}
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-[#f1784b]">
+            <h2 className={`text-xl sm:text-2xl font-bold ${taskTitleColor}`}>
               {currentTask.title}
             </h2>
           </div>
@@ -839,22 +873,24 @@ export default function PTEExamPatternPage() {
           {currentTask.tagline}
         </p>
 
-        {/* Task Specification Table (Peach/Orange rounded header bar) */}
+        {/* Task Specification Table */}
         <div className="mt-6 overflow-x-auto rounded-2xl shadow-sm border border-slate-200 bg-white">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#f1784b] text-white font-bold text-center">
-                <th className="py-3 px-4 text-xs font-semibold border-r border-[#ea6b3c]/50">Task</th>
-                <th className="py-3 px-4 text-xs font-semibold border-r border-[#ea6b3c]/50">Skills assessed</th>
-                <th className="py-3 px-4 text-xs font-semibold border-r border-[#ea6b3c]/50">Prompt length</th>
-                <th className="py-3 px-4 text-xs font-semibold border-r border-[#ea6b3c]/50">Preparation time</th>
-                <th className="py-3 px-4 text-xs font-semibold border-r border-[#ea6b3c]/50">Time to answer</th>
+              <tr className={`${tableHeaderBg} text-white font-bold text-center`}>
+                <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Task</th>
+                <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Skills assessed</th>
+                <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Prompt length</th>
+                {!isWriting && currentTask.table.prepTime && (
+                  <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Preparation time</th>
+                )}
+                <th className={`py-3 px-4 text-xs font-semibold border-r ${tableBorderColor}`}>Time to answer</th>
                 <th className="py-3 px-4 text-xs font-semibold">Number of questions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700 text-center font-medium">
               <tr className="hover:bg-slate-50/80 transition">
-                <td className="py-4 px-4 text-xs text-slate-800 font-semibold border-r border-slate-100 max-w-[200px]">
+                <td className="py-4 px-4 text-xs text-slate-800 font-semibold border-r border-slate-100 max-w-[220px]">
                   {currentTask.table.taskDesc}
                 </td>
                 <td className="py-4 px-4 text-xs border-r border-slate-100 whitespace-nowrap">
@@ -863,9 +899,11 @@ export default function PTEExamPatternPage() {
                 <td className="py-4 px-4 text-xs border-r border-slate-100 whitespace-nowrap">
                   {currentTask.table.promptLength}
                 </td>
-                <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
-                  {currentTask.table.prepTime}
-                </td>
+                {!isWriting && currentTask.table.prepTime && (
+                  <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
+                    {currentTask.table.prepTime}
+                  </td>
+                )}
                 <td className="py-4 px-4 text-xs border-r border-slate-100 max-w-[150px]">
                   {currentTask.table.answerTime}
                 </td>
@@ -880,28 +918,34 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* Interactive Mock Test Simulator (Page 1)                              */}
+      {/* Interactive Mock Test Simulator (Pearson Style)                       */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         <div className="bg-white rounded-xl shadow-md border border-slate-300 overflow-hidden">
           
           {/* Top Simulator Header Bar */}
-          <div className="border-t-4 border-cyan-500 bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center justify-between text-xs font-semibold text-slate-600">
-            <div className="font-bold text-slate-800">
-              Mock Test - 1
+          <div className="border-t-4 border-[#0284c7] bg-white border-b border-slate-200 px-5 py-3 flex items-center justify-between text-xs font-semibold text-slate-700">
+            <div className="text-slate-800 font-bold">
+              {isWriting ? `Remaining Time - ${formatTime(writingTimeLeft)}` : 'Mock Test - 1'}
             </div>
-            <div className="text-slate-500">
-              {simQuestionIdx + 1} of {currentTask.mockQuestions?.length || 29}
+            <div className="text-slate-800 font-bold">
+              {isWriting ? 'Mock Test - 1' : `${simQuestionIdx + 1} of ${currentTask.mockQuestions?.length || 29}`}
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1 font-mono text-slate-700">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                00:{simCountdown < 10 ? `0${simCountdown}` : simCountdown} / 45:36
-              </span>
+              {isWriting ? (
+                <span className="text-slate-600 font-bold">
+                  {currentTask.id === 'write-essay' ? '29 of 29' : '28 of 29'}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 font-mono text-slate-700">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  00:{simCountdown < 10 ? `0${simCountdown}` : simCountdown} / 45:36
+                </span>
+              )}
               <button 
                 onClick={() => setSampleModalOpen(!sampleModalOpen)} 
                 title="Toggle Expanded View" 
-                className="text-slate-400 hover:text-slate-700 transition"
+                className="text-slate-500 hover:text-slate-800 transition cursor-pointer"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
@@ -916,67 +960,132 @@ export default function PTEExamPatternPage() {
               {currentMock.instruction}
             </p>
 
-            {/* Audio Recorder / Status Box */}
-            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 max-w-lg">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-700">Audio Recorder</span>
-                <span className={`font-bold ${isRecording ? 'text-emerald-600 animate-pulse' : isCompleted ? 'text-cyan-600' : 'text-[#f1784b]'}`}>
-                  {isRecording 
-                    ? 'Recording in progress...' 
-                    : isCompleted 
-                    ? 'Recording Complete' 
-                    : `Recording starts in ${simCountdown} sec`}
-                </span>
-              </div>
+            {/* CONDITIONAL RENDER: Writing Editor Simulator vs Audio Recorder */}
+            {isWriting ? (
+              <div className="space-y-5">
+                {/* SWT Reading Passage or Essay Prompt Box */}
+                {currentMock.passage ? (
+                  <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-700 leading-relaxed font-sans max-h-72 overflow-y-auto space-y-3 shadow-2xs">
+                    {currentMock.passage.split('\n\n').map((para, i) => (
+                      <p key={i}>{para}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-800 leading-relaxed font-sans shadow-2xs">
+                    <p className="font-medium">{currentMock.prompt}</p>
+                  </div>
+                )}
 
-              {/* Progress visualizer */}
-              <div className="mt-3 flex items-center gap-3">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isRecording ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-200 text-slate-600'}`}>
-                  <Mic className="w-3.5 h-3.5" />
-                </div>
-                <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-300 ${isRecording ? 'bg-emerald-500 w-3/4' : isCompleted ? 'bg-cyan-500 w-full' : 'bg-[#f1784b] w-1/4'}`}
+                {/* Pearson Text Editor Container with Top Toolbar */}
+                <div className="border border-slate-300 rounded-lg overflow-hidden shadow-xs">
+                  {/* Top Cyan Toolbar */}
+                  <div className="bg-[#00c2cb] px-4 py-2 flex items-center justify-between text-white text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={handleCut}
+                        className="px-3 py-1 rounded bg-white/20 hover:bg-white/30 text-white font-semibold text-xs transition cursor-pointer"
+                      >
+                        Cut
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="px-3 py-1 rounded bg-white/20 hover:bg-white/30 text-white font-semibold text-xs transition cursor-pointer"
+                      >
+                        Copy
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handlePaste}
+                        className="px-3 py-1 rounded bg-white/20 hover:bg-white/30 text-white font-semibold text-xs transition cursor-pointer"
+                      >
+                        Paste
+                      </button>
+                    </div>
+                    <div className="font-semibold text-white/95 text-xs">
+                      {writingWordCount} word
+                    </div>
+                  </div>
+
+                  {/* Main Textarea */}
+                  <textarea
+                    ref={textareaRef}
+                    value={writingText}
+                    onChange={handleWritingTextChange}
+                    placeholder="Write here"
+                    rows={8}
+                    className="w-full p-4 bg-white text-slate-800 text-xs sm:text-sm font-sans focus:outline-none focus:ring-1 focus:ring-cyan-500 border-t border-slate-200 resize-y"
                   />
                 </div>
               </div>
+            ) : (
+              /* Speaking / Listening Audio Simulator */
+              <div className="space-y-5">
+                <div className="border border-slate-200 rounded-lg p-4 bg-slate-50/50 max-w-lg">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-700">Audio Recorder</span>
+                    <span className={`font-bold ${isRecording ? 'text-emerald-600 animate-pulse' : isCompleted ? 'text-cyan-600' : 'text-[#f1784b]'}`}>
+                      {isRecording 
+                        ? 'Recording in progress...' 
+                        : isCompleted 
+                        ? 'Recording Complete' 
+                        : `Recording starts in ${simCountdown} sec`}
+                    </span>
+                  </div>
 
-              {/* Interactive buttons */}
-              <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setIsRecording(!isRecording);
-                      setIsCompleted(false);
-                    }}
-                    className="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium transition cursor-pointer"
-                  >
-                    {isRecording ? 'Stop Mic' : 'Simulate Mic'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSimCountdown(35);
-                      setIsRecording(false);
-                      setIsCompleted(false);
-                    }}
-                    className="flex items-center gap-1 text-slate-600 hover:text-slate-900 transition cursor-pointer"
-                  >
-                    <RotateCcw className="w-3 h-3" /> Reset
-                  </button>
+                  {/* Progress visualizer */}
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isRecording ? 'bg-emerald-500 text-white animate-pulse' : 'bg-slate-200 text-slate-600'}`}>
+                      <Mic className="w-3.5 h-3.5" />
+                    </div>
+                    <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 ${isRecording ? 'bg-emerald-500 w-3/4' : isCompleted ? 'bg-cyan-500 w-full' : 'bg-[#f1784b] w-1/4'}`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Interactive buttons */}
+                  <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setIsRecording(!isRecording);
+                          setIsCompleted(false);
+                        }}
+                        className="px-2.5 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium transition cursor-pointer"
+                      >
+                        {isRecording ? 'Stop Mic' : 'Simulate Mic'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSimCountdown(35);
+                          setIsRecording(false);
+                          setIsCompleted(false);
+                        }}
+                        className="flex items-center gap-1 text-slate-600 hover:text-slate-900 transition cursor-pointer"
+                      >
+                        <RotateCcw className="w-3 h-3" /> Reset
+                      </button>
+                    </div>
+                    <span className="text-[10px] text-slate-400">Microphone: Headset Ready</span>
+                  </div>
                 </div>
-                <span className="text-[10px] text-slate-400">Microphone: Headset Ready</span>
-              </div>
-            </div>
 
-            {/* Prompt Content Card */}
-            <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-800 leading-relaxed font-serif shadow-2xs">
-              <p>{currentMock.prompt}</p>
-            </div>
+                {/* Prompt Content Card */}
+                <div className="border border-slate-200 rounded-lg p-5 bg-white text-xs sm:text-sm text-slate-800 leading-relaxed font-serif shadow-2xs">
+                  <p>{currentMock.prompt}</p>
+                </div>
+              </div>
+            )}
 
             {/* Bottom Controls inside test card */}
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 onClick={() => {
+                  setWritingText('');
+                  setWritingWordCount(0);
                   setSimCountdown(35);
                   setIsRecording(false);
                   setIsCompleted(false);
@@ -991,6 +1100,8 @@ export default function PTEExamPatternPage() {
                   if (currentTask.mockQuestions?.length > 1) {
                     setSimQuestionIdx((simQuestionIdx + 1) % currentTask.mockQuestions.length);
                   }
+                  setWritingText('');
+                  setWritingWordCount(0);
                   setSimCountdown(35);
                   setIsRecording(false);
                   setIsCompleted(false);
@@ -1005,17 +1116,21 @@ export default function PTEExamPatternPage() {
           </div>
         </div>
 
-        {/* Action pills below simulator (Page 1) */}
+        {/* Action pills below simulator */}
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
             onClick={() => setSampleModalOpen(true)}
-            className="px-5 py-2 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-bold transition shadow-xs cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-bold transition shadow-xs cursor-pointer"
           >
-            PTE {currentModule.title.split(' ')[1]} {currentTask.title}
+            PTE {isWriting ? 'Writing' : currentModule.title.split(' ')[1]} {currentTask.title}
           </button>
           <button
             onClick={() => setSampleModalOpen(true)}
-            className="px-5 py-2 rounded-full bg-white border border-[#00c2cb] text-[#00c2cb] hover:bg-cyan-50 text-xs font-bold transition cursor-pointer"
+            className={`px-5 py-2.5 rounded-full text-xs font-bold transition cursor-pointer ${
+              isWriting 
+                ? 'bg-[#00c2cb] hover:bg-[#00a8b5] text-white shadow-xs' 
+                : 'bg-white border border-[#00c2cb] text-[#00c2cb] hover:bg-cyan-50'
+            }`}
           >
             {currentTask.title} Sample Questions
           </button>
@@ -1024,7 +1139,7 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* How to Respond to This Task Section (Page 1 & 2)                      */}
+      {/* How to Respond to This Task Section                                   */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -1035,7 +1150,7 @@ export default function PTEExamPatternPage() {
               How to <span className="text-[#00c2cb]">Respond to</span> This Task?
             </h3>
 
-            {/* Bullets with cyan diamond icons */}
+            {/* Bullets with cyan 4-pointed stars */}
             <div className="space-y-3 pt-2">
               {currentTask.howToRespond?.bullets?.map((bullet, idx) => (
                 <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -1045,27 +1160,51 @@ export default function PTEExamPatternPage() {
               ))}
             </div>
 
+            {/* Cut, Copy, Paste instructions for writing tasks */}
+            {currentTask.howToRespond?.editingInstructions && (
+              <div className="space-y-1.5 pt-2 text-xs sm:text-sm text-slate-700">
+                <p>
+                  <strong className="text-slate-900 font-bold">Cut:</strong> {currentTask.howToRespond.editingInstructions.cut}
+                </p>
+                <p>
+                  <strong className="text-slate-900 font-bold">Copy:</strong> {currentTask.howToRespond.editingInstructions.copy}
+                </p>
+                <p>
+                  <strong className="text-slate-900 font-bold">Paste:</strong> {currentTask.howToRespond.editingInstructions.paste}
+                </p>
+              </div>
+            )}
+
             {/* Note & Grading highlight */}
-            <div className="pt-2 text-xs text-slate-700 space-y-2">
-              <p>
-                <strong className="text-slate-900">Note:</strong> {currentTask.howToRespond?.note}
-              </p>
-              <p>
-                Task grading is based on: <strong className="text-slate-900">{currentTask.howToRespond?.grading}</strong>
-              </p>
+            <div className="pt-2 text-xs sm:text-sm text-slate-700 space-y-2">
+              {currentTask.howToRespond?.note && (
+                <p>
+                  <strong className="text-slate-900">Note:</strong> {currentTask.howToRespond?.note}
+                </p>
+              )}
+              {currentTask.howToRespond?.grading && (
+                <p>
+                  <strong className="text-slate-900 font-bold">Task grading is based on:</strong> {currentTask.howToRespond?.grading}
+                </p>
+              )}
+              {currentTask.howToRespond?.guideText && (
+                <p className="text-xs text-slate-600 pt-1">
+                  {currentTask.howToRespond?.guideText}
+                </p>
+              )}
             </div>
 
             {/* CTA action buttons */}
             <div className="pt-3 flex flex-wrap gap-3">
               <Link
                 to="/mock-tests"
-                className="px-5 py-2.5 rounded-lg bg-[#008f99] hover:bg-[#007b85] text-white font-bold text-xs transition shadow-xs cursor-pointer"
+                className="px-5 py-2.5 rounded-lg bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-bold text-xs transition shadow-xs cursor-pointer"
               >
                 Detailed Question-wise Page
               </Link>
               <button
                 onClick={() => setSampleModalOpen(true)}
-                className="px-5 py-2.5 rounded-lg bg-[#008f99] hover:bg-[#007b85] text-white font-bold text-xs transition shadow-xs cursor-pointer"
+                className="px-5 py-2.5 rounded-lg bg-[#075985] hover:bg-[#034466] text-white font-bold text-xs transition shadow-xs cursor-pointer"
               >
                 Sample Questions
               </button>
@@ -1076,25 +1215,27 @@ export default function PTEExamPatternPage() {
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white group">
               
-              {/* Floating Yellow "TIPS" Badge (Page 1) */}
-              <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-xl px-4 py-2.5 shadow-md flex items-center gap-2">
+              {/* Floating "TIPS" Speech Card with Lightbulb */}
+              <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-xs border border-slate-200 rounded-xl px-4 py-2.5 shadow-md flex items-center gap-3">
                 <div className="text-left">
-                  <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                    {currentTask.title}
+                  <div className="text-[11px] font-bold text-slate-700 tracking-tight">
+                    {currentTask.title === 'Essay' ? 'Write Essay' : currentTask.title}
                   </div>
-                  <div className="text-sm font-black text-slate-900 tracking-tight">
+                  <div className="text-base font-black text-slate-900 tracking-tight">
                     TIPS
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center shadow-xs">
-                  <Lightbulb className="w-4 h-4 fill-current stroke-[2.5]" />
+                <div className="relative flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center shadow-xs">
+                    <Lightbulb className="w-5 h-5 fill-amber-300 stroke-[2.5] text-amber-900" />
+                  </div>
                 </div>
               </div>
 
-              {/* Representative Instructor Photo */}
+              {/* Professional Coach Photo */}
               <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"
-                alt="PTE Speaking Coach"
+                alt="NinetyPTE Academic Instructor"
                 className="w-full h-80 sm:h-96 object-cover object-top filter brightness-[1.02]"
               />
 
@@ -1113,7 +1254,7 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* FAQs Section (Page 2)                                                 */}
+      {/* FAQs Section                                                          */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="text-left">
@@ -1154,7 +1295,7 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* Banner 1: Free Mock Test Callout (Page 2)                             */}
+      {/* Banner 1: Free Mock Test Callout                                      */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
         <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-gradient-to-r from-rose-50 via-white to-amber-50 p-8 sm:p-12 text-center">
@@ -1175,7 +1316,7 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* Banner 2: Score Calculator Guide Callout (Page 2)                     */}
+      {/* Banner 2: Score Calculator Guide Callout                              */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm text-center space-y-3">
@@ -1194,15 +1335,15 @@ export default function PTEExamPatternPage() {
       </section>
 
       {/* --------------------------------------------------------------------- */}
-      {/* Banner 3: Ready to boost score Video Callout (Page 2)                 */}
+      {/* Banner 3: Ready to boost score Video Callout                          */}
       {/* --------------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-[#f0f9fa] rounded-2xl p-6 sm:p-8 border border-cyan-100 text-center space-y-2">
           <h4 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
-            Ready to boost your {activeModule} score?
+            {isWriting ? 'Struggling with PTE Writing?' : `Ready to boost your ${activeModule} score?`}
           </h4>
           <p className="text-xs sm:text-sm text-slate-500">
-            Watch our strategy videos to improve your {activeModule} proficiency
+            Watch our strategy videos to improve your {isWriting ? 'Writing' : activeModule} proficiency
           </p>
           <div className="pt-2">
             <Link
@@ -1223,7 +1364,7 @@ export default function PTEExamPatternPage() {
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[#f1784b] text-white font-bold text-xs flex items-center justify-center">
+                <div className={`w-8 h-8 rounded-full ${taskBadgeBg} text-white font-bold text-xs flex items-center justify-center`}>
                   {currentTask.code}
                 </div>
                 <h4 className="text-lg font-bold text-slate-900">
@@ -1239,47 +1380,45 @@ export default function PTEExamPatternPage() {
             </div>
 
             <div className="mt-4 space-y-4 text-xs sm:text-sm text-slate-700">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 font-serif leading-relaxed">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 font-sans leading-relaxed">
                 <p className="font-sans text-[11px] font-bold uppercase text-slate-400 mb-1">
-                  Sample Practice Prompt:
+                  Practice Prompt:
                 </p>
-                {currentMock.prompt}
+                {currentMock.passage ? (
+                  <div className="max-h-48 overflow-y-auto space-y-2 text-xs">
+                    {currentMock.passage.split('\n\n').map((p, idx) => (
+                      <p key={idx}>{p}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <p>{currentMock.prompt}</p>
+                )}
               </div>
 
               <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-emerald-900 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-700">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Model AI Benchmark Response:</span>
+                  <CheckCircle className="w-4 h-4 text-emerald-600" />
+                  <span>NinetyPTE 90/90 Model Response</span>
                 </div>
-                <p className="font-semibold text-xs text-emerald-800">
-                  {currentMock.modelScore}
-                </p>
+                <p className="font-sans text-xs italic">{currentMock.modelScore}</p>
               </div>
 
               <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-900 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-xs text-amber-700">
-                  <Lightbulb className="w-4 h-4" />
-                  <span>Expert Scoring Advice:</span>
+                  <Lightbulb className="w-4 h-4 text-amber-600" />
+                  <span>Strategic Advice</span>
                 </div>
-                <p className="text-xs text-amber-800">
-                  {currentMock.tips}
-                </p>
+                <p className="text-xs leading-relaxed">{currentMock.tips}</p>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setSampleModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer"
               >
-                Close
+                Close Preview
               </button>
-              <Link
-                to="/mock-tests"
-                className="px-5 py-2 rounded-xl bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-bold transition cursor-pointer"
-              >
-                Take Full Mock Test
-              </Link>
             </div>
           </div>
         </div>
