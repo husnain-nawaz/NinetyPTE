@@ -24,9 +24,9 @@ export default function PTEDashboard() {
         onOpenReferModal={() => setShowReferModal(true)}
       />
 
-      {/* Portal Main Container */}
-      <main className="flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-5">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      {/* Portal Main Container (100% scale proportions) */}
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8">
             <PTEDashboardMainSections
               examVariant={examVariant}
@@ -42,16 +42,16 @@ export default function PTEDashboard() {
       </main>
 
       {/* Minimal Portal Footer (isolated from marketing site footer) */}
-      <footer className="bg-white border-t border-slate-200 px-6 py-5 mt-8">
-        <div className="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-[11.5px] text-slate-500">
-          <div className="flex items-center gap-3">
-            <Link to="/dashboard" className="text-xl font-black tracking-tighter text-[#0f3554]">
+      <footer className="bg-white border-t border-slate-200 px-6 py-6 mt-10">
+        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-[13px] text-slate-500">
+          <div className="flex items-center gap-3.5">
+            <Link to="/dashboard" className="text-2xl font-black tracking-tighter text-[#0f3554]">
               ninety<span className="text-[#00b4c6]">pte</span>
             </Link>
             <span>All rights reserved &copy; NinetyPTE Education, 2026</span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 font-medium text-slate-600">
+          <div className="flex flex-wrap items-center justify-center gap-5 font-medium text-slate-600">
             <Link to="/contact" className="hover:text-[#0097a7] transition">
               Contact
             </Link>
@@ -75,15 +75,15 @@ export default function PTEDashboard() {
       {showExpiryToast && (
         <div
           role="status"
-          className="fixed bottom-4 right-4 z-40 max-w-sm rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#9333ea] text-white px-4 py-3 shadow-xl flex items-center gap-3"
+          className="fixed bottom-5 right-5 z-40 max-w-md rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#9333ea] text-white px-5 py-3.5 shadow-xl flex items-center gap-3.5"
         >
           <Clock className="w-5 h-5 shrink-0 text-white/90" />
-          <p className="text-[11px] font-semibold leading-snug">
+          <p className="text-xs font-semibold leading-snug">
             Your Premium subscription is about to expire in 3 days.
           </p>
           <Link
             to="/pricing"
-            className="shrink-0 rounded-lg bg-white text-[#7e22ce] px-3 py-1 text-[11px] font-bold hover:bg-purple-50 transition"
+            className="shrink-0 rounded-lg bg-white text-[#7e22ce] px-3.5 py-1.5 text-xs font-bold hover:bg-purple-50 transition"
           >
             Renew
           </Link>
@@ -93,7 +93,7 @@ export default function PTEDashboard() {
             aria-label="Dismiss expiry reminder"
             className="p-0.5 rounded hover:bg-white/20 cursor-pointer"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
