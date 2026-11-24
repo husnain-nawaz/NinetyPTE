@@ -61,6 +61,7 @@ function AppContent() {
   ].includes(location.pathname);
   const isDashboard =
     location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/v1/dashboard') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -175,6 +176,14 @@ function AppContent() {
                 <PTEDashboard />
               </ProtectedRoute>
             } 
+          />
+          <Route
+            path="/v1/dashboard"
+            element={
+              <ProtectedRoute>
+                <PTEDashboard />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/super-dashboard"

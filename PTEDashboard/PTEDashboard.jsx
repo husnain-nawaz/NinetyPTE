@@ -1,58 +1,238 @@
-import { useNavigate } from 'react-router-dom';
-import { LogOut, User } from 'lucide-react';
-import { clearUserSession, getStoredUser } from '../frontend/src/utils/auth';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Clock, Play, X } from 'lucide-react';
+import PTEDashboardHeader from './PTEDashboardHeader';
+import PTEDashboardMainSections from './PTEDashboardMainSections';
+import PTEDashboardRightRail from './PTEDashboardRightRail';
 
+/**
+ * NinetyPTE Student Portal Home Page (`/dashboard`, `/pte-dashboard`, `/v1/dashboard`).
+ * Completely decoupled from the public marketing layout.
+ */
 export default function PTEDashboard() {
-  const navigate = useNavigate();
-  const user = getStoredUser() || {};
-
-  const handleLogout = () => {
-    clearUserSession();
-    navigate('/login');
-  };
+  const [examVariant, setExamVariant] = useState('academic');
+  const [showExpiryToast, setShowExpiryToast] = useState(true);
+  const [activeVideo, setActiveVideo] = useState(null);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showReferModal, setShowReferModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
-      {/* Dashboard Topbar */}
-      <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-black tracking-tight text-slate-900">
-            ninety<span className="text-cyan-500 font-extrabold">pte</span>
-          </span>
-          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider ml-2">
-            Dashboard
-          </span>
-        </div>
+    <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
+      <PTEDashboardHeader
+        examVariant={examVariant}
+        onChangeExamVariant={setExamVariant}
+        onOpenReferModal={() => setShowReferModal(true)}
+      />
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-600">
-            <div className="w-7 h-7 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold">
-              <User className="w-4 h-4" />
-            </div>
-            <span className="font-semibold text-slate-800 hidden sm:inline">
-              {user.email || 'Logged in User'}
-            </span>
+      {/* Portal Main Container */}
+      <main className="flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div className="lg:col-span-8">
+            <PTEDashboardMainSections
+              examVariant={examVariant}
+              onSelectVideo={setActiveVideo}
+              onShowHistoryModal={() => setShowHistoryModal(true)}
+            />
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50 text-xs font-semibold transition cursor-pointer"
-            title="Log out"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Blank Workspace for PTEDashboard */}
-      <main className="flex-1 p-6 sm:p-10">
-        <div className="max-w-7xl mx-auto h-full min-h-[400px] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-8 text-center text-slate-400">
-          <p className="text-sm font-medium">PTEDashboard is ready.</p>
-          <p className="text-xs text-slate-400 mt-1">This page is protected and only accessible when logged in.</p>
+          <div className="lg:col-span-4">
+            <PTEDashboardRightRail onSelectVideo={setActiveVideo} />
+          </div>
         </div>
       </main>
+
+      {/* Minimal Portal Footer (isolated from marketing site footer) */}
+      <footer className="bg-white border-t border-slate-200 px-6 py-5 mt-8">
+        <div className="max-w-[1360px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-[11.5px] text-slate-500">
+          <div className="flex items-center gap-3">
+            <Link to="/dashboard" className="text-xl font-black tracking-tighter text-[#0f3554]">
+              ninety<span className="text-[#00b4c6]">pte</span>
+            </Link>
+            <span>All rights reserved &copy; NinetyPTE Education, 2026</span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 font-medium text-slate-600">
+            <Link to="/contact" className="hover:text-[#0097a7] transition">
+              Contact
+            </Link>
+            <Link to="/disclaimer" className="hover:text-[#0097a7] transition">
+              Disclaimer
+            </Link>
+            <Link to="/refund-policy" className="hover:text-[#0097a7] transition">
+              Refund &amp; Cancellation Policy
+            </Link>
+            <Link to="/privacy-policy" className="hover:text-[#0097a7] transition">
+              Privacy Policy
+            </Link>
+            <Link to="/terms-conditions" className="hover:text-[#0097a7] transition">
+              Terms &amp; Conditions
+            </Link>
+          </div>
+        </div>
+      </footer>
+
+      {/* Bottom-Right Floating Subscription Expiry Notice */}
+      {showExpiryToast && (
+        <div
+          role="status"
+          className="fixed bottom-4 right-4 z-40 max-w-sm rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#9333ea] text-white px-4 py-3 shadow-xl flex items-center gap-3"
+        >
+          <Clock className="w-5 h-5 shrink-0 text-white/90" />
+          <p className="text-[11px] font-semibold leading-snug">
+            Your Premium subscription is about to expire in 3 days.
+          </p>
+          <Link
+            to="/pricing"
+            className="shrink-0 rounded-lg bg-white text-[#7e22ce] px-3 py-1 text-[11px] font-bold hover:bg-purple-50 transition"
+          >
+            Renew
+          </Link>
+          <button
+            type="button"
+            onClick={() => setShowExpiryToast(false)}
+            aria-label="Dismiss expiry reminder"
+            className="p-0.5 rounded hover:bg-white/20 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Video Guide Preview Modal */}
+      {activeVideo && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setActiveVideo(null)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className={`h-52 bg-gradient-to-br ${activeVideo.bg} p-6 flex flex-col justify-between text-white relative`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black tracking-wide text-cyan-300 uppercase">
+                  NinetyPTE Video Guide · {activeVideo.duration}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveVideo(null)}
+                  aria-label="Close video modal"
+                  className="p-1 rounded-full bg-black/30 hover:bg-black/50 text-white cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shrink-0 shadow-lg">
+                  <Play className="w-5 h-5 fill-white ml-0.5" />
+                </span>
+                <div>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${activeVideo.badgeBg}`}
+                  >
+                    {activeVideo.tagHighlight}
+                  </span>
+                  <h3 className="mt-1 text-base font-extrabold leading-snug">
+                    {activeVideo.title}
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <p className="text-xs text-slate-600 leading-relaxed">{activeVideo.summary}</p>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveVideo(null)}
+                  className="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+                >
+                  Close
+                </button>
+                <Link
+                  to="/pte-online-course"
+                  className="rounded-lg bg-[#0d5488] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#093e66]"
+                >
+                  Open Full Course Library
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Practice History Modal */}
+      {showHistoryModal && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setShowHistoryModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-extrabold text-slate-900">Full Practice History</h3>
+              <button
+                type="button"
+                onClick={() => setShowHistoryModal(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              No practice sessions recorded yet today. Pick any Speaking, Writing, Reading, or Listening task card to start logging real-time scores.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Link
+                to="/pte-speaking-practice"
+                className="rounded-lg bg-[#2cc9ba] px-4 py-2 text-xs font-bold text-white hover:bg-[#23b5a7]"
+              >
+                Start Speaking Practice
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Refer & Earn Info Modal */}
+      {showReferModal && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setShowReferModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-extrabold text-[#d97736]">NinetyPTE Refer &amp; Earn</h3>
+              <button
+                type="button"
+                onClick={() => setShowReferModal(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Share your unique student code <strong className="text-slate-900">#002087161</strong> with friends preparing for PTE. Once they join a paid plan, free mock test credits are added to your balance.
+            </p>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowReferModal(false)}
+                className="rounded-lg bg-[#0d5488] px-4 py-2 text-xs font-bold text-white cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
