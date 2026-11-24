@@ -204,7 +204,7 @@ export default function Footer() {
                 <li><Link to="/pte-core-score-calculator" className="hover:text-cyan-600 transition">PTE Core Score Calculator</Link></li>
                 <li><Link to="/pte-core-mock-test" className="hover:text-cyan-600 transition">PTE Core Mock Test</Link></li>
                 <li><Link to="/pte-core-speaking-practice" className="hover:text-cyan-600 transition">Speaking Practice</Link></li>
-                <li><Link to="/pte-writing-practice" className="hover:text-cyan-600 transition">Writing Practice</Link></li>
+                <li><Link to="/pte-core-writing-practice" className="hover:text-cyan-600 transition">Writing Practice</Link></li>
                 <li><Link to="/pte-reading-practice" className="hover:text-cyan-600 transition">Reading Practice</Link></li>
                 <li><Link to="/pte-listening-practice" className="hover:text-cyan-600 transition">Listening Practice</Link></li>
               </ul>

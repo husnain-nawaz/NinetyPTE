@@ -25,6 +25,7 @@ import PTEAcademicUKVIExamPage from './pages/PTEAcademicUKVIExamPage';
 import PTECoreExamPage from './pages/PTECoreExamPage';
 import PTECoreScoreCalculatorPage from './pages/PTECoreScoreCalculatorPage';
 import PTECoreSpeakingPracticePage from './pages/PTECoreSpeakingPracticePage';
+import PTECoreWritingPracticePage from './pages/PTECoreWritingPracticePage';
 import PTESpeakingPracticePage from './pages/PTESpeakingPracticePage';
 import PTEWritingPracticePage from './pages/PTEWritingPracticePage';
 import PTEReadingPracticePage from './pages/PTEReadingPracticePage';
@@ -127,6 +128,7 @@ function AppContent() {
           <Route path="/clb-score-calculator" element={<PTECoreScoreCalculatorPage />} />
           <Route path="/pte-core-exam-pattern" element={<Navigate to="/pte-core-speaking-practice" replace />} />
           <Route path="/pte-core-speaking-practice" element={<PTECoreSpeakingPracticePage />} />
+          <Route path="/pte-core-writing-practice" element={<PTECoreWritingPracticePage />} />
           <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
           <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
