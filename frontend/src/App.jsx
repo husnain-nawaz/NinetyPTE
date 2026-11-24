@@ -28,6 +28,7 @@ import MockTestsPage from './pages/MockTestsPage';
 import PTEOnlineCoursePage from './pages/PTEOnlineCoursePage';
 import PTEMaterialPage from './pages/PTEMaterialPage';
 import PTEAcceptancePage from './pages/PTEAcceptancePage';
+import OnTestDayPage from './pages/OnTestDayPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
@@ -119,6 +120,9 @@ function AppContent() {
           <Route path="/who-accepts-pte" element={<PTEAcceptancePage />} />
           <Route path="/pte-test-centres" element={<PTEAcceptancePage />} />
           <Route path="/pte-acceptance-countries" element={<PTEAcceptancePage />} />
+          <Route path="/on-test-day" element={<OnTestDayPage />} />
+          <Route path="/pte-on-test-day" element={<OnTestDayPage />} />
+          <Route path="/test-day-guide" element={<OnTestDayPage />} />
           <Route path="/pte-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-ukvi-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-score-calculator" element={<PTEScoreCalculatorPage />} />
