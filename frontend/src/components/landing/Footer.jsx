@@ -206,7 +206,7 @@ export default function Footer() {
                 <li><Link to="/pte-core-speaking-practice" className="hover:text-cyan-600 transition">Speaking Practice</Link></li>
                 <li><Link to="/pte-core-writing-practice" className="hover:text-cyan-600 transition">Writing Practice</Link></li>
                 <li><Link to="/pte-core-reading-practice" className="hover:text-cyan-600 transition">Reading Practice</Link></li>
-                <li><Link to="/pte-listening-practice" className="hover:text-cyan-600 transition">Listening Practice</Link></li>
+                <li><Link to="/pte-core-listening-practice" className="hover:text-cyan-600 transition">Listening Practice</Link></li>
               </ul>
             </div>
 

@@ -628,7 +628,7 @@ export default function PTECoreReadingPracticePage() {
               <span>Reading</span>
             </Link>
             <Link
-              to="/pte-listening-practice"
+              to="/pte-core-listening-practice"
               className="px-5 py-2 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white flex items-center gap-1.5 transition"
             >
               <Headphones className="w-3.5 h-3.5" />
