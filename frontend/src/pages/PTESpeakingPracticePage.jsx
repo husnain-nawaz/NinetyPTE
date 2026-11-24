@@ -287,10 +287,10 @@ export default function PTESpeakingPracticePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-amber-500 text-white font-black flex items-center justify-center text-sm shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-[#f0854d] text-white font-extrabold flex items-center justify-center text-xs shadow-xs">
               {current.badge}
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-amber-600">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#f0854d]">
               {current.title}
             </h2>
           </div>
@@ -299,211 +299,225 @@ export default function PTESpeakingPracticePage() {
             {current.desc}
           </p>
 
-          <div className="bg-white rounded-2xl overflow-hidden border border-amber-200/90 shadow-2xs">
-            <div className="grid grid-cols-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] sm:text-xs font-black p-3 text-center">
-              <div>Task</div>
-              <div>Skills assessed</div>
-              <div>Prompt length</div>
-              <div>Preparation time</div>
-              <div>Time to answer</div>
-              <div>Number of questions</div>
+          {/* Specs Table matching PDF */}
+          <div className="border border-orange-300/80 rounded-xl overflow-hidden shadow-2xs">
+            <div className="grid grid-cols-6 bg-[#f0854d] text-white text-[11px] sm:text-xs font-bold text-center">
+              <div className="p-3 border-r border-orange-300/60">Task</div>
+              <div className="p-3 border-r border-orange-300/60">Skills assessed</div>
+              <div className="p-3 border-r border-orange-300/60">Prompt length</div>
+              <div className="p-3 border-r border-orange-300/60">Preparation time</div>
+              <div className="p-3 border-r border-orange-300/60">Time to answer</div>
+              <div className="p-3">Number of questions</div>
             </div>
-            <div className="grid grid-cols-6 p-4 text-xs text-slate-700 text-center items-center gap-2 bg-amber-50/20">
-              <div className="text-left font-medium">{current.specs.task}</div>
-              <div className="font-semibold">{current.specs.skills}</div>
-              <div>{current.specs.promptLength}</div>
-              <div>{current.specs.prepTime}</div>
-              <div>{current.specs.answerTime}</div>
-              <div className="font-bold">{current.specs.questions}</div>
+            <div className="grid grid-cols-6 bg-white text-xs text-slate-700 text-center items-center">
+              <div className="p-3 text-left font-normal border-r border-slate-200">{current.specs.task}</div>
+              <div className="p-3 font-medium border-r border-slate-200">{current.specs.skills}</div>
+              <div className="p-3 border-r border-slate-200">{current.specs.promptLength}</div>
+              <div className="p-3 border-r border-slate-200">{current.specs.prepTime}</div>
+              <div className="p-3 border-r border-slate-200">{current.specs.answerTime}</div>
+              <div className="p-3 font-medium">{current.specs.questions}</div>
             </div>
           </div>
 
           {/* ===================================================================== */}
-          {/* 3. TASK-SPECIFIC SIMULATOR MOCKUP CARD (Page 1)                       */}
+          {/* 3. AUTHENTIC MOCK TEST SIMULATOR CARD (Matching PDF Layout)            */}
           {/* ===================================================================== */}
-          <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-xl space-y-5">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
             
             {/* Header Status Bar */}
-            <div className="flex items-center justify-between text-xs text-slate-500 pb-2 border-b border-slate-100">
-              <span className="font-bold text-slate-800">
+            <div className="flex items-center justify-between text-xs text-slate-600 pb-1">
+              <span className="font-bold text-slate-800 text-sm">
                 {activeTask === 'summarize-group-discussion' ? 'Mock Test - 116' : 'Mock Test - 1'}
               </span>
-              <div className="flex items-center gap-4">
-                <span className="font-mono">
+              <div className="flex items-center gap-4 text-xs">
+                <span className="font-medium text-slate-600">
                   {activeTask === 'summarize-group-discussion' ? '30 of 37' : '6 of 29'}
                 </span>
-                <span className="font-mono flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
+                <span className="font-medium text-slate-600 flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-slate-500" />
                   {activeTask === 'summarize-group-discussion' ? '17:55 / 82:09' : '04:53 / 45:36'}
                 </span>
-                <Maximize2 className="w-3.5 h-3.5 cursor-pointer hover:text-slate-900" />
+                <Maximize2 className="w-3.5 h-3.5 text-slate-500 cursor-pointer hover:text-slate-900" />
               </div>
             </div>
 
-            {/* Instruction */}
-            <p className="text-xs sm:text-sm italic font-medium text-slate-700">
-              {current.instruction}
-            </p>
-
-            {/* TASK-SPECIFIC UI DISPLAY */}
-            
-            {/* 1. DESCRIBE IMAGE: SHOW AUTHENTIC CHART IMAGE! */}
-            {activeTask === 'describe-image' && (
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-4 max-w-xl mx-auto">
-                <div className="bg-white p-4 rounded-xl border border-slate-200 text-center shadow-xs">
-                  <div className="text-xs font-black text-slate-800 mb-2">
-                    Global Renewable Energy Capacity Growth (Gigawatts, 2018 - 2024)
-                  </div>
-                  
-                  {/* Clean Vector Bar Chart */}
-                  <div className="h-44 w-full flex items-end justify-around gap-2 px-4 pt-4 border-b border-l border-slate-300">
-                    <div className="flex flex-col items-center gap-1 w-12">
-                      <div className="text-[10px] font-bold text-slate-600">180 GW</div>
-                      <div className="w-full bg-amber-400 rounded-t h-20" />
-                      <span className="text-[10px] text-slate-500">2018</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1 w-12">
-                      <div className="text-[10px] font-bold text-slate-600">240 GW</div>
-                      <div className="w-full bg-amber-500 rounded-t h-28" />
-                      <span className="text-[10px] text-slate-500">2020</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1 w-12">
-                      <div className="text-[10px] font-bold text-slate-600">310 GW</div>
-                      <div className="w-full bg-orange-500 rounded-t h-36" />
-                      <span className="text-[10px] text-slate-500">2022</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1 w-12">
-                      <div className="text-[10px] font-bold text-slate-700">420 GW</div>
-                      <div className="w-full bg-[#00c2cb] rounded-t h-42" />
-                      <span className="text-[10px] font-bold text-slate-800">2024</span>
-                    </div>
-                  </div>
-                  <div className="text-[9px] text-slate-400 mt-2">Source: International Renewable Energy Agency (IRENA)</div>
-                </div>
-
-                {/* Status Box */}
-                <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700">Recorded Answer</span>
-                  <span className="text-rose-500 font-bold animate-pulse">Beginning in 25 sec</span>
-                </div>
-              </div>
-            )}
-
-            {/* 2. SUMMARIZE GROUP DISCUSSION: SHOW DISCUSSION AVATARS & AUDIO */}
-            {activeTask === 'summarize-group-discussion' && (
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 text-center space-y-4 max-w-lg mx-auto">
-                <div className="flex items-center justify-around py-2">
-                  <div className="text-center space-y-1">
-                    <div className="w-12 h-12 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center text-sm border-2 border-sky-300">
-                      Dr. A
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-600">Speaker 1</div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm border-2 border-emerald-300">
-                      Prof. B
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-600">Speaker 2</div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm border-2 border-purple-300">
-                      Eng. C
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-600">Speaker 3</div>
-                  </div>
-                </div>
-
-                <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-600 font-bold">
-                    <span>Audio Player</span>
-                    <span className="text-[#00c2cb] font-black">Playing</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                    <div className="w-1/2 h-full bg-[#00c2cb] rounded-full" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 3. RE-TELL LECTURE: SHOW LECTURE SLIDE */}
-            {activeTask === 'retell-lecture' && (
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-4 max-w-xl mx-auto">
-                <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 shadow-xs">
-                  <div className="w-28 h-24 bg-gradient-to-tr from-slate-800 to-slate-900 rounded-lg flex flex-col items-center justify-center text-white p-2 text-center shrink-0">
-                    <GraduationCap className="w-6 h-6 text-[#00c2cb] mb-1" />
-                    <span className="text-[9px] font-bold text-slate-300">Lecture Slide</span>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="font-bold text-slate-900">Atmospheric Chemistry & Thermal Inversion</div>
-                    <p className="text-[11px] text-slate-500 leading-snug">
-                      Key topics: Stratospheric temperature gradients, ozone layer absorption, and solar UV radiation buffering.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-600 font-bold">
-                    <span>Audio Player</span>
-                    <span className="text-[#00c2cb] font-black">Playing</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                    <div className="w-3/4 h-full bg-[#00c2cb] rounded-full" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 4. READ ALOUD: PASSAGE CARD */}
-            {activeTask === 'read-aloud' && (
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4 max-w-xl mx-auto">
-                <div className="p-4 bg-white rounded-xl border border-slate-200 text-xs sm:text-sm font-medium text-slate-800 leading-relaxed shadow-xs">
-                  {current.promptText}
-                </div>
-                <div className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700">Recorded Answer</span>
-                  <span className="text-rose-500 font-bold animate-pulse">Beginning in 35 sec</span>
-                </div>
-              </div>
-            )}
-
-            {/* 5. REPEAT SENTENCE / OTHER AUDIO TASKS: AUDIO PLAYER BOX */}
-            {['repeat-sentence', 'answer-short-question', 'respond-to-a-situation'].includes(activeTask) && (
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 text-center space-y-4 max-w-lg mx-auto">
-                <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-2">
-                  <span>Audio Player</span>
-                  <span className="text-rose-500 animate-pulse">Beginning in 2 sec</span>
-                </div>
-                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="w-1/3 h-full bg-[#00c2cb] rounded-full animate-pulse" />
-                </div>
-                <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 font-mono">
-                  {current.promptText}
-                </div>
-              </div>
-            )}
-
-            {/* Bottom Controls */}
-            <div className="flex items-center justify-between pt-2">
-              <button className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
-                Save & Exit
-              </button>
-              <button className="px-7 py-2 rounded-xl bg-[#00c2cb] hover:bg-[#00a8b5] text-white text-xs font-extrabold shadow-sm transition">
-                Next &gt;
-              </button>
+            {/* Horizontal Test Progress Bar */}
+            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-[#00c5cd] rounded-full transition-all duration-300" 
+                style={{ width: activeTask === 'summarize-group-discussion' ? '81%' : '21%' }}
+              />
             </div>
 
+            {/* Inner Test Item Container */}
+            <div className="border border-slate-200 rounded-xl p-5 sm:p-6 bg-white space-y-5">
+              
+              {/* Instruction in bold italic */}
+              <p className="text-xs sm:text-sm font-bold italic text-slate-700 leading-relaxed">
+                {current.instruction}
+              </p>
+
+              {/* 1. DESCRIBE IMAGE: SHOW AUTHENTIC VECTOR CHART */}
+              {activeTask === 'describe-image' && (
+                <div className="space-y-4">
+                  <div className="bg-slate-50/70 p-4 rounded-xl border border-slate-200 text-center max-w-lg mx-auto">
+                    <div className="text-xs font-bold text-slate-800 mb-2">
+                      Global Renewable Energy Capacity Growth (Gigawatts, 2018 - 2024)
+                    </div>
+                    
+                    {/* Clean Vector Bar Chart */}
+                    <div className="h-40 w-full flex items-end justify-around gap-2 px-4 pt-3 border-b border-l border-slate-300">
+                      <div className="flex flex-col items-center gap-1 w-12">
+                        <div className="text-[10px] font-bold text-slate-600">180 GW</div>
+                        <div className="w-full bg-[#f0854d]/70 rounded-t h-16" />
+                        <span className="text-[10px] text-slate-500">2018</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1 w-12">
+                        <div className="text-[10px] font-bold text-slate-600">240 GW</div>
+                        <div className="w-full bg-[#f0854d]/85 rounded-t h-24" />
+                        <span className="text-[10px] text-slate-500">2020</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1 w-12">
+                        <div className="text-[10px] font-bold text-slate-600">310 GW</div>
+                        <div className="w-full bg-[#f0854d] rounded-t h-32" />
+                        <span className="text-[10px] text-slate-500">2022</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1 w-12">
+                        <div className="text-[10px] font-bold text-slate-700">420 GW</div>
+                        <div className="w-full bg-[#00c5cd] rounded-t h-38" />
+                        <span className="text-[10px] font-bold text-slate-800">2024</span>
+                      </div>
+                    </div>
+                    <div className="text-[9px] text-slate-400 mt-2">Source: International Renewable Energy Agency (IRENA)</div>
+                  </div>
+
+                  {/* Status Box */}
+                  <div className="border border-slate-200 rounded-md p-3.5 max-w-md mx-auto bg-white space-y-2">
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                      <span>Recorded Answer</span>
+                      <span className="text-rose-600 font-semibold">Beginning in 25 sec</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. READ ALOUD: PASSAGE CARD + RECORDED ANSWER BOX */}
+              {activeTask === 'read-aloud' && (
+                <div className="space-y-4 max-w-xl mx-auto">
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 leading-relaxed font-normal">
+                    {current.promptText}
+                  </div>
+                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2">
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                      <span>Recorded Answer</span>
+                      <span className="text-rose-600 font-semibold">Beginning in 35 sec</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. RESPOND TO A SITUATION: SITUATION PROMPT CARD + AUDIO PLAYER */}
+              {activeTask === 'respond-to-a-situation' && (
+                <div className="space-y-4 max-w-lg mx-auto">
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                    A colleague has asked you to participate in an extracurricular project. However, you have an urgent examination next week and need to focus entirely on your coursework. What would you say to your colleague?
+                  </div>
+                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Audio Player</span>
+                      <span className="text-rose-600 font-bold">Playing</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <button className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                        <Play className="w-3.5 h-3.5 fill-slate-400" />
+                      </button>
+                      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#00c5cd] rounded-full w-1/3" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2">
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                      <span>Recorded Answer</span>
+                      <span className="text-rose-600 font-semibold">Beginning in 10 sec</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 4. REPEAT SENTENCE, RE-TELL LECTURE, SUMMARIZE GROUP DISCUSSION, ANSWER SHORT QUESTION */}
+              {['repeat-sentence', 'retell-lecture', 'summarize-group-discussion', 'answer-short-question'].includes(activeTask) && (
+                <div className="space-y-4 max-w-lg mx-auto">
+                  {/* Clean Pearson Audio Player box matching PDF */}
+                  <div className="border border-slate-200 rounded-md p-4 bg-white space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                      <span>Audio Player</span>
+                      <span className="text-rose-600 font-bold">
+                        {activeTask === 'repeat-sentence' ? 'Beginning in 2 sec' : 'Playing'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                        <Play className="w-3.5 h-3.5 fill-slate-400" />
+                      </button>
+                      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-[#00c5cd] rounded-full" 
+                          style={{ width: activeTask === 'repeat-sentence' ? '0%' : '45%' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recorded Answer Status Box */}
+                  <div className="border border-slate-200 rounded-md p-3.5 bg-white space-y-2 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                      <span>Recorded Answer</span>
+                      <span className="text-rose-600 font-semibold">
+                        {activeTask === 'repeat-sentence' && 'Beginning in 2 sec'}
+                        {activeTask === 'retell-lecture' && 'Beginning in 10 sec'}
+                        {activeTask === 'summarize-group-discussion' && 'Beginning in 10 sec'}
+                        {activeTask === 'answer-short-question' && 'Beginning in 1 sec'}
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#00c5cd] rounded-full w-0" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mock Test Card Navigation Buttons */}
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <button className="px-5 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-medium transition cursor-pointer">
+                  Save & Exit
+                </button>
+                <button className="px-6 py-1.5 rounded-lg bg-[#00c5cd] hover:bg-[#00b2ba] text-white text-xs font-bold shadow-xs transition cursor-pointer">
+                  Next &gt;
+                </button>
+              </div>
+
+            </div>
           </div>
 
-          {/* Action Pills below simulator */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button className="px-5 py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">
+          {/* Action pills below mock test */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button className="px-5 py-2 rounded-full bg-[#00c5cd] text-white font-bold text-xs shadow-xs hover:bg-[#00b2ba] transition">
               PTE Speaking {current.title}
             </button>
-            <button className="px-5 py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-xs shadow-xs hover:bg-[#00a8b5] transition">
+            <button className="px-5 py-2 rounded-full bg-[#00c5cd] text-white font-bold text-xs shadow-xs hover:bg-[#00b2ba] transition">
               {current.title} Sample Questions
             </button>
           </div>
-
         </div>
       </section>
 
