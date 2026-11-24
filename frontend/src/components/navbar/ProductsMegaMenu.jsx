@@ -27,7 +27,7 @@ export default function ProductsMegaMenu({ onClose }) {
         { title: 'Mock Tests', href: '/mock-tests', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold">📋</div> },
         { title: 'Exam Pattern', href: '/pte-academic-ukvi-exam-pattern', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold">📝</div> },
         { title: 'Strategies', href: '#strategies', icon: <div className="w-5 h-5 rounded-md bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">♞</div> },
-        { title: 'Score Calculator', href: '#score-calculator', icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
+        { title: 'Score Calculator', href: '/pte-score-calculator', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center text-[9px] font-mono font-bold">+-<br/>x÷</div> },
         { title: 'PTE Voucher', href: '/book-exam', isRoute: true, icon: <div className="w-5 h-5 rounded-md bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold">🎟️</div> },
       ]
     },

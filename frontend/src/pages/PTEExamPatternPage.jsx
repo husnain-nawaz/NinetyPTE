@@ -1184,7 +1184,7 @@ export default function PTEExamPatternPage() {
           </h4>
           <div>
             <Link
-              to="/about-pte#weightage"
+              to="/pte-score-calculator"
               className="inline-block px-7 py-2.5 rounded-xl bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-bold text-xs transition shadow-xs cursor-pointer"
             >
               Learn More
