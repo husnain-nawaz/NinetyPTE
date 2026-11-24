@@ -26,6 +26,7 @@ import PTEExamPatternPage from './pages/PTEExamPatternPage';
 import PTEScoreCalculatorPage from './pages/PTEScoreCalculatorPage';
 import MockTestsPage from './pages/MockTestsPage';
 import PTEOnlineCoursePage from './pages/PTEOnlineCoursePage';
+import PTEMaterialPage from './pages/PTEMaterialPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
@@ -109,6 +110,10 @@ function AppContent() {
           <Route path="/pte-online-coaching" element={<PTEOnlineCoursePage />} />
           <Route path="/online-course" element={<PTEOnlineCoursePage />} />
           <Route path="/online-coaching" element={<PTEOnlineCoursePage />} />
+          <Route path="/pte-material" element={<PTEMaterialPage />} />
+          <Route path="/best-pte-practice-preparation-material" element={<PTEMaterialPage />} />
+          <Route path="/pte-preparation-material" element={<PTEMaterialPage />} />
+          <Route path="/pte-practice-material" element={<PTEMaterialPage />} />
           <Route path="/pte-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-ukvi-score-calculator" element={<PTEScoreCalculatorPage />} />
           <Route path="/pte-academic-score-calculator" element={<PTEScoreCalculatorPage />} />

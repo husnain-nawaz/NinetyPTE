@@ -216,7 +216,7 @@ export default function Footer() {
               <ul className="space-y-1.5 text-xs text-slate-500">
                 <li><Link to="/pte-online-course" className="hover:text-cyan-600 transition">PTE Online Course</Link></li>
                 <li><Link to="/mobile-app" className="hover:text-cyan-600 transition">PTE Practice Mobile App</Link></li>
-                <li><Link to="/about-pte" className="hover:text-cyan-600 transition">PTE Material</Link></li>
+                <li><Link to="/pte-material" className="hover:text-cyan-600 transition">PTE Material</Link></li>
                 <li><Link to="/book-exam" className="hover:text-cyan-600 transition">How to Book PTE Exam</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">Who Accepts PTE</Link></li>
                 <li><Link to="/about-pte" className="hover:text-cyan-600 transition">On Test Day</Link></li>
