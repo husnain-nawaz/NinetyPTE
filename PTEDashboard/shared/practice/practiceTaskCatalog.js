@@ -204,6 +204,19 @@ const READING_MCM_SEED_ROWS = [
   { id: '9000189', title: 'Tigers', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
 ];
 
+const REORDER_PARAGRAPHS_SEED_ROWS = [
+  { id: '10001083', title: 'Satellite TV', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '10001082', title: 'Farmland and Forest', difficulty: 'Medium', practicedCount: 2, appearedCount: 1 },
+  { id: '10001081', title: 'Pest Control', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 52 },
+  { id: '10001080', title: 'Forest Cycle', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 52 },
+  { id: '10001079', title: 'Bugs', difficulty: 'Medium', practicedCount: 0, appearedCount: 55 },
+  { id: '10001078', title: 'Whale', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 53 },
+  { id: '10001077', title: 'School Uniform', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '10001076', title: 'Ripple', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '10001075', title: 'Teaching and Learning', difficulty: 'Medium', practicedCount: 1, appearedCount: 111 },
+  { id: '10001074', title: 'Hiring Chefs', difficulty: 'Medium', practicedCount: 1, appearedCount: 5 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -409,12 +422,20 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'reorder-paragraphs',
     code: 'RO',
     title: 'Re-order Paragraphs',
-    totalQuestions: 645,
+    totalQuestions: 819,
     coreTotalQuestions: 615,
-    startId: 9200645,
-    continueItem: { id: '9200512', title: 'Glacier Core Sampling' },
-    instruction: 'The text boxes below have been placed in a random order. Restore the original order cleanly.',
-    promptText: 'Arrange statements A–D into logical chronological order describing Antarctic ice-core dating.',
+    startId: 10001083,
+    continueItem: { id: '10001048', title: 'Causation in Criminology' },
+    hideDownloadButton: true,
+    reorderParagraphs: [
+      { id: 'A', correctOrder: 2, text: 'As orbital transponders expanded bandwidth in the 1980s, dish sizes shrank enough for residential rooftops.' },
+      { id: 'B', correctOrder: 1, text: 'Satellite television began as a specialized relay network connecting remote broadcast stations across continents.' },
+      { id: 'C', correctOrder: 4, text: 'Digital compression later allowed hundreds of high-definition channels to share a single orbital slot.' },
+      { id: 'D', correctOrder: 3, text: 'This breakthrough enabled rural households to receive live news and educational programming directly.' },
+    ],
+    instruction: 'The text boxes in the left panel have been placed in a random order. Restore the original order cleanly.',
+    promptText: 'Arrange statements A–D into logical chronological order from earliest satellite relay to modern digital broadcasting.',
+    seedRows: REORDER_PARAGRAPHS_SEED_ROWS,
   },
   'reading/fill-in-the-blanks': {
     skill: 'reading',

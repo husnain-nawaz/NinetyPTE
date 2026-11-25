@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
+  ArrowDown,
+  ArrowUp,
   ChevronLeft,
   Info,
   Mic,
@@ -36,6 +38,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
   const [showAnswer, setShowAnswer] = useState(false);
   const [blankSelections, setBlankSelections] = useState({});
   const [selectedChoices, setSelectedChoices] = useState([]);
+  const [paragraphOrder, setParagraphOrder] = useState(() => taskMeta.reorderParagraphs || []);
 
   const questions = useMemo(
     () =>
@@ -261,6 +264,64 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 );
               })}
             </div>
+          ) : Array.isArray(taskMeta.reorderParagraphs) ? (
+            <div className="space-y-2.5">
+              {(showAnswer
+                ? [...paragraphOrder].sort((a, b) => a.correctOrder - b.correctOrder)
+                : paragraphOrder
+              ).map((item, idx) => (
+                <div
+                  key={item.id}
+                  className={`rounded-xl border px-4 py-3 flex items-center justify-between gap-3 text-xs sm:text-sm ${
+                    showAnswer
+                      ? 'border-emerald-400 bg-emerald-50/70 text-emerald-900'
+                      : 'border-slate-200 bg-white text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-md bg-[#eef6fd] text-[#0c4a7e] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      {showAnswer ? item.correctOrder : item.id}
+                    </span>
+                    <span>{item.text}</span>
+                  </div>
+
+                  {!showAnswer && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() =>
+                          setParagraphOrder((prev) => {
+                            const next = [...prev];
+                            [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
+                            return next;
+                          })
+                        }
+                        aria-label="Move paragraph up"
+                        className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-35 cursor-pointer"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === paragraphOrder.length - 1}
+                        onClick={() =>
+                          setParagraphOrder((prev) => {
+                            const next = [...prev];
+                            [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
+                            return next;
+                          })
+                        }
+                        aria-label="Move paragraph down"
+                        className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-35 cursor-pointer"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -364,6 +425,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                   setResponseText('');
                   setBlankSelections({});
                   setSelectedChoices([]);
+                  setParagraphOrder(taskMeta.reorderParagraphs || []);
                   setSubmittedNotice('');
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
@@ -374,7 +436,8 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
               {(taskMeta.hasAudioPrompt ||
                 taskMeta.hasImagePrompt ||
                 taskMeta.hasDropdownBlanks ||
-                Array.isArray(taskMeta.mcqOptions)) && (
+                Array.isArray(taskMeta.mcqOptions) ||
+                Array.isArray(taskMeta.reorderParagraphs)) && (
                 <button
                   type="button"
                   onClick={() => setShowAnswer((prev) => !prev)}
