@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { clearUserSession, getStoredUser, isSuperAdmin } from '../frontend/src/utils/auth';
 import PracticeMegaMenu from './PracticeMegaMenu';
-import NotificationsDrawer, { INITIAL_NOTIFICATIONS } from './NotificationsDrawer';
+import NotificationsDrawer from './NotificationsDrawer';
+import { INITIAL_NOTIFICATIONS } from './pteDashboardData';
 
 /**
  * Top announcement ribbon + student portal header isolated from the public marketing navbar.

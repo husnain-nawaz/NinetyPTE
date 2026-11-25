@@ -1,17 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Trash2, X } from 'lucide-react';
 
-export const INITIAL_NOTIFICATIONS = [
-  {
-    id: 'notif-expiry-3d',
-    title: 'Premium subscription expires in 3 days',
-    message: 'Your Premium subscription is about to expire in 3 days.',
-    date: '25 November, 2026',
-    unread: true,
-    avatarInitials: 'NP',
-  },
-];
-
 /**
  * Right-side slide-over Notifications drawer with All/Unread tabs,
  * single-item delete, Delete All, and Read All controls.
