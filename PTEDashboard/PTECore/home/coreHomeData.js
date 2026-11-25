@@ -52,7 +52,7 @@ export const CORE_HOME_DATA = {
       { name: 'Fill in the Blanks', done: 98, total: 421, to: '/v1/core/practice/listening/fill-in-the-blanks' },
       { name: 'Multiple Choice, Single Answer', done: 24, total: 204, to: '/v1/core/practice/listening/multiple-choice-single' },
       { name: 'Select Missing Word', done: 39, total: 203, to: '/v1/core/practice/listening/select-missing-word' },
-      { name: 'Highlight Incorrect Words', done: 94, total: 888, to: '/v1/core/practice/listening/highlight-incorrect-words' },
+      { name: 'Highlight Incorrect Words', done: 94, total: 515, to: '/v1/core/practice/listening/highlight-incorrect-words' },
       { name: 'Write From Dictation', done: 326, total: 1580, to: '/v1/core/practice/listening/write-from-dictation' },
     ],
   },
