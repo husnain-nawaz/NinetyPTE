@@ -43,7 +43,12 @@ import OnTestDayPage from './pages/OnTestDayPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
-import { PTEDashboard, PTEAnalyticsPage, ProtectedRoute } from '../../PTEDashboard';
+import {
+  PTEDashboard,
+  PTEAnalyticsPage,
+  PTEQuestionWeightagePage,
+  ProtectedRoute,
+} from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
 
 function AppContent() {
@@ -64,6 +69,8 @@ function AppContent() {
     location.pathname.startsWith('/v1/dashboard') ||
     location.pathname.startsWith('/v1/analytics') ||
     location.pathname.startsWith('/analytics') ||
+    location.pathname.startsWith('/v1/question-weightage') ||
+    location.pathname.startsWith('/question-weightage') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -200,6 +207,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/question-weightage"
+            element={
+              <ProtectedRoute>
+                <PTEQuestionWeightagePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/question-weightage"
+            element={
+              <ProtectedRoute>
+                <PTEQuestionWeightagePage />
               </ProtectedRoute>
             }
           />

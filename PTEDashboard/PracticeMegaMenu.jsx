@@ -25,7 +25,7 @@ const STUDY_TOOL_LINKS = [
   { label: 'Vocab Bank', to: '/best-pte-practice-preparation-material' },
   { label: 'Strategy Videos', to: '/pte-online-course' },
   { label: 'Practice History', to: '/v1/analytics' },
-  { label: 'Question Weightage', to: '/v1/analytics' },
+  { label: 'Question Weightage', to: '/v1/question-weightage' },
 ];
 
 function getPracticeColumns(examVariant) {
