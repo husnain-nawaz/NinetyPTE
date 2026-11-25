@@ -108,6 +108,10 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         navigate('/v1/vocab-bank');
       } else if (location.pathname.includes('prediction')) {
         navigate('/v1/prediction');
+      } else if (location.pathname.includes('templates')) {
+        navigate('/v1/templates');
+      } else if (location.pathname.includes('grammar')) {
+        navigate('/v1/grammar');
       } else {
         navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
       }

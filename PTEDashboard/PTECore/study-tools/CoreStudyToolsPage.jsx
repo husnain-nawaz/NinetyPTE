@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { TEMPLATE_FILES_CORE } from '../../PTEAcademic/study-tools/templatesData';
 import { usePortal } from '../../shared/portalContext';
 import { GRAMMAR_TOPICS } from '../../shared/study-tools/grammarData';
 import StudyToolsShell from '../../shared/study-tools/StudyToolsShell';
 import { PREDICTION_FILES_CORE } from './corePredictionsData';
+import { TEMPLATE_FILES_CORE } from './coreTemplatesData';
 
 /**
  * PTE Core Study Tools workspace (/v1/templates, /v1/prediction, /v1/grammar in Core mode).

@@ -98,11 +98,13 @@ function AppContent() {
     location.pathname.startsWith('/core-vocab-bank') ||
     location.pathname.startsWith('/v1/grammar') ||
     location.pathname.startsWith('/grammar') ||
+    location.pathname.startsWith('/core-grammar') ||
     location.pathname.startsWith('/v1/prediction') ||
     location.pathname.startsWith('/prediction') ||
     location.pathname.startsWith('/core-prediction') ||
     location.pathname.startsWith('/v1/templates') ||
     location.pathname.startsWith('/templates') ||
+    location.pathname.startsWith('/core-templates') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -471,6 +473,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEStudyToolsPage initialTab="templates" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/templates"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="templates" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-templates"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="templates" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/grammar"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="grammar" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-grammar"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="grammar" syncPortalMode />
               </ProtectedRoute>
             }
           />
