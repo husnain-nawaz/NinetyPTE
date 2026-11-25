@@ -15,20 +15,14 @@ import {
   Trophy,
   UserPlus,
 } from 'lucide-react';
-import {
-  CALENDAR_WEEKS,
-  TARGET_PRESETS,
-  TODAYS_TASKS_BY_SKILL,
-  VIDEO_GUIDES,
-} from './homeData';
 
 const pad2 = (num) => String(num).padStart(2, '0');
 
 /**
- * Right-hand utility column of PTE Academic dashboard home page.
+ * Parameterized right-hand utility rail shared by PTEAcademic and PTECore home dashboards.
  */
-export default function HomeRightRail({ onSelectVideo }) {
-  const [target, setTarget] = useState(TARGET_PRESETS[2]);
+export default function DashboardHomeRightRail({ data, onSelectVideo }) {
+  const [target, setTarget] = useState(data.defaultTarget);
   const [editingTarget, setEditingTarget] = useState(false);
 
   const [examDateStr, setExamDateStr] = useState('');
@@ -90,9 +84,9 @@ export default function HomeRightRail({ onSelectVideo }) {
     setTimeout(() => setCopiedReferral(false), 2000);
   };
 
-  const heroVideo = VIDEO_GUIDES[0];
-  const activeTasks = TODAYS_TASKS_BY_SKILL[taskSkill] || [];
-  const shownCalendarDays = calendarExpanded ? CALENDAR_WEEKS : CALENDAR_WEEKS.slice(0, 14);
+  const heroVideo = data.videoGuides[0];
+  const activeTasks = data.todaysTasksBySkill[taskSkill] || [];
+  const shownCalendarDays = calendarExpanded ? data.calendarWeeks : data.calendarWeeks.slice(0, 14);
 
   return (
     <aside className="space-y-5">
@@ -150,7 +144,7 @@ export default function HomeRightRail({ onSelectVideo }) {
 
           {editingTarget && (
             <div className="absolute left-0 top-full mt-1.5 w-44 rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg z-30 text-xs sm:text-[13px]">
-              {TARGET_PRESETS.map((preset) => (
+              {data.targetPresets.map((preset) => (
                 <button
                   key={preset.range}
                   type="button"
@@ -275,7 +269,7 @@ export default function HomeRightRail({ onSelectVideo }) {
               <span>Today&apos;s Target</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <span className="text-base font-extrabold text-slate-800">0/97</span>
+              <span className="text-base font-extrabold text-slate-800">{data.todayTargetGoal}</span>
               <span className="w-7 h-7 rounded-full border-[5px] border-slate-200" />
             </div>
           </div>
@@ -303,9 +297,7 @@ export default function HomeRightRail({ onSelectVideo }) {
               <div
                 key={`${day.num}-${idx}`}
                 className={`h-9 rounded-lg flex items-center justify-center font-semibold ${
-                  day.status === 'pending'
-                    ? 'bg-[#fef3c7] text-[#b45309]'
-                    : 'bg-slate-50 text-slate-600'
+                  day.status === 'pending' ? 'bg-[#fef3c7] text-[#b45309]' : 'bg-slate-50 text-slate-600'
                 }`}
               >
                 {day.num}
@@ -340,7 +332,7 @@ export default function HomeRightRail({ onSelectVideo }) {
         <div className="rounded-xl border border-slate-100 bg-[#fbfdfe] p-4">
           <h3 className="text-sm font-bold text-slate-800 mb-3">Today&apos;s Task</h3>
           <div className="grid grid-cols-4 gap-2 mb-3.5">
-            {Object.keys(TODAYS_TASKS_BY_SKILL).map((skill) => {
+            {Object.keys(data.todaysTasksBySkill).map((skill) => {
               const active = taskSkill === skill;
               return (
                 <button

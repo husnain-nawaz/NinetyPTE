@@ -21,17 +21,6 @@ import {
   Timer,
   Video,
 } from 'lucide-react';
-import {
-  MOCK_TEST_CARDS,
-  PRACTICE_TASKS_ACADEMIC,
-  PTE_GUIDE_FAQS,
-  PTE_GUIDE_TABS,
-  QUICK_TOOL_TILES,
-  SKILL_TAB_META,
-  TODAYS_SKILLS,
-  TOP_SUMMARY_STATS,
-  VIDEO_GUIDES,
-} from './homeData';
 
 const SKILL_ICON = {
   Speaking: Mic,
@@ -75,23 +64,23 @@ function DonutRing({ pct }) {
 }
 
 /**
- * Left main column of PTE Academic dashboard home page.
+ * Parameterized left main column shared by PTEAcademic and PTECore home dashboards.
  */
-export default function HomeMainSections({ onSelectVideo }) {
+export default function DashboardHomeMain({ data, onSelectVideo }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
   const [timeframe, setTimeframe] = useState('All');
-  const [activeGuideTab, setActiveGuideTab] = useState('About PTE');
+  const [activeGuideTab, setActiveGuideTab] = useState(data.guideTabs[0]);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
 
   const visibleSkillTasks = useMemo(() => {
-    const tasks = PRACTICE_TASKS_ACADEMIC[activeSkillTab] || [];
+    const tasks = data.practiceTasks[activeSkillTab] || [];
     const q = searchQuery.trim().toLowerCase();
     if (!q) return tasks;
     return tasks.filter((item) => item.name.toLowerCase().includes(q));
-  }, [activeSkillTab, searchQuery]);
+  }, [activeSkillTab, data.practiceTasks, searchQuery]);
 
-  const currentFaqs = PTE_GUIDE_FAQS[activeGuideTab] || [];
+  const currentFaqs = data.guideFaqs[activeGuideTab] || [];
 
   return (
     <div className="space-y-5">
@@ -127,7 +116,7 @@ export default function HomeMainSections({ onSelectVideo }) {
 
       {/* 2. Top 5 Question Bank Donut Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3.5">
-        {TOP_SUMMARY_STATS.map((stat) => (
+        {data.topSummaryStats.map((stat) => (
           <button
             key={stat.key}
             type="button"
@@ -161,7 +150,7 @@ export default function HomeMainSections({ onSelectVideo }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {TODAYS_SKILLS.map((skill) => {
+          {data.todaysSkills.map((skill) => {
             const Icon = SKILL_ICON[skill.key];
             return (
               <div
@@ -234,7 +223,7 @@ export default function HomeMainSections({ onSelectVideo }) {
             >
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
-            <span>Last updated on Nov 21, 2026</span>
+            <span>Last updated on {data.lastUpdatedLabel}</span>
             <div className="relative">
               <select
                 value={timeframe}
@@ -252,9 +241,9 @@ export default function HomeMainSections({ onSelectVideo }) {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 border-b border-slate-100 pb-3.5 mb-5">
-          {Object.keys(SKILL_TAB_META).map((skillName) => {
+          {Object.keys(data.skillTabMeta).map((skillName) => {
             const Icon = SKILL_ICON[skillName];
-            const meta = SKILL_TAB_META[skillName];
+            const meta = data.skillTabMeta[skillName];
             const isActive = activeSkillTab === skillName;
 
             return (
@@ -285,7 +274,7 @@ export default function HomeMainSections({ onSelectVideo }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {visibleSkillTasks.map((task) => {
               const pct = Math.min(100, Math.round((task.done / task.total) * 100));
-              const meta = SKILL_TAB_META[activeSkillTab];
+              const meta = data.skillTabMeta[activeSkillTab];
               return (
                 <Link
                   key={task.name}
@@ -302,7 +291,7 @@ export default function HomeMainSections({ onSelectVideo }) {
                     <div className="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden">
                       <div
                         className={`h-full rounded-full ${meta.barColor}`}
-                        style={{ width: `${Math.max(4, pct)}%` }}
+                        style={{ width: `${task.done === 0 ? 0 : Math.max(4, pct)}%` }}
                       />
                     </div>
                   </div>
@@ -321,8 +310,8 @@ export default function HomeMainSections({ onSelectVideo }) {
       <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
         <h2 className="text-base sm:text-lg font-bold text-slate-800 mb-4">Mock Test</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {MOCK_TEST_CARDS.map((card) => {
-            const pct = Math.max(4, Math.min(100, Math.round((card.done / card.total) * 100)));
+          {data.mockTestCards.map((card) => {
+            const pct = card.done === 0 ? 0 : Math.max(4, Math.min(100, Math.round((card.done / card.total) * 100)));
             return (
               <Link
                 key={card.name}
@@ -352,7 +341,7 @@ export default function HomeMainSections({ onSelectVideo }) {
       {/* 6. 8-Tile Quick Tools Grid */}
       <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {QUICK_TOOL_TILES.map((tile) => {
+          {data.quickToolTiles.map((tile) => {
             const TileIcon = QUICK_TOOL_ICON[tile.key] || FileText;
             return (
               <Link
@@ -383,7 +372,7 @@ export default function HomeMainSections({ onSelectVideo }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {VIDEO_GUIDES.map((video) => (
+          {data.videoGuides.map((video) => (
             <button
               key={video.id}
               type="button"
@@ -430,7 +419,7 @@ export default function HomeMainSections({ onSelectVideo }) {
         <h2 className="text-base sm:text-lg font-bold text-slate-800 mb-4">PTE Guide</h2>
 
         <div className="flex flex-wrap items-center gap-2.5 mb-5">
-          {PTE_GUIDE_TABS.map((tab) => {
+          {data.guideTabs.map((tab) => {
             const isActive = activeGuideTab === tab;
             return (
               <button
