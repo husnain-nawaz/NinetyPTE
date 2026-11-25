@@ -55,6 +55,7 @@ import {
   PTECoreDashboardPage,
   PTECoreAnalyticsPage,
   PTECoreExamPatternPage,
+  PTECoreStrategyVideosPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -89,6 +90,7 @@ function AppContent() {
     location.pathname.startsWith('/practice-history') ||
     location.pathname.startsWith('/v1/youtube-videos') ||
     location.pathname.startsWith('/youtube-videos') ||
+    location.pathname.startsWith('/core-youtube-videos') ||
     location.pathname.startsWith('/v1/vocab-bank') ||
     location.pathname.startsWith('/vocab-bank') ||
     location.pathname.startsWith('/v1/grammar') ||
@@ -315,6 +317,38 @@ function AppContent() {
           <Route
             path="/youtube-videos"
             element={<Navigate to="/v1/youtube-videos/1" replace />}
+          />
+          <Route
+            path="/youtube-videos/:page"
+            element={
+              <ProtectedRoute>
+                <PTEStrategyVideosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/youtube-videos"
+            element={
+              <ProtectedRoute>
+                <PTECoreStrategyVideosPage syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/youtube-videos/:page"
+            element={
+              <ProtectedRoute>
+                <PTECoreStrategyVideosPage syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-youtube-videos"
+            element={
+              <ProtectedRoute>
+                <PTECoreStrategyVideosPage syncPortalMode />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/v1/vocab-bank"

@@ -63,7 +63,7 @@ export const CORE_HOME_DATA = {
   ],
   quickToolTiles: [
     { key: 'predictions', label: 'Predictions', to: '/v1/prediction' },
-    { key: 'strategy', label: 'Strategy Videos', to: '/v1/youtube-videos/1' },
+    { key: 'strategy', label: 'Strategy Videos', to: '/v1/core/youtube-videos' },
     { key: 'vocab', label: 'Vocab Bank', to: '/v1/vocab-bank' },
     { key: 'feedback', label: 'Score Feedback', to: '/pte-core-score-calculator' },
     { key: 'compatibility', label: 'Compatibility', to: '/on-test-day' },

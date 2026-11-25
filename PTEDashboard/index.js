@@ -1,5 +1,6 @@
 export { default as PTEDashboard } from './PTEDashboardRouter';
 export { default as PTEAnalyticsPage } from './PTEAnalyticsRouter';
+export { default as PTEStrategyVideosPage } from './PTEStrategyVideosRouter';
 export { default as PortalProvider } from './shared/PortalProvider';
 export { default as ProtectedRoute } from './shared/ProtectedRoute';
 
@@ -9,7 +10,6 @@ export {
   AcademicAnalyticsPage,
   AcademicQuestionWeightagePage as PTEQuestionWeightagePage,
   AcademicPracticeHistoryPage as PTEPracticeHistoryPage,
-  AcademicStrategyVideosPage as PTEStrategyVideosPage,
   AcademicVocabBankPage as PTEVocabBankPage,
   AcademicStudyToolsPage as PTEStudyToolsPage,
 } from './PTEAcademic';
@@ -19,6 +19,7 @@ export {
   CoreDashboardPage as PTECoreDashboardPage,
   CoreAnalyticsPage as PTECoreAnalyticsPage,
   CoreExamPatternPage as PTECoreExamPatternPage,
+  CoreStrategyVideosPage as PTECoreStrategyVideosPage,
 } from './PTECore';
 
 export { default } from './PTEDashboardRouter';

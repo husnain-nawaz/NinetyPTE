@@ -74,6 +74,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     setPracticeOpen(false);
 
     const isCoreTarget = location.pathname.includes('analytics');
+    const isVideos = location.pathname.includes('youtube-videos');
     const isPatternOrWeightage =
       location.pathname.includes('question-weightage') ||
       location.pathname.includes('exam-pattern');
@@ -82,12 +83,16 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
       location.pathname.includes('core-') ||
       location.pathname.includes('exam-pattern');
 
-    if (nextTrack === 'core' && isPatternOrWeightage) {
+    if (nextTrack === 'core' && isVideos) {
+      navigate('/v1/core/youtube-videos');
+    } else if (nextTrack === 'core' && isPatternOrWeightage) {
       navigate('/v1/exam-pattern');
     } else if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
       navigate('/dashboard');
     } else if (nextTrack === 'academic' && isCoreRoute) {
-      if (isPatternOrWeightage) {
+      if (isVideos) {
+        navigate('/v1/youtube-videos/1');
+      } else if (isPatternOrWeightage) {
         navigate('/v1/question-weightage');
       } else {
         navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');

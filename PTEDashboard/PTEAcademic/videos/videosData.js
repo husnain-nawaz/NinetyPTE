@@ -1,13 +1,4 @@
-const PALETTES = [
-  { bg: 'from-slate-900 via-[#0e2d47] to-[#1e1b4b]', accent: 'bg-red-600' },
-  { bg: 'from-[#1a1033] via-[#2c1654] to-[#0f172a]', accent: 'bg-sky-500' },
-  { bg: 'from-slate-950 via-slate-900 to-[#3f1414]', accent: 'bg-amber-500' },
-  { bg: 'from-[#06283d] via-[#133b5c] to-[#0c1b2a]', accent: 'bg-cyan-500' },
-  { bg: 'from-[#1f0d2b] via-[#361047] to-[#0f172a]', accent: 'bg-rose-600' },
-  { bg: 'from-[#0d2238] via-[#173654] to-[#2e1a12]', accent: 'bg-orange-500' },
-  { bg: 'from-[#072b28] via-[#0c4a43] to-[#0f172a]', accent: 'bg-emerald-600' },
-  { bg: 'from-[#1e1b4b] via-[#312e81] to-[#0f172a]', accent: 'bg-indigo-600' },
-];
+import { hydrateStrategyVideo } from '../../shared/videos/videoUtils';
 
 const RAW_PAGE_1_VIDEOS = [
   ['PTE AI Score vs Human Score: How Accurate Is the Scoring?', 'a month ago', 'AI SCORE vs HUMAN', 'Speaking & Writing', '11:24'],
@@ -71,23 +62,9 @@ const RAW_PAGE_2_VIDEOS = [
   ['Full 2-Hour Mock Test Pacing Strategy for PTE 79+', 'a year ago', '2-HOUR PACING PLAN', 'Mock Tests', '15:00'],
 ];
 
-function hydrateVideo([title, timeAgo, badgeText, category, duration], index, pageNum) {
-  const palette = PALETTES[index % PALETTES.length];
-  return {
-    id: `vid-p${pageNum}-${index + 1}`,
-    title,
-    timeAgo,
-    badgeText,
-    category,
-    duration,
-    bg: palette.bg,
-    accent: palette.accent,
-  };
-}
-
 export const STRATEGY_VIDEOS_BY_PAGE = {
-  1: RAW_PAGE_1_VIDEOS.map((item, idx) => hydrateVideo(item, idx, 1)),
-  2: RAW_PAGE_2_VIDEOS.map((item, idx) => hydrateVideo(item, idx + 2, 2)),
+  1: RAW_PAGE_1_VIDEOS.map((item, idx) => hydrateStrategyVideo(item, idx, 'vid-p1')),
+  2: RAW_PAGE_2_VIDEOS.map((item, idx) => hydrateStrategyVideo(item, idx + 2, 'vid-p2')),
 };
 
 export const ALL_STRATEGY_VIDEOS = [

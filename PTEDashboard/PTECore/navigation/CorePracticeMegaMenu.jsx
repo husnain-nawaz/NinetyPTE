@@ -6,7 +6,7 @@ const CORE_STUDY_TOOLS = [
   { label: 'Predictions', to: '/v1/prediction' },
   { label: 'Grammar', to: '/v1/grammar' },
   { label: 'Vocab Bank', to: '/v1/vocab-bank' },
-  { label: 'Strategy Videos', to: '/v1/youtube-videos/1' },
+  { label: 'Strategy Videos', to: '/v1/core/youtube-videos' },
   { label: 'Practice History', to: '/v1/practice-history' },
   { label: 'Exam Pattern', to: '/v1/exam-pattern' },
 ];
