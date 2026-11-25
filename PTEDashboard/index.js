@@ -18,6 +18,7 @@ export {
 export {
   CoreDashboardPage as PTECoreDashboardPage,
   CoreAnalyticsPage as PTECoreAnalyticsPage,
+  CoreExamPatternPage as PTECoreExamPatternPage,
 } from './PTECore';
 
 export { default } from './PTEDashboardRouter';

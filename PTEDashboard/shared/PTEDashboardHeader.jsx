@@ -74,10 +74,24 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     setPracticeOpen(false);
 
     const isCoreTarget = location.pathname.includes('analytics');
-    if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
+    const isPatternOrWeightage =
+      location.pathname.includes('question-weightage') ||
+      location.pathname.includes('exam-pattern');
+    const isCoreRoute =
+      location.pathname.includes('/core') ||
+      location.pathname.includes('core-') ||
+      location.pathname.includes('exam-pattern');
+
+    if (nextTrack === 'core' && isPatternOrWeightage) {
+      navigate('/v1/exam-pattern');
+    } else if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
       navigate('/dashboard');
-    } else if (nextTrack === 'academic' && location.pathname.includes('/core')) {
-      navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
+    } else if (nextTrack === 'academic' && isCoreRoute) {
+      if (isPatternOrWeightage) {
+        navigate('/v1/question-weightage');
+      } else {
+        navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
+      }
     }
   };
 

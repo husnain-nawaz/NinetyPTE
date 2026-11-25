@@ -54,6 +54,7 @@ import {
   PTEStudyToolsPage,
   PTECoreDashboardPage,
   PTECoreAnalyticsPage,
+  PTECoreExamPatternPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -81,6 +82,9 @@ function AppContent() {
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/v1/question-weightage') ||
     location.pathname.startsWith('/question-weightage') ||
+    location.pathname.startsWith('/v1/exam-pattern') ||
+    location.pathname.startsWith('/exam-pattern') ||
+    location.pathname.startsWith('/core-exam-pattern') ||
     location.pathname.startsWith('/v1/practice-history') ||
     location.pathname.startsWith('/practice-history') ||
     location.pathname.startsWith('/v1/youtube-videos') ||
@@ -245,6 +249,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEQuestionWeightagePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/exam-pattern"
+            element={
+              <ProtectedRoute>
+                <PTECoreExamPatternPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exam-pattern"
+            element={
+              <ProtectedRoute>
+                <PTECoreExamPatternPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/exam-pattern"
+            element={
+              <ProtectedRoute>
+                <PTECoreExamPatternPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-exam-pattern"
+            element={
+              <ProtectedRoute>
+                <PTECoreExamPatternPage />
               </ProtectedRoute>
             }
           />

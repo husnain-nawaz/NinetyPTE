@@ -8,7 +8,7 @@ const CORE_STUDY_TOOLS = [
   { label: 'Vocab Bank', to: '/v1/vocab-bank' },
   { label: 'Strategy Videos', to: '/v1/youtube-videos/1' },
   { label: 'Practice History', to: '/v1/practice-history' },
-  { label: 'Exam Pattern', to: '/pte-core-exam-pattern' },
+  { label: 'Exam Pattern', to: '/v1/exam-pattern' },
 ];
 
 const CORE_PRACTICE_COLUMNS = [
