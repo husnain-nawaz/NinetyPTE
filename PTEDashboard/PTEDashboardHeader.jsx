@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { clearUserSession, getStoredUser, isSuperAdmin } from '../frontend/src/utils/auth';
 import PracticeMegaMenu from './PracticeMegaMenu';
+import NotificationsDrawer, { INITIAL_NOTIFICATIONS } from './NotificationsDrawer';
 
 /**
  * Top announcement ribbon + student portal header isolated from the public marketing navbar.
@@ -35,8 +36,11 @@ export default function PTEDashboardHeader({
   const [practiceOpen, setPracticeOpen] = useState(false);
   const [variantOpen, setVariantOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const unreadCount = notifications.filter((item) => item.unread).length;
 
   const isHomeRoute =
     location.pathname === '/dashboard' ||
@@ -60,6 +64,7 @@ export default function PTEDashboardHeader({
   };
 
   return (
+    <>
     <div className="sticky top-0 z-40">
       {/* Top Announcement Bar */}
       <div className="bg-[#0d5488] text-white px-4 py-2.5 text-xs sm:text-[13px] font-medium flex items-center justify-center gap-2 text-center">
@@ -143,26 +148,18 @@ export default function PTEDashboardHeader({
             <Languages className="w-[18px] h-[18px]" />
           </button>
 
-          {/* Notifications */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setNotifOpen((prev) => !prev)}
-              aria-label="Notifications"
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative cursor-pointer"
-            >
-              <Bell className="w-[18px] h-[18px]" />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500" />
-            </button>
-            {notifOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-lg z-50 text-xs sm:text-[13px]">
-                <p className="font-bold text-slate-800 pb-2 border-b border-slate-100">Notifications</p>
-                <p className="pt-2.5 text-slate-500 leading-relaxed">
-                  Your Premium practice access is active. Keep practising daily to build your streak!
-                </p>
-              </div>
+          {/* Notifications Bell */}
+          <button
+            type="button"
+            onClick={() => setNotifOpen(true)}
+            aria-label="Open notifications"
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative cursor-pointer"
+          >
+            <Bell className="w-[18px] h-[18px]" />
+            {unreadCount > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
             )}
-          </div>
+          </button>
 
           {/* PTE Exam Variant Selector */}
           <div className="relative">
@@ -361,5 +358,24 @@ export default function PTEDashboardHeader({
         </div>
       )}
     </div>
+
+    <NotificationsDrawer
+      isOpen={notifOpen}
+      onClose={() => setNotifOpen(false)}
+      notifications={notifications}
+      onDeleteOne={(id) =>
+        setNotifications((prev) => prev.filter((item) => item.id !== id))
+      }
+      onDeleteAll={() => setNotifications([])}
+      onMarkOneRead={(id) =>
+        setNotifications((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, unread: false } : item))
+        )
+      }
+      onReadAll={() =>
+        setNotifications((prev) => prev.map((item) => ({ ...item, unread: false })))
+      }
+    />
+    </>
   );
 }
