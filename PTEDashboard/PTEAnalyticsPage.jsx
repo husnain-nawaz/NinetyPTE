@@ -270,13 +270,13 @@ export default function PTEAnalyticsPage() {
                 />
               </div>
 
-              <div className="lg:col-span-3 flex flex-col justify-between gap-3.5">
+              <div className="lg:col-span-3 flex flex-col gap-3">
                 {TIME_SKILL_META.map(({ key, icon: Icon, iconBg, iconColor }) => {
                   const stat = SKILL_SIDE_STATS[key];
                   return (
                     <div
                       key={key}
-                      className="rounded-2xl border border-slate-200/90 px-4 py-3.5 flex items-center justify-between gap-3 bg-white"
+                      className="flex-1 rounded-2xl border border-slate-200/90 px-4 py-3.5 flex items-center justify-between gap-3 bg-white"
                     >
                       <div className="flex items-center gap-3">
                         <span
