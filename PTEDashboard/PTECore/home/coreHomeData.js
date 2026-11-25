@@ -37,7 +37,7 @@ export const CORE_HOME_DATA = {
     ],
     Writing: [
       { name: 'Summarize Written Text', done: 0, total: 434, to: '/v1/core/practice/writing/summarize-written-text' },
-      { name: 'Write Email', done: 0, total: 311, to: '/v1/core/practice/writing/write-email' },
+      { name: 'Write Email', done: 0, total: 177, to: '/v1/core/practice/writing/write-email' },
     ],
     Reading: [
       { name: 'Reading & Writing: Fill in the Blanks', done: 68, total: 950, to: '/v1/core/practice/reading/reading-writing-fill-in-the-blanks' },

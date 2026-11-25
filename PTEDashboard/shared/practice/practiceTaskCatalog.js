@@ -191,6 +191,19 @@ const CORE_SUMMARIZE_WRITTEN_TEXT_SEED_ROWS = [
   { id: '24000430', title: 'Global Health', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
 ];
 
+const WRITE_EMAIL_SEED_ROWS = [
+  { id: '22000181', title: 'Birthday Reservation', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 1593 },
+  { id: '22000180', title: 'Company of Friend', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 500 },
+  { id: '22000178', title: 'Company Energy', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 757 },
+  { id: '22000177', title: 'Noise and Hot Water', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 1837 },
+  { id: '22000173', title: 'Stairs Light', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 1975 },
+  { id: '22000172', title: 'Carpool', difficulty: 'Medium', practicedCount: 0, appearedCount: 4 },
+  { id: '22000171', title: 'Bad Dining Experience', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '22000163', title: 'Watching a Movie', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 439 },
+  { id: '22000025', title: 'Movie Invite', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 515 },
+  { id: '22000152', title: 'Movie Invitation', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 3611 },
+];
+
 const RW_FILL_BLANKS_SEED_ROWS = [
   { id: '12001335', title: 'Public Education', difficulty: 'Medium', isNew: true, newPrediction: true, practicedCount: 2, appearedCount: 55 },
   { id: '12001334', title: 'Resultant Force', difficulty: 'Medium', newPrediction: true, practicedCount: 2, appearedCount: 54 },
@@ -533,12 +546,15 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'write-email',
     code: 'WEM',
     title: 'Write Email',
-    totalQuestions: 311,
-    startId: 8800311,
-    continueItem: { id: '8800209', title: 'Conference Room Booking' },
-    instruction: 'You have 9 minutes to read the prompt and write an email (50–120 words) covering all three requested points cleanly.',
+    totalQuestions: 177,
+    coreTotalQuestions: 177,
+    startId: 22000181,
+    continueItem: null,
+    hideDownloadButton: true,
+    instruction: 'Read a description of a situation. Then write an email responding to the situation in 9 minutes using complete sentences.',
     promptText:
-      'You recently attended a workplace training workshop and noticed a broken projector in Room B. Write an email to the facilities coordinator describing the room issue, session impact, and request for inspection before Monday.',
+      'You are organizing a surprise birthday dinner for a colleague next Friday evening. Write an email to the restaurant manager requesting a quiet table reservation, noting guests with nut allergies, and asking about bringing a cake.',
+    seedRows: WRITE_EMAIL_SEED_ROWS,
   },
   'reading/reading-writing-fill-in-the-blanks': {
     skill: 'reading',
