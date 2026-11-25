@@ -14,8 +14,8 @@ import {
 } from 'lucide-react';
 import PTEDashboardHeader from '../PTEDashboardHeader';
 import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
+import { ANALYTICS_SKILL_COLORS } from './analyticsConstants';
 import {
-  ANALYTICS_SKILL_COLORS,
   HalfCircleGauge,
   Last24HoursCommunityChart,
   ProgressAreaChart,

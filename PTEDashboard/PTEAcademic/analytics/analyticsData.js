@@ -1,4 +1,4 @@
-export { ANALYTICS_SKILL_COLORS as SKILL_COLORS } from '../../shared/analytics/AnalyticsCharts';
+export { ANALYTICS_SKILL_COLORS as SKILL_COLORS } from '../../shared/analytics/analyticsConstants';
 
 const ACADEMIC_TASKS = [
   { code: 'RA', label: 'Read Aloud', skill: 'Speaking', communityCount: 233000, communityLabel: '233K' },
