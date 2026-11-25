@@ -165,6 +165,19 @@ const RESPOND_TO_SITUATION_SEED_ROWS = [
   { id: '21000364', title: 'Food in the Refrigerator', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 1 },
 ];
 
+const SUMMARIZE_WRITTEN_TEXT_SEED_ROWS = [
+  { id: '6000486', title: 'Learning and Growing in Relationships', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 2 },
+  { id: '6000485', title: 'Design', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 1 },
+  { id: '6000484', title: 'Financial Literacy Among Young Adults', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 2 },
+  { id: '6000483', title: 'The Paradox of Technological Efficiency', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '6000482', title: 'The Impact of Social Media', difficulty: 'Medium', isNew: true, newPrediction: true, practicedCount: 0, appearedCount: 50 },
+  { id: '6000481', title: 'The Passing of Time', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '6000480', title: 'Nature and Humanity', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '6000479', title: 'Economy and Material', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '6000478', title: 'Microloan', difficulty: 'Medium', practicedCount: 2, appearedCount: 102 },
+  { id: '6000477', title: 'Preschool Program', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 53 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -295,13 +308,15 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'summarize-written-text',
     code: 'SWT',
     title: 'Summarize Written Text',
-    totalQuestions: 390,
+    totalQuestions: 442,
     coreTotalQuestions: 300,
-    startId: 8000390,
-    continueItem: { id: '8000215', title: 'Urban Canopy Cooling' },
+    startId: 6000486,
+    continueItem: { id: '6000226', title: 'Paleolithic People' },
+    hideDownloadButton: true,
     instruction: 'Read the passage below and summarize it using one sentence. Type your response in the box at the bottom of the screen.',
     promptText:
-      'Municipal tree-planting initiatives reduce summer surface temperatures in dense neighbourhoods while filtering airborne particulates and lowering peak household cooling demand.',
+      'Meaningful personal and professional growth often develops through constructive interpersonal relationships that combine empathy, clear feedback, and shared accountability over time.',
+    seedRows: SUMMARIZE_WRITTEN_TEXT_SEED_ROWS,
   },
   'writing/write-essay': {
     skill: 'writing',

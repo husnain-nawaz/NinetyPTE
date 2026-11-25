@@ -198,13 +198,73 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
               <span className="text-xs font-bold text-slate-600">00:00</span>
             </div>
           ) : (
-            <textarea
-              rows={5}
-              value={responseText}
-              onChange={(e) => setResponseText(e.target.value)}
-              placeholder={`Enter your ${taskMeta.title} response here...`}
-              className="w-full rounded-xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#00b4c6]"
-            />
+            <div className="space-y-3">
+              <textarea
+                rows={5}
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
+                placeholder={
+                  taskMeta.skill === 'writing'
+                    ? 'Type your summary here...'
+                    : `Enter your ${taskMeta.title} response here...`
+                }
+                className="w-full rounded-xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#00b4c6]"
+              />
+
+              {taskMeta.skill === 'writing' && (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    {[
+                      {
+                        label: 'Cut',
+                        onClick: () => {
+                          try {
+                            navigator.clipboard?.writeText(responseText);
+                          } catch {
+                            // Ignore clipboard failures
+                          }
+                          setResponseText('');
+                        },
+                      },
+                      {
+                        label: 'Copy',
+                        onClick: () => {
+                          try {
+                            navigator.clipboard?.writeText(responseText);
+                          } catch {
+                            // Ignore clipboard failures
+                          }
+                        },
+                      },
+                      {
+                        label: 'Paste',
+                        onClick: async () => {
+                          try {
+                            const clip = await navigator.clipboard?.readText();
+                            if (clip) setResponseText((prev) => `${prev}${clip}`);
+                          } catch {
+                            // Ignore clipboard failures
+                          }
+                        },
+                      },
+                    ].map((btn) => (
+                      <button
+                        key={btn.label}
+                        type="button"
+                        onClick={btn.onClick}
+                        className="rounded-full bg-[#155e75] hover:bg-[#0e4456] px-4 py-1 text-xs font-bold text-white transition cursor-pointer"
+                      >
+                        {btn.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="text-xs font-semibold text-slate-500">
+                    Word Count: {responseText.trim() ? responseText.trim().split(/\s+/).length : 0}
+                  </span>
+                </div>
+              )}
+            </div>
           )}
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
