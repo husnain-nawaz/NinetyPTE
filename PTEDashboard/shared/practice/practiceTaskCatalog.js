@@ -392,6 +392,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RS',
     title: 'Repeat Sentence',
     totalQuestions: 3174,
+    coreTotalQuestions: 3174,
     startId: 2003380,
     continueItem: { id: '2001147', title: 'RS1147' },
     supportsDisplayContent: true,
