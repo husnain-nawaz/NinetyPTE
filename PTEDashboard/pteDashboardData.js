@@ -138,7 +138,7 @@ export const MOCK_TEST_CARDS = [
 export const QUICK_TOOL_TILES = [
   { key: 'predictions', label: 'Predictions', to: '/best-pte-practice-preparation-material' },
   { key: 'strategy', label: 'Strategy Videos', to: '/v1/youtube-videos/1' },
-  { key: 'vocab', label: 'Vocab Bank', to: '/best-pte-practice-preparation-material' },
+  { key: 'vocab', label: 'Vocab Bank', to: '/v1/vocab-bank' },
   { key: 'feedback', label: 'Score Feedback', to: '/pte-score-calculator' },
   { key: 'compatibility', label: 'Compatibility', to: '/on-test-day' },
   { key: 'full-mock', label: 'Full Mock Test', to: '/mock-tests' },
