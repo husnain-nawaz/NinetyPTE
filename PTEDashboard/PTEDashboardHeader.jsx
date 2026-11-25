@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   Calendar,
@@ -16,21 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { clearUserSession, getStoredUser, isSuperAdmin } from '../frontend/src/utils/auth';
-
-const PRACTICE_DROPDOWN_LINKS = {
-  academic: [
-    { label: 'Speaking Practice', to: '/pte-speaking-practice' },
-    { label: 'Writing Practice', to: '/pte-writing-practice' },
-    { label: 'Reading Practice', to: '/pte-reading-practice' },
-    { label: 'Listening Practice', to: '/pte-listening-practice' },
-  ],
-  core: [
-    { label: 'Core Speaking Practice', to: '/pte-core-speaking-practice' },
-    { label: 'Core Writing Practice', to: '/pte-core-writing-practice' },
-    { label: 'Core Reading Practice', to: '/pte-core-reading-practice' },
-    { label: 'Core Listening Practice', to: '/pte-core-listening-practice' },
-  ],
-};
+import PracticeMegaMenu from './PracticeMegaMenu';
 
 /**
  * Top announcement ribbon + student portal header isolated from the public marketing navbar.
@@ -41,8 +27,10 @@ export default function PTEDashboardHeader({
   onOpenReferModal,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = getStoredUser() || {};
   const superAdmin = isSuperAdmin(user);
+  const closeTimeoutRef = useRef(null);
 
   const [practiceOpen, setPracticeOpen] = useState(false);
   const [variantOpen, setVariantOpen] = useState(false);
@@ -50,8 +38,21 @@ export default function PTEDashboardHeader({
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const practiceItems =
-    examVariant === 'core' ? PRACTICE_DROPDOWN_LINKS.core : PRACTICE_DROPDOWN_LINKS.academic;
+  const isHomeRoute =
+    location.pathname === '/dashboard' ||
+    location.pathname === '/v1/dashboard' ||
+    location.pathname === '/pte-dashboard';
+
+  const openPracticeMenu = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    setPracticeOpen(true);
+  };
+
+  const scheduleClosePracticeMenu = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setPracticeOpen(false);
+    }, 150);
+  };
 
   const handleLogout = () => {
     clearUserSession();
@@ -69,7 +70,7 @@ export default function PTEDashboardHeader({
       </div>
 
       {/* Main Portal Header */}
-      <header className="bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8">
+      <header className="relative bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1440px] mx-auto h-[72px] flex items-center justify-between gap-4">
         <div className="flex items-center gap-7">
           {/* NinetyPTE Portal Wordmark */}
@@ -81,36 +82,31 @@ export default function PTEDashboardHeader({
 
           {/* Portal Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <Link to="/dashboard" className="text-[#00b4c6] font-semibold">
+            <Link
+              to="/dashboard"
+              className={isHomeRoute ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6] transition'}
+            >
               Home
             </Link>
 
-            <div className="relative">
+            <div
+              onMouseEnter={openPracticeMenu}
+              onMouseLeave={scheduleClosePracticeMenu}
+              className="py-5"
+            >
               <button
                 type="button"
                 onClick={() => setPracticeOpen((prev) => !prev)}
-                className="flex items-center gap-1 hover:text-[#00b4c6] transition cursor-pointer"
+                aria-expanded={practiceOpen}
+                className={`flex items-center gap-1 transition cursor-pointer ${
+                  practiceOpen ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6]'
+                }`}
               >
                 <span>Practice</span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${practiceOpen ? 'rotate-180' : ''}`}
+                />
               </button>
-              {practiceOpen && (
-                <div
-                  onMouseLeave={() => setPracticeOpen(false)}
-                  className="absolute left-0 top-full mt-2.5 w-56 rounded-xl border border-slate-200 bg-white py-2 shadow-lg z-50"
-                >
-                  {practiceItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      to={item.to}
-                      onClick={() => setPracticeOpen(false)}
-                      className="block px-4 py-2.5 text-xs sm:text-[13px] font-medium text-slate-700 hover:bg-cyan-50 hover:text-[#0097a7]"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
             </div>
 
             <Link
@@ -287,6 +283,19 @@ export default function PTEDashboardHeader({
           </button>
         </div>
         </div>
+
+        {/* Full-Width Portal Practice Mega Menu */}
+        {practiceOpen && (
+          <div
+            onMouseEnter={openPracticeMenu}
+            onMouseLeave={scheduleClosePracticeMenu}
+          >
+            <PracticeMegaMenu
+              examVariant={examVariant}
+              onClose={() => setPracticeOpen(false)}
+            />
+          </div>
+        )}
       </header>
 
       {/* Mobile Nav Drawer */}
@@ -301,6 +310,27 @@ export default function PTEDashboardHeader({
             className="block"
           >
             Speaking Practice
+          </Link>
+          <Link
+            to={examVariant === 'core' ? '/pte-core-writing-practice' : '/pte-writing-practice'}
+            onClick={() => setMobileMenuOpen(false)}
+            className="block"
+          >
+            Writing Practice
+          </Link>
+          <Link
+            to={examVariant === 'core' ? '/pte-core-reading-practice' : '/pte-reading-practice'}
+            onClick={() => setMobileMenuOpen(false)}
+            className="block"
+          >
+            Reading Practice
+          </Link>
+          <Link
+            to={examVariant === 'core' ? '/pte-core-listening-practice' : '/pte-listening-practice'}
+            onClick={() => setMobileMenuOpen(false)}
+            className="block"
+          >
+            Listening Practice
           </Link>
           <Link
             to={examVariant === 'core' ? '/pte-core-mock-test' : '/mock-tests'}
