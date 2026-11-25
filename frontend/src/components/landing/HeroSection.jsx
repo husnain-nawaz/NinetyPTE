@@ -1,6 +1,10 @@
+import { Link } from 'react-router-dom';
 import { ChevronRight, Clock, Flame, Calendar, Award } from 'lucide-react';
+import { getStoredUser, isSuperAdmin } from '../../utils/auth';
 
 export default function HeroSection() {
+  const currentUser = getStoredUser();
+  const dashboardPath = isSuperAdmin(currentUser) ? '/super-dashboard' : '/dashboard';
   return (
     <section className="relative overflow-hidden pt-4 pb-28 lg:pb-36">
       {/* Background Slanted Gradient Mesh */}
@@ -29,13 +33,23 @@ export default function HeroSection() {
             </p>
 
             <div>
-              <a
-                href="#dashboard"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-extrabold text-xs tracking-wide shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5"
-              >
-                <span>Dashboard</span>
-                <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
-              </a>
+              {currentUser ? (
+                <Link
+                  to={dashboardPath}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-extrabold text-xs tracking-wide shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5"
+                >
+                  <span>Dashboard</span>
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                </Link>
+              ) : (
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-900 font-extrabold text-xs tracking-wide shadow-lg shadow-cyan-500/30 transition transform hover:-translate-y-0.5"
+                >
+                  <span>Start Free Trial</span>
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                </Link>
+              )}
             </div>
           </div>
 

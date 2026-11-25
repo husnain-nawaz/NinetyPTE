@@ -94,16 +94,26 @@ export default function Navbar() {
 
             <LanguageDropdown variant="business" />
 
-            <button
-              onClick={() => {
-                const el = document.getElementById('enquiry-form');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-                else window.scrollTo({ top: 400, behavior: 'smooth' });
-              }}
-              className="px-5 py-2 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs sm:text-sm shadow-xs transition active:scale-95 cursor-pointer"
-            >
-              Get Free Trial
-            </button>
+            {currentUser ? (
+              <Link
+                to={showSuperDashboard ? '/super-dashboard' : '/dashboard'}
+                className="px-5 py-2 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs sm:text-sm shadow-xs transition flex items-center gap-1"
+              >
+                <span>Dashboard</span>
+                <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+              </Link>
+            ) : (
+              <button
+                onClick={() => {
+                  const el = document.getElementById('enquiry-form');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  else window.scrollTo({ top: 400, behavior: 'smooth' });
+                }}
+                className="px-5 py-2 rounded-full bg-[#00c2cb] hover:bg-[#00a8b5] text-white font-extrabold text-xs sm:text-sm shadow-xs transition active:scale-95 cursor-pointer"
+              >
+                Get Free Trial
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -135,17 +145,27 @@ export default function Navbar() {
                 <LanguageDropdown variant="business" />
               </div>
               
-              <button 
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  const el = document.getElementById('enquiry-form');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  else window.scrollTo({ top: 400, behavior: 'smooth' });
-                }}
-                className="w-full py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-center text-sm shadow-md"
-              >
-                Get Free Trial
-              </button>
+              {currentUser ? (
+                <Link
+                  to={showSuperDashboard ? '/super-dashboard' : '/dashboard'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-center text-sm shadow-md block"
+                >
+                  Dashboard &gt;
+                </Link>
+              ) : (
+                <button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    const el = document.getElementById('enquiry-form');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    else window.scrollTo({ top: 400, behavior: 'smooth' });
+                  }}
+                  className="w-full py-2.5 rounded-full bg-[#00c2cb] text-white font-extrabold text-center text-sm shadow-md"
+                >
+                  Get Free Trial
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -233,7 +253,7 @@ export default function Navbar() {
               )}
               <Link
                 to="/dashboard"
-                className="px-4 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5"
+                className="px-5 py-2 rounded-full bg-white hover:bg-cyan-50 text-[#00a8b5] font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1"
               >
                 <span>Dashboard</span>
                 <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
