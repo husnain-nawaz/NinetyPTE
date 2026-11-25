@@ -126,6 +126,19 @@ const RETELL_LECTURE_SEED_ROWS = [
   { id: '4000593', title: 'Dissociation of Personalities', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 107, questionType: 'Audio + Slide' },
 ];
 
+const ANSWER_SHORT_QUESTION_SEED_ROWS = [
+  { id: '5002001', title: 'ASQ2001', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0, contentSnippet: 'What instrument do meteorologists use to measure atmospheric pressure? (Barometer)' },
+  { id: '5002000', title: 'ASQ2000', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0, contentSnippet: 'What do we call a period of ten consecutive years? (Decade)' },
+  { id: '5001999', title: 'ASQ1999', difficulty: 'Medium', isNew: true, prediction: true, practicedCount: 0, appearedCount: 51, contentSnippet: 'Which organ in the human body pumps blood through the circulatory system? (Heart)' },
+  { id: '5001998', title: 'ASQ1998', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 50, contentSnippet: 'What do you call the document needed to travel between different countries? (Passport)' },
+  { id: '5001997', title: 'ASQ1997', difficulty: 'Medium', practicedCount: 0, appearedCount: 51, contentSnippet: 'How many sides does an octagon have? (Eight)' },
+  { id: '5001996', title: 'ASQ1996', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 50, contentSnippet: 'What is the opposite direction of sunrise? (West)' },
+  { id: '5001995', title: 'ASQ1995', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 50, contentSnippet: 'Which scientist studies rocks, minerals, and Earth’s crust? (Geologist)' },
+  { id: '5001994', title: 'ASQ1994', difficulty: 'Medium', practicedCount: 0, appearedCount: 50, contentSnippet: 'What do we call a list of chapters shown at the front of a book? (Table of contents)' },
+  { id: '5001993', title: 'ASQ1993', difficulty: 'Medium', practicedCount: 0, appearedCount: 0, contentSnippet: 'Which month immediately follows August? (September)' },
+  { id: '5001992', title: 'ASQ1992', difficulty: 'Medium', practicedCount: 0, appearedCount: 0, contentSnippet: 'What freezing temperature in Celsius turns water into ice? (Zero degrees)' },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -215,10 +228,13 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'ASQ',
     title: 'Answer Short Question',
     totalQuestions: 1946,
-    startId: 5001946,
-    continueItem: { id: '5001522', title: 'Thermometer Scale' },
+    startId: 5002001,
+    continueItem: { id: '5000075', title: 'ASQ0075' },
+    supportsDisplayContent: true,
+    hasAudioPrompt: true,
     instruction: 'You will hear a question. Please give a simple and short answer. Often just one or a few words is enough.',
     promptText: 'What instrument do meteorologists use to measure atmospheric pressure?',
+    seedRows: ANSWER_SHORT_QUESTION_SEED_ROWS,
   },
   'speaking/summarize-group-discussion': {
     skill: 'speaking',
@@ -486,7 +502,12 @@ export function buildTaskQuestionList(taskMeta) {
 
     items.push({
       id: String(idNum),
-      title: taskMeta.slug === 'repeat-sentence' ? `RS${3380 - idx}` : `${topic} ${taskMeta.code}-${total - idx}`,
+      title:
+        taskMeta.slug === 'repeat-sentence'
+          ? `RS${3380 - idx}`
+          : taskMeta.slug === 'answer-short-question'
+            ? `ASQ${2001 - idx}`
+            : `${topic} ${taskMeta.code}-${total - idx}`,
       difficulty,
       isNew,
       newPrediction,
