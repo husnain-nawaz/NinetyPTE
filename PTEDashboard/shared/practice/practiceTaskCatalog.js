@@ -1,7 +1,7 @@
 const READ_ALOUD_SEED_ROWS = [
   { id: '1001648', title: 'Returning Book', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 128 },
   { id: '1001647', title: 'Smart Cooking', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 86 },
-  { id: '1001646', title: 'Community Gardening', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 116 },
+  { id: '1001646', title: 'Community Gardening', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 116 },
   { id: '1001645', title: 'Visit to Canada', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 284 },
   { id: '1001644', title: 'Road Bicycle Racing', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 17 },
   { id: '1001643', title: 'Coconut Oil', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 12 },
@@ -378,11 +378,12 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RA',
     title: 'Read Aloud',
     totalQuestions: 1552,
+    coreTotalQuestions: 1552,
     startId: 1001648,
     continueItem: { id: '1001234', title: 'Social Media' },
     instruction: 'Look at the text below. In 35 seconds, you must read this text aloud as naturally and clearly as possible. You have 35 seconds to read aloud.',
     promptText:
-      'Returning borrowed library materials before the due date keeps high-demand academic collections accessible for every student enrolled in foundational research courses across the faculty.',
+      'When returning a borrowed book, remember that there has been a recent rise in damaged bindings, says one Toronto librarian, noting most tears stem from simple misunderstanding.',
     seedRows: READ_ALOUD_SEED_ROWS,
   },
   'speaking/repeat-sentence': {
