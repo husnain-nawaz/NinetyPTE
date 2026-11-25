@@ -96,6 +96,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     location.pathname === '/v1/core/dashboard' ||
     location.pathname === '/core-dashboard';
 
+  const homePath = isCoreMode ? '/v1/core/dashboard' : '/dashboard';
+
   const openPracticeMenu = () => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     setPracticeOpen(true);
@@ -111,59 +113,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     setPortalMode(nextTrack);
     setVariantOpen(false);
     setPracticeOpen(false);
-
-    const isCoreTarget = location.pathname.includes('analytics');
-    const isVideos = location.pathname.includes('youtube-videos');
-    const isPractice = location.pathname.includes('/practice/');
-    const isSharedTool =
-      location.pathname.includes('vocab-bank') ||
-      location.pathname.includes('grammar') ||
-      location.pathname.includes('prediction') ||
-      location.pathname.includes('templates') ||
-      location.pathname.includes('practice-history') ||
-      location.pathname.includes('/profile');
-    const isPatternOrWeightage =
-      location.pathname.includes('question-weightage') ||
-      location.pathname.includes('exam-pattern');
-    const isCoreRoute =
-      location.pathname.includes('/core') ||
-      location.pathname.includes('core-') ||
-      location.pathname.includes('exam-pattern');
-
-    if (nextTrack === 'core' && isPractice) {
-      const nextPath = location.pathname.startsWith('/v1/core/practice/')
-        ? location.pathname
-        : location.pathname.replace('/v1/practice/', '/v1/core/practice/');
-      navigate(nextPath);
-    } else if (nextTrack === 'core' && isVideos) {
-      navigate('/v1/core/youtube-videos');
-    } else if (nextTrack === 'core' && isPatternOrWeightage) {
-      navigate('/v1/exam-pattern');
-    } else if (nextTrack === 'core' && isSharedTool) {
-      if (location.pathname.includes('vocab-bank')) {
-        navigate('/v1/vocab-bank');
-      }
-    } else if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
-      navigate('/dashboard');
-    } else if (nextTrack === 'academic' && isCoreRoute) {
-      if (isPractice) {
-        navigate(location.pathname.replace('/v1/core/practice/', '/v1/practice/'));
-      } else if (isVideos) {
-        navigate('/v1/youtube-videos/1');
-      } else if (isPatternOrWeightage) {
-        navigate('/v1/question-weightage');
-      } else if (location.pathname.includes('vocab-bank')) {
-        navigate('/v1/vocab-bank');
-      } else if (location.pathname.includes('prediction')) {
-        navigate('/v1/prediction');
-      } else if (location.pathname.includes('templates')) {
-        navigate('/v1/templates');
-      } else if (location.pathname.includes('grammar')) {
-        navigate('/v1/grammar');
-      } else {
-        navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
-      }
-    }
+    setMobileMenuOpen(false);
+    navigate(nextTrack === 'core' ? '/v1/core/dashboard' : '/dashboard');
   };
 
   const handleLogout = () => {
@@ -186,7 +137,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         <header className="relative bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8">
           <div className="max-w-[1440px] mx-auto h-[72px] flex items-center justify-between gap-4">
             <div className="flex items-center gap-7">
-              <Link to="/dashboard" className="inline-flex items-center gap-0.5 shrink-0">
+              <Link to={homePath} className="inline-flex items-center gap-0.5 shrink-0">
                 <span className="text-[26px] font-black tracking-tighter text-[#0f3554]">
                   ninety<span className="text-[#00b4c6]">pte</span>
                 </span>
@@ -195,7 +146,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
               {/* Portal Desktop Navigation */}
               <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
                 <Link
-                  to="/dashboard"
+                  to={homePath}
                   className={isHomeRoute ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6] transition'}
                 >
                   Home
@@ -473,7 +424,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         {/* Mobile Nav Drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white border-b border-slate-200 px-5 py-4 space-y-2.5 text-xs font-semibold text-slate-700 shadow-md">
-            <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block text-[#00b4c6]">
+            <Link to={homePath} onClick={() => setMobileMenuOpen(false)} className="block text-[#00b4c6]">
               Home ({activeTrackLabel})
             </Link>
             <Link

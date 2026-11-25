@@ -105,14 +105,14 @@ export default function DashboardHomeRightRail({ data, onSelectVideo }) {
 
         <div className="mt-4 space-y-1.5">
           <span className="inline-block bg-white text-slate-900 px-2.5 py-1 rounded font-black text-sm uppercase tracking-tight">
-            PTE <span className="text-rose-600">AI SCORE</span>
+            {heroVideo.tagTop}
           </span>
           <div>
             <span className="inline-block bg-amber-400 text-slate-950 px-2.5 py-1 rounded font-black text-sm uppercase tracking-tight">
-              VS HUMAN SCORE
+              {heroVideo.tagHighlight}
             </span>
           </div>
-          <p className="text-xs text-slate-300 pt-1">Watch expert breakdown</p>
+          <p className="text-xs text-slate-300 pt-1 line-clamp-1">{heroVideo.title}</p>
         </div>
 
         <span className="absolute right-5 bottom-5 w-11 h-11 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center group-hover:scale-110 group-hover:bg-red-600 transition">

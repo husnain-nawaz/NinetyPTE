@@ -2,8 +2,76 @@ import {
   SHARED_CALENDAR_WEEKS,
   SHARED_SKILL_TAB_META,
   SHARED_TODAYS_SKILLS,
-  SHARED_VIDEO_GUIDES,
 } from '../../shared/home/sharedHomeDefaults';
+
+const CORE_VIDEO_GUIDES = [
+  {
+    id: 'core-vs-academic',
+    tagTop: 'PTE CORE',
+    tagHighlight: 'VS PTE ACADEMIC',
+    bg: 'from-slate-900 via-[#0e2d47] to-[#1e1b4b]',
+    badgeBg: 'bg-cyan-500',
+    title: 'PTE Core vs PTE Academic: Format, Scoring & CLB Equivalency',
+    timeAgo: '2 months ago',
+    duration: '13:35',
+    summary: 'Complete walkthrough comparing PTE Core tasks (Write Email, Respond to a Situation) against Academic and mapping scores to IRCC CLB bands.',
+  },
+  {
+    id: 'core-swt-guide',
+    tagTop: 'PTE CORE',
+    tagHighlight: 'SWT 25–50 WORDS',
+    bg: 'from-[#1a1033] via-[#2c1654] to-[#0f172a]',
+    badgeBg: 'bg-sky-500',
+    title: 'PTE Core: Summarize Written Text Made Easy | Real Examples',
+    timeAgo: 'a month ago',
+    duration: '10:32',
+    summary: 'How to synthesize main points concisely within 25 to 50 words for maximum PTE Core Form and Grammar scoring.',
+  },
+  {
+    id: 'core-write-email',
+    tagTop: 'HOW TO WRITE',
+    tagHighlight: 'INFORMAL & FORMAL EMAIL',
+    bg: 'from-slate-950 via-slate-900 to-[#3f1414]',
+    badgeBg: 'bg-amber-500',
+    title: 'PTE Core Write Email Masterclass: Hit All Bullet Points for CLB 9+',
+    timeAgo: 'a month ago',
+    duration: '14:20',
+    summary: 'Structured 9-minute email framework covering greetings, purpose statement, all three scenario bullets, and natural sign-off.',
+  },
+  {
+    id: 'core-respond-situation',
+    tagTop: 'RESPOND TO',
+    tagHighlight: 'A SITUATION',
+    bg: 'from-[#06283d] via-[#133b5c] to-[#0c1b2a]',
+    badgeBg: 'bg-cyan-500',
+    title: 'PTE Core Respond to a Situation: Workplace & Everyday Templates',
+    timeAgo: '2 months ago',
+    duration: '12:45',
+    summary: 'Practical workplace and everyday scenario templates with appropriate tone and clear 40-second fluency.',
+  },
+  {
+    id: 'core-sst-template',
+    tagTop: 'PTE CORE',
+    tagHighlight: 'SUMMARIZE SPOKEN TEXT',
+    bg: 'from-[#1f0d2b] via-[#361047] to-[#0f172a]',
+    badgeBg: 'bg-rose-600',
+    title: 'PTE Core Summarize Spoken Text | 20–30 Words Tips & Template',
+    timeAgo: '2 months ago',
+    duration: '10:45',
+    summary: 'Targeted listening note-taking and 20–30 word summary construction for high PTE Core Listening and Writing marks.',
+  },
+  {
+    id: 'core-clb-strategy',
+    tagTop: 'EXPRESS ENTRY',
+    tagHighlight: 'CLB 9+ STRATEGY',
+    bg: 'from-[#0d2238] via-[#173654] to-[#2e1a12]',
+    badgeBg: 'bg-emerald-500',
+    title: 'How the PTE Core 10–90 Scale Maps to Canadian CLB 7, 8 & 9',
+    timeAgo: '2 months ago',
+    duration: '11:48',
+    summary: 'Score targets across Speaking, Writing, Reading, and Listening to maximize Express Entry CRS points.',
+  },
+];
 
 export const CORE_HOME_DATA = {
   lastUpdatedLabel: 'Nov 25, 2026',
@@ -18,7 +86,7 @@ export const CORE_HOME_DATA = {
   ],
   todaysSkills: SHARED_TODAYS_SKILLS,
   skillTabMeta: SHARED_SKILL_TAB_META,
-  videoGuides: SHARED_VIDEO_GUIDES,
+  videoGuides: CORE_VIDEO_GUIDES,
   calendarWeeks: SHARED_CALENDAR_WEEKS,
   topSummaryStats: [
     { key: 'predictions', label: 'Prediction Questions', count: '1,477', pct: 34, targetTab: 'Speaking' },
@@ -62,9 +130,9 @@ export const CORE_HOME_DATA = {
     { name: 'Timed Mock Test', done: 0, total: 80, to: '/pte-core-mock-test' },
   ],
   quickToolTiles: [
-    { key: 'predictions', label: 'Predictions', to: '/v1/prediction' },
+    { key: 'predictions', label: 'Predictions', to: '/v1/core/prediction' },
     { key: 'strategy', label: 'Strategy Videos', to: '/v1/core/youtube-videos' },
-    { key: 'vocab', label: 'Vocab Bank', to: '/v1/vocab-bank' },
+    { key: 'vocab', label: 'Vocab Bank', to: '/v1/core/vocab-bank' },
     { key: 'feedback', label: 'Score Feedback', to: '/pte-core-score-calculator' },
     { key: 'compatibility', label: 'Compatibility', to: '/on-test-day' },
     { key: 'full-mock', label: 'Full Mock Test', to: '/pte-core-mock-test' },
@@ -129,7 +197,7 @@ export const CORE_HOME_DATA = {
     'Writing Guide': [
       {
         q: 'What are the word count rules for PTE Core Write Email and SWT?',
-        a: 'Write Email must be 50–120 words covering all 3 scenario points with proper opening/closing. Summarize Written Text must be one single sentence between 25 and 50 words.',
+        a: 'Write Email must be 50–120 words covering all 3 scenario points with proper opening/closing. Summarize Written Text must be 25 to 50 words capturing the core points.',
       },
     ],
     'Reading Guide': [

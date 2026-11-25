@@ -10,11 +10,12 @@ import {
 } from 'lucide-react';
 import PTEDashboardHeader from '../PTEDashboardHeader';
 import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
+import { usePortal } from '../portalContext';
 
 const STUDY_TOOL_TABS = [
-  { id: 'templates', label: 'Templates', path: '/v1/templates' },
-  { id: 'predictions', label: 'Predictions', path: '/v1/prediction' },
-  { id: 'grammar', label: 'Grammar', path: '/v1/grammar' },
+  { id: 'templates', label: 'Templates', path: '/v1/templates', corePath: '/v1/core/templates' },
+  { id: 'predictions', label: 'Predictions', path: '/v1/prediction', corePath: '/v1/core/prediction' },
+  { id: 'grammar', label: 'Grammar', path: '/v1/grammar', corePath: '/v1/core/grammar' },
 ];
 
 function downloadStudyResource(item) {
@@ -106,6 +107,8 @@ export default function StudyToolsShell({
   infoDescription,
 }) {
   const navigate = useNavigate();
+  const { portalMode } = usePortal();
+  const isCoreMode = portalMode === 'core';
   const [showInfoTip, setShowInfoTip] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
 
@@ -149,7 +152,7 @@ export default function StudyToolsShell({
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => navigate(tab.path)}
+                onClick={() => navigate(isCoreMode ? tab.corePath : tab.path)}
                 className={`px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-t-xl transition cursor-pointer ${
                   isActive
                     ? 'bg-white text-[#0c4a7e] font-bold shadow-[0_-2px_6px_rgba(15,23,42,0.04)] relative z-10'

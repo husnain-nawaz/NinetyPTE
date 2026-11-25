@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import PTEDashboardHeader from '../PTEDashboardHeader';
 import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
+import { usePortal } from '../portalContext';
 import { ANALYTICS_SKILL_COLORS } from './analyticsConstants';
 import {
   HalfCircleGauge,
@@ -100,6 +101,8 @@ function DropdownPill({ options, value, onChange, ariaLabel }) {
  * parameterized by each track's dataset.
  */
 export default function PortalAnalyticsView({ data }) {
+  const { portalMode } = usePortal();
+  const isCoreMode = portalMode === 'core';
   const [activeTab, setActiveTab] = useState('progress');
   const [questionFilter, setQuestionFilter] = useState('All Questions');
   const [timeframe, setTimeframe] = useState(data.defaultTimeframe || 'Last 30 days');
@@ -135,7 +138,7 @@ export default function PortalAnalyticsView({ data }) {
           </div>
 
           <Link
-            to="/dashboard"
+            to={isCoreMode ? '/v1/core/dashboard' : '/dashboard'}
             className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs sm:text-[13px] font-semibold text-slate-600 hover:border-[#00b4c6] hover:text-[#0097a7] transition shadow-2xs"
           >
             <ArrowLeft className="w-3.5 h-3.5" />

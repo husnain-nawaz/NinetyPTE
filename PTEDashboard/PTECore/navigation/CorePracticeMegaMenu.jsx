@@ -2,13 +2,13 @@ import { BookOpen, Headphones, Mic, PenLine } from 'lucide-react';
 import PracticeMegaMenuShell from '../../shared/navigation/PracticeMegaMenuShell';
 
 const CORE_STUDY_TOOLS = [
-  { label: 'Templates', to: '/v1/templates' },
-  { label: 'Predictions', to: '/v1/prediction' },
-  { label: 'Grammar', to: '/v1/grammar' },
-  { label: 'Vocab Bank', to: '/v1/vocab-bank' },
+  { label: 'Templates', to: '/v1/core/templates' },
+  { label: 'Predictions', to: '/v1/core/prediction' },
+  { label: 'Grammar', to: '/v1/core/grammar' },
+  { label: 'Vocab Bank', to: '/v1/core/vocab-bank' },
   { label: 'Strategy Videos', to: '/v1/core/youtube-videos' },
   { label: 'Practice History', to: '/v1/practice-history' },
-  { label: 'Exam Pattern', to: '/v1/exam-pattern' },
+  { label: 'Exam Pattern', to: '/v1/core/exam-pattern' },
 ];
 
 const CORE_PRACTICE_COLUMNS = [

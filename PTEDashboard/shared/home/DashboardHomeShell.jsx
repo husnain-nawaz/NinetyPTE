@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Play, X } from 'lucide-react';
 import PTEDashboardHeader from '../PTEDashboardHeader';
+import { usePortal } from '../portalContext';
 import DashboardHomeMain from './DashboardHomeMain';
 import DashboardHomeRightRail from './DashboardHomeRightRail';
 
@@ -10,6 +11,8 @@ import DashboardHomeRightRail from './DashboardHomeRightRail';
  * (PTEAcademic vs PTECore).
  */
 export default function DashboardHomeShell({ data, showExpiryToast = false }) {
+  const { portalMode } = usePortal();
+  const isCoreMode = portalMode === 'core';
   const [expiryToastVisible, setExpiryToastVisible] = useState(showExpiryToast);
   const [activeVideo, setActiveVideo] = useState(null);
   const [showReferModal, setShowReferModal] = useState(false);
@@ -33,7 +36,7 @@ export default function DashboardHomeShell({ data, showExpiryToast = false }) {
       <footer className="bg-white border-t border-slate-200 px-6 py-6 mt-10">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-[13px] text-slate-500">
           <div className="flex items-center gap-3.5">
-            <Link to="/dashboard" className="text-2xl font-black tracking-tighter text-[#0f3554]">
+            <Link to={isCoreMode ? '/v1/core/dashboard' : '/dashboard'} className="text-2xl font-black tracking-tighter text-[#0f3554]">
               ninety<span className="text-[#00b4c6]">pte</span>
             </Link>
             <span>All rights reserved &copy; NinetyPTE Education, 2026</span>
@@ -129,7 +132,7 @@ export default function DashboardHomeShell({ data, showExpiryToast = false }) {
                   Close
                 </button>
                 <Link
-                  to="/v1/youtube-videos/1"
+                  to={isCoreMode ? '/v1/core/youtube-videos' : '/v1/youtube-videos/1'}
                   className="rounded-lg bg-[#0d5488] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#093e66]"
                 >
                   Open Full Video Library

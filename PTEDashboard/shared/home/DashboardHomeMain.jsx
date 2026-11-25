@@ -21,6 +21,7 @@ import {
   Timer,
   Video,
 } from 'lucide-react';
+import { usePortal } from '../portalContext';
 
 const SKILL_ICON = {
   Speaking: Mic,
@@ -67,6 +68,8 @@ function DonutRing({ pct }) {
  * Parameterized left main column shared by PTEAcademic and PTECore home dashboards.
  */
 export default function DashboardHomeMain({ data, onSelectVideo }) {
+  const { portalMode } = usePortal();
+  const isCoreMode = portalMode === 'core';
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
   const [timeframe, setTimeframe] = useState('All');
@@ -88,13 +91,13 @@ export default function DashboardHomeMain({ data, onSelectVideo }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-2xs self-start">
           <Link
-            to="/dashboard"
+            to={isCoreMode ? '/v1/core/dashboard' : '/dashboard'}
             className="px-6 py-2 rounded-full text-xs sm:text-sm font-bold bg-[#2cc9ba] text-white shadow-xs"
           >
             Practice Progress
           </Link>
           <Link
-            to="/v1/analytics"
+            to={isCoreMode ? '/v1/core/analytics' : '/v1/analytics'}
             className="px-6 py-2 rounded-full text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition"
           >
             Performance Progress
@@ -362,9 +365,11 @@ export default function DashboardHomeMain({ data, onSelectVideo }) {
       {/* 7. PTE Video Guide */}
       <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base sm:text-lg font-bold text-slate-800">PTE Video Guide</h2>
+          <h2 className="text-base sm:text-lg font-bold text-slate-800">
+            {isCoreMode ? 'PTE Core Video Guide' : 'PTE Video Guide'}
+          </h2>
           <Link
-            to="/v1/youtube-videos/1"
+            to={isCoreMode ? '/v1/core/youtube-videos' : '/v1/youtube-videos/1'}
             className="rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:border-cyan-400 hover:text-[#0097a7]"
           >
             View All
@@ -416,7 +421,9 @@ export default function DashboardHomeMain({ data, onSelectVideo }) {
 
       {/* 8. PTE Guide Tabs + FAQ Accordion */}
       <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
-        <h2 className="text-base sm:text-lg font-bold text-slate-800 mb-4">PTE Guide</h2>
+        <h2 className="text-base sm:text-lg font-bold text-slate-800 mb-4">
+          {isCoreMode ? 'PTE Core Guide' : 'PTE Guide'}
+        </h2>
 
         <div className="flex flex-wrap items-center gap-2.5 mb-5">
           {data.guideTabs.map((tab) => {

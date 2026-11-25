@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, ChevronDown, Clock } from 'lucide-react';
 import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
 import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
+import { usePortal } from '../../shared/portalContext';
 
 const HISTORY_PERIOD_OPTIONS = [
   { id: 'today', label: 'Today', days: 0 },
@@ -63,20 +64,75 @@ const RECENT_PRACTICE_ENTRIES = [
   },
 ];
 
+const CORE_RECENT_PRACTICE_ENTRIES = [
+  {
+    id: 'core-hist-wem-1',
+    task: 'Write Email',
+    code: 'WEM',
+    questionTitle: 'Birthday Reservation Request to Restaurant Manager',
+    score: '82 / 90',
+    duration: '08:15',
+    attemptedAt: '30 Oct, 2026 · 04:15 PM',
+    daysAgo: 26,
+    to: '/v1/core/practice/writing/write-email',
+    badgeClass: 'bg-[#5ba4f5]',
+  },
+  {
+    id: 'core-hist-rs-1',
+    task: 'Repeat Sentence',
+    code: 'RS',
+    questionTitle: 'Workplace Safety Briefing Orientation Announcement',
+    score: '74 / 90',
+    duration: '04:12',
+    attemptedAt: '18 Nov, 2026 · 07:45 PM',
+    daysAgo: 7,
+    to: '/v1/core/practice/speaking/repeat-sentence',
+    badgeClass: 'bg-[#eb8c44]',
+  },
+  {
+    id: 'core-hist-wfd-1',
+    task: 'Write From Dictation',
+    code: 'WFD',
+    questionTitle: 'Public Transportation Subsidies Reduce Highway Congestion',
+    score: '81 / 90',
+    duration: '06:25',
+    attemptedAt: '12 Nov, 2026 · 09:10 AM',
+    daysAgo: 13,
+    to: '/v1/core/practice/listening/write-from-dictation',
+    badgeClass: 'bg-[#12487a]',
+  },
+  {
+    id: 'core-hist-rwb-1',
+    task: 'Reading & Writing Blanks',
+    code: 'RWB',
+    questionTitle: 'Early Penicillin Discovery & Laboratory Observation',
+    score: '68 / 90',
+    duration: '09:50',
+    attemptedAt: '05 Nov, 2026 · 02:20 PM',
+    daysAgo: 20,
+    to: '/v1/core/practice/reading/reading-writing-fill-in-the-blanks',
+    badgeClass: 'bg-[#36c959]',
+  },
+];
+
 /**
- * PTE Academic Practice History page (/v1/practice-history, /practice-history).
+ * Portal Practice History page (/v1/practice-history, /practice-history), switching
+ * entries and return links dynamically between PTE Academic and PTE Core.
  */
 export default function AcademicPracticeHistoryPage() {
+  const { portalMode } = usePortal();
+  const isCoreMode = portalMode === 'core';
   const [periodId, setPeriodId] = useState('today');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const selectedPeriod =
     HISTORY_PERIOD_OPTIONS.find((item) => item.id === periodId) || HISTORY_PERIOD_OPTIONS[0];
 
+  const entriesSource = isCoreMode ? CORE_RECENT_PRACTICE_ENTRIES : RECENT_PRACTICE_ENTRIES;
   const filteredEntries =
     selectedPeriod.days === 0
       ? []
-      : RECENT_PRACTICE_ENTRIES.filter((entry) => entry.daysAgo <= selectedPeriod.days);
+      : entriesSource.filter((entry) => entry.daysAgo <= selectedPeriod.days);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">
@@ -85,7 +141,7 @@ export default function AcademicPracticeHistoryPage() {
       <main className="flex-1 w-full max-w-[980px] mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
         <section className="rounded-2xl bg-white border border-slate-200/90 border-t-[3px] border-t-[#2cc9ba] px-6 py-5 sm:px-7 sm:py-6 shadow-md">
           <Link
-            to="/dashboard"
+            to={isCoreMode ? '/v1/core/dashboard' : '/dashboard'}
             className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-[#2cc9ba] hover:text-[#1fb3a5] transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
