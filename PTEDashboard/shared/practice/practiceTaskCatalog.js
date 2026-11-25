@@ -178,6 +178,19 @@ const SUMMARIZE_WRITTEN_TEXT_SEED_ROWS = [
   { id: '6000477', title: 'Preschool Program', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 53 },
 ];
 
+const RW_FILL_BLANKS_SEED_ROWS = [
+  { id: '12001335', title: 'Public Education', difficulty: 'Medium', isNew: true, newPrediction: true, practicedCount: 2, appearedCount: 55 },
+  { id: '12001334', title: 'Resultant Force', difficulty: 'Medium', newPrediction: true, practicedCount: 2, appearedCount: 54 },
+  { id: '12001333', title: 'Dogs & Humans', difficulty: 'Medium', practicedCount: 1, appearedCount: 6 },
+  { id: '12001332', title: 'Learning', difficulty: 'Medium', newPrediction: true, practicedCount: 1, appearedCount: 60 },
+  { id: '12001331', title: 'Charity Group', difficulty: 'Medium', newPrediction: true, practicedCount: 1, appearedCount: 109 },
+  { id: '12001330', title: 'Sleepwalking', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 63 },
+  { id: '12001329', title: 'Communication Skills', difficulty: 'Medium', practicedCount: 2, appearedCount: 59 },
+  { id: '12001328', title: 'Housing', difficulty: 'Medium', newPrediction: true, practicedCount: 1, appearedCount: 117 },
+  { id: '12001327', title: 'Insects', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 241 },
+  { id: '12001326', title: 'Workforce Plan', difficulty: 'Medium', practicedCount: 1, appearedCount: 12 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -345,15 +358,18 @@ export const PRACTICE_TASKS_BY_KEY = {
   'reading/reading-writing-fill-in-the-blanks': {
     skill: 'reading',
     slug: 'reading-writing-fill-in-the-blanks',
-    code: 'FIB(D)',
-    title: 'Reading & Writing: Fill in the Blanks',
-    totalQuestions: 980,
+    code: 'RWB',
+    title: 'Fill in the Blanks (Dropdown)',
+    coreTitle: 'Reading & Writing: Fill in the Blanks',
+    totalQuestions: 1165,
     coreTotalQuestions: 950,
-    startId: 9000980,
-    continueItem: { id: '9000740', title: 'Microplastic Filtration' },
+    startId: 12001335,
+    continueItem: { id: '12001335', title: 'Public Education' },
+    hasDropdownBlanks: true,
     instruction: 'Below is a text with blanks. Click on each blank, a list of choices will appear. Select the appropriate answer choice for each blank.',
     promptText:
-      'Clean-water engineers rely on multi-stage membrane filtration to [separate] fine suspended particles from municipal reservoirs before distribution.',
+      'Public education systems empower learners to [develop] foundational literacy while [expanding] equitable career pathways across regional communities.',
+    seedRows: RW_FILL_BLANKS_SEED_ROWS,
   },
   'reading/multiple-choice-multiple': {
     skill: 'reading',
@@ -505,6 +521,7 @@ export function resolvePracticeTask(skill, taskSlug, isCoreMode = false) {
   const raw = PRACTICE_TASKS_BY_KEY[key] || PRACTICE_TASKS_BY_KEY['speaking/read-aloud'];
   const totalQuestions =
     isCoreMode && raw.coreTotalQuestions ? raw.coreTotalQuestions : raw.totalQuestions;
+  const title = isCoreMode && raw.coreTitle ? raw.coreTitle : raw.title;
 
   const isAudioListeningTask =
     raw.hasAudioPrompt ||
@@ -517,6 +534,7 @@ export function resolvePracticeTask(skill, taskSlug, isCoreMode = false) {
 
   return {
     ...raw,
+    title,
     totalQuestions,
     hasAudioPrompt: isAudioListeningTask,
     supportsDisplayContent: isShortCodeTask,

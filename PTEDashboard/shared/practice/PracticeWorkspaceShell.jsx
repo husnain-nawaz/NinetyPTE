@@ -34,6 +34,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
   const [difficultyVote, setDifficultyVote] = useState('');
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [blankSelections, setBlankSelections] = useState({});
 
   const questions = useMemo(
     () =>
@@ -197,6 +198,32 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
               </button>
               <span className="text-xs font-bold text-slate-600">00:00</span>
             </div>
+          ) : taskMeta.hasDropdownBlanks ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-700">
+              <span className="font-semibold text-[#0c4a7e]">Select blanks:</span>
+              {['develop', 'expanding'].map((answerWord, blankIdx) => {
+                const options = [answerWord, 'restrict', 'observe', 'decline'];
+                const chosen = showAnswer ? answerWord : blankSelections[blankIdx] || '';
+                return (
+                  <select
+                    key={answerWord}
+                    value={chosen}
+                    onChange={(e) =>
+                      setBlankSelections((prev) => ({ ...prev, [blankIdx]: e.target.value }))
+                    }
+                    aria-label={`Blank ${blankIdx + 1}`}
+                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-[#0c4a7e] focus:outline-none focus:border-[#00b4c6]"
+                  >
+                    <option value="">-- Blank {blankIdx + 1} --</option>
+                    {options.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                );
+              })}
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -298,6 +325,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 type="button"
                 onClick={() => {
                   setResponseText('');
+                  setBlankSelections({});
                   setSubmittedNotice('');
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
@@ -305,7 +333,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Redo</span>
               </button>
-              {(taskMeta.hasAudioPrompt || taskMeta.hasImagePrompt) && (
+              {(taskMeta.hasAudioPrompt || taskMeta.hasImagePrompt || taskMeta.hasDropdownBlanks) && (
                 <button
                   type="button"
                   onClick={() => setShowAnswer((prev) => !prev)}

@@ -278,7 +278,11 @@ export default function QuestionBankSidebarDrawer({
               <button
                 type="button"
                 onClick={() => downloadTaskMaterial(taskMeta, filteredQuestions)}
-                className="rounded-full bg-[#eb8c44] hover:bg-[#d97736] text-white px-4 py-1.5 text-xs font-bold shadow-2xs transition cursor-pointer"
+                className={`rounded-full text-white px-4 py-1.5 text-xs font-bold shadow-2xs transition cursor-pointer ${
+                  taskMeta.skill === 'reading'
+                    ? 'bg-[#84cc16] hover:bg-[#65a30d]'
+                    : 'bg-[#eb8c44] hover:bg-[#d97736]'
+                }`}
               >
                 Download Material
               </button>
@@ -288,7 +292,13 @@ export default function QuestionBankSidebarDrawer({
 
         {/* Continue Banner */}
         {showContinueBanner && taskMeta.continueItem && (
-          <div className="mx-5 sm:mx-6 mb-3 rounded-xl bg-[#fff8ef] border border-[#fed7aa] px-4 py-2.5 flex items-center justify-between gap-3">
+          <div
+            className={`mx-5 sm:mx-6 mb-3 rounded-xl border px-4 py-2.5 flex items-center justify-between gap-3 ${
+              taskMeta.skill === 'reading'
+                ? 'bg-[#f0fdf4] border-[#bbf7d0]'
+                : 'bg-[#fff8ef] border-[#fed7aa]'
+            }`}
+          >
             <button
               type="button"
               onClick={() => {
@@ -307,7 +317,11 @@ export default function QuestionBankSidebarDrawer({
             >
               <span className="text-slate-500 font-medium">Continue from</span>
               <span className="text-slate-300">|</span>
-              <span className="font-bold text-[#ea580c]">
+              <span
+                className={`font-bold ${
+                  taskMeta.skill === 'reading' ? 'text-[#16a34a]' : 'text-[#ea580c]'
+                }`}
+              >
                 {taskMeta.continueItem.id} : {taskMeta.continueItem.title}
               </span>
               <span className="text-slate-400">Click to continue the previous practice list</span>
@@ -317,7 +331,11 @@ export default function QuestionBankSidebarDrawer({
               type="button"
               onClick={() => setShowContinueBanner(false)}
               aria-label="Dismiss continue banner"
-              className="w-5 h-5 rounded-full bg-[#fb923c] text-white flex items-center justify-center shrink-0 hover:bg-[#ea580c] cursor-pointer"
+              className={`w-5 h-5 rounded-full text-white flex items-center justify-center shrink-0 cursor-pointer ${
+                taskMeta.skill === 'reading'
+                  ? 'bg-[#4ade80] hover:bg-[#22c55e]'
+                  : 'bg-[#fb923c] hover:bg-[#ea580c]'
+              }`}
             >
               <X className="w-3 h-3" />
             </button>
