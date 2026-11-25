@@ -447,9 +447,10 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 value={responseText}
                 onChange={(e) => setResponseText(e.target.value)}
                 placeholder={
-                  taskMeta.skill === 'writing' || taskMeta.hasEditorToolbar
+                  taskMeta.placeholder ||
+                  (taskMeta.skill === 'writing' || taskMeta.hasEditorToolbar
                     ? 'Type your summary here...'
-                    : `Enter your ${taskMeta.title} response here...`
+                    : `Enter your ${taskMeta.title} response here...`)
                 }
                 className="w-full rounded-xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#00b4c6]"
               />

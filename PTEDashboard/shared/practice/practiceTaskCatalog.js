@@ -334,6 +334,19 @@ const HIGHLIGHT_INCORRECT_WORDS_SEED_ROWS = [
   { id: '16000518', title: 'Black Mamba', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
 ];
 
+const WRITE_FROM_DICTATION_SEED_ROWS = [
+  { id: '20003762', title: 'WFD3762', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0, contentSnippet: 'Students who attend tutorial sessions regularly submit more structured final assignments.' },
+  { id: '20003761', title: 'WFD3761', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0, contentSnippet: 'Early astronomical records helped coastal navigators track seasonal trade winds.' },
+  { id: '20003760', title: 'WFD3760', difficulty: 'Medium', isNew: true, prediction: true, practicedCount: 1, appearedCount: 35, contentSnippet: 'The university library extends evening opening hours throughout the examination period.' },
+  { id: '20003759', title: 'WFD3759', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Practical laboratory training prepares science graduates for modern industrial research.' },
+  { id: '20003757', title: 'WFD3757', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Economic historians examine tax ledgers to understand regional living standards.' },
+  { id: '20003756', title: 'WFD3756', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 50, contentSnippet: 'Renewable energy storage remains essential for balancing peak electricity demand.' },
+  { id: '20003754', title: 'WFD3754', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 103, contentSnippet: 'All fieldwork safety protocols must be reviewed prior to leaving the campus.' },
+  { id: '20003753', title: 'WFD3753', difficulty: 'Difficult', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Public transportation subsidies reduce highway congestion during weekday commuting hours.' },
+  { id: '20003752', title: 'WFD3752', difficulty: 'Medium', practicedCount: 1, appearedCount: 0, contentSnippet: 'Accurate climate models rely on decades of calibrated ocean temperature measurements.' },
+  { id: '20003751', title: 'WFD3751', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Guest lecturers will discuss sustainable architecture in the main auditorium tomorrow.' },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -736,12 +749,18 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'write-from-dictation',
     code: 'WFD',
     title: 'Write from Dictation',
-    totalQuestions: 1630,
-    coreTotalQuestions: 1580,
-    startId: 9951630,
-    continueItem: { id: '9951305', title: 'Research Ethics Deadline' },
+    totalQuestions: 3649,
+    coreTotalQuestions: 3649,
+    startId: 20003762,
+    continueItem: { id: '20003760', title: 'WFD3760' },
+    supportsDisplayContent: true,
+    supportsPriorityFilter: true,
+    hasAudioPrompt: true,
+    hasEditorToolbar: true,
+    placeholder: 'Type your response here...',
     instruction: 'You will hear a sentence. Type the sentence in the box below exactly as you hear it.',
-    promptText: 'Every research proposal must include a clear schedule and measurable evaluation criteria.',
+    promptText: 'Students who attend tutorial sessions regularly submit more structured final assignments.',
+    seedRows: WRITE_FROM_DICTATION_SEED_ROWS,
   },
 };
 
@@ -801,7 +820,9 @@ export function buildTaskQuestionList(taskMeta) {
           ? `RS${3380 - idx}`
           : taskMeta.slug === 'answer-short-question'
             ? `ASQ${2001 - idx}`
-            : `${topic} ${taskMeta.code}-${total - idx}`,
+            : taskMeta.slug === 'write-from-dictation'
+              ? `WFD${3762 - idx}`
+              : `${topic} ${taskMeta.code}-${total - idx}`,
       difficulty,
       isNew,
       newPrediction,

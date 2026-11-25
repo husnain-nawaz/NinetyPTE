@@ -281,7 +281,9 @@ export default function QuestionBankSidebarDrawer({
                 className={`rounded-full text-white px-4 py-1.5 text-xs font-bold shadow-2xs transition cursor-pointer ${
                   taskMeta.skill === 'reading'
                     ? 'bg-[#84cc16] hover:bg-[#65a30d]'
-                    : 'bg-[#eb8c44] hover:bg-[#d97736]'
+                    : taskMeta.skill === 'listening'
+                      ? 'bg-[#0e7490] hover:bg-[#0c5d73]'
+                      : 'bg-[#eb8c44] hover:bg-[#d97736]'
                 }`}
               >
                 Download Material
