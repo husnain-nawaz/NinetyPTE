@@ -296,7 +296,9 @@ export default function QuestionBankSidebarDrawer({
             className={`mx-5 sm:mx-6 mb-3 rounded-xl border px-4 py-2.5 flex items-center justify-between gap-3 ${
               taskMeta.skill === 'reading'
                 ? 'bg-[#f0fdf4] border-[#bbf7d0]'
-                : 'bg-[#fff8ef] border-[#fed7aa]'
+                : taskMeta.skill === 'listening'
+                  ? 'bg-[#f0f9ff] border-[#bae6fd]'
+                  : 'bg-[#fff8ef] border-[#fed7aa]'
             }`}
           >
             <button
@@ -319,7 +321,11 @@ export default function QuestionBankSidebarDrawer({
               <span className="text-slate-300">|</span>
               <span
                 className={`font-bold ${
-                  taskMeta.skill === 'reading' ? 'text-[#16a34a]' : 'text-[#ea580c]'
+                  taskMeta.skill === 'reading'
+                    ? 'text-[#16a34a]'
+                    : taskMeta.skill === 'listening'
+                      ? 'text-[#0284c7]'
+                      : 'text-[#ea580c]'
                 }`}
               >
                 {taskMeta.continueItem.id} : {taskMeta.continueItem.title}
@@ -334,7 +340,9 @@ export default function QuestionBankSidebarDrawer({
               className={`w-5 h-5 rounded-full text-white flex items-center justify-center shrink-0 cursor-pointer ${
                 taskMeta.skill === 'reading'
                   ? 'bg-[#4ade80] hover:bg-[#22c55e]'
-                  : 'bg-[#fb923c] hover:bg-[#ea580c]'
+                  : taskMeta.skill === 'listening'
+                    ? 'bg-[#38bdf8] hover:bg-[#0284c7]'
+                    : 'bg-[#fb923c] hover:bg-[#ea580c]'
               }`}
             >
               <X className="w-3 h-3" />

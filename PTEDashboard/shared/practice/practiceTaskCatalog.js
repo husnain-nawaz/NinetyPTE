@@ -243,6 +243,19 @@ const READING_MCS_SEED_ROWS = [
   { id: '8000278', title: 'Supplements', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
 ];
 
+const SUMMARIZE_SPOKEN_TEXT_SEED_ROWS = [
+  { id: '13000703', title: 'Bees', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '13000702', title: 'English Language in Poetry', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '13000701', title: "Children's Life Quality", difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 60 },
+  { id: '13000700', title: 'Melatonin', difficulty: 'Medium', practicedCount: 1, appearedCount: 18 },
+  { id: '13000699', title: 'Waste food', difficulty: 'Medium', practicedCount: 2, appearedCount: 14 },
+  { id: '13000698', title: 'Nuts', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '13000697', title: 'Andrew Carnegie', difficulty: 'Medium', practicedCount: 0, appearedCount: 6 },
+  { id: '13000696', title: 'Clone', difficulty: 'Medium', practicedCount: 2, appearedCount: 3 },
+  { id: '13000695', title: 'Speech-Language Therapy', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '13000694', title: 'Credit Card Experiment', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -508,12 +521,16 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'summarize-spoken-text',
     code: 'SST',
     title: 'Summarize Spoken Text',
-    totalQuestions: 612,
+    totalQuestions: 657,
     coreTotalQuestions: 580,
-    startId: 9500612,
-    continueItem: { id: '9500488', title: 'Battery Recycling Loops' },
-    instruction: 'You will hear a short audio recording. Write a concise summary of what you heard covering all key points.',
-    promptText: 'Audio Lecture: Closed-loop lithium recovery reduces raw ore extraction pressure.',
+    startId: 13000703,
+    continueItem: { id: '13000055', title: 'Definitions of Globalization' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    hasEditorToolbar: true,
+    instruction: 'You will hear a short lecture. Write a summary for a fellow student who was not present at the lecture. You should write 50-70 words.',
+    promptText: 'Audio Lecture: Honeybee colony organization, pollination services, and seasonal hive resilience.',
+    seedRows: SUMMARIZE_SPOKEN_TEXT_SEED_ROWS,
   },
   'listening/multiple-choice-multiple': {
     skill: 'listening',
