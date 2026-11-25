@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ScrollToTop from './components/common/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
@@ -59,6 +60,7 @@ import {
   PTECoreVocabBankPage,
   PTECoreStudyToolsPage,
   PortalProfilePage,
+  CyanBarsLoader,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -121,7 +123,8 @@ function AppContent() {
 
       {/* Dynamic Route View */}
       <main className="flex-1">
-        <Routes>
+        <Suspense fallback={<CyanBarsLoader fullScreen />}>
+          <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/book-exam" element={<BookExamPage />} />
@@ -606,7 +609,8 @@ function AppContent() {
           <Route path="/signup" element={<AuthPage initialMode="signup" />} />
           <Route path="/register" element={<AuthPage initialMode="signup" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
 
       {/* Comprehensive Site Footer (hidden on dedicated auth and minimal legal pages) */}

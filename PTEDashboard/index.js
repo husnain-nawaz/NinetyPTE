@@ -4,6 +4,7 @@ export { default as PTEStrategyVideosPage } from './PTEStrategyVideosRouter';
 export { default as PTEVocabBankPage } from './PTEVocabBankRouter';
 export { default as PTEStudyToolsPage } from './PTEStudyToolsRouter';
 export { default as PortalProfilePage } from './shared/profile/PortalProfilePage';
+export { default as CyanBarsLoader, PortalLoadGate } from './shared/CyanBarsLoader';
 export { default as PortalProvider } from './shared/PortalProvider';
 export { default as ProtectedRoute } from './shared/ProtectedRoute';
 

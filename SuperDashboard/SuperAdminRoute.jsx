@@ -1,9 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { getStoredUser, isSuperAdmin } from '../frontend/src/utils/auth';
+import { PortalLoadGate } from '../PTEDashboard/shared/CyanBarsLoader';
 
 /**
- * Route guard ensuring only the verified Super Admin account (Husnain@gmail.com)
- * can access SuperDashboard routes.
+ * Route guard ensuring only the verified Super Admin account
+ * can access SuperDashboard routes, showing the cyan loader until ready.
  */
 export default function SuperAdminRoute({ children }) {
   const location = useLocation();
@@ -17,5 +18,5 @@ export default function SuperAdminRoute({ children }) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return children;
+  return <PortalLoadGate>{children}</PortalLoadGate>;
 }
