@@ -439,6 +439,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'ASQ',
     title: 'Answer Short Question',
     totalQuestions: 1946,
+    coreTotalQuestions: 1946,
     startId: 5002001,
     continueItem: { id: '5000075', title: 'ASQ0075' },
     supportsDisplayContent: true,
