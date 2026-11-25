@@ -75,6 +75,12 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
 
     const isCoreTarget = location.pathname.includes('analytics');
     const isVideos = location.pathname.includes('youtube-videos');
+    const isSharedTool =
+      location.pathname.includes('vocab-bank') ||
+      location.pathname.includes('grammar') ||
+      location.pathname.includes('prediction') ||
+      location.pathname.includes('templates') ||
+      location.pathname.includes('practice-history');
     const isPatternOrWeightage =
       location.pathname.includes('question-weightage') ||
       location.pathname.includes('exam-pattern');
@@ -87,6 +93,10 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
       navigate('/v1/core/youtube-videos');
     } else if (nextTrack === 'core' && isPatternOrWeightage) {
       navigate('/v1/exam-pattern');
+    } else if (nextTrack === 'core' && isSharedTool) {
+      if (location.pathname.includes('vocab-bank')) {
+        navigate('/v1/vocab-bank');
+      }
     } else if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
       navigate('/dashboard');
     } else if (nextTrack === 'academic' && isCoreRoute) {
@@ -94,6 +104,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         navigate('/v1/youtube-videos/1');
       } else if (isPatternOrWeightage) {
         navigate('/v1/question-weightage');
+      } else if (location.pathname.includes('vocab-bank')) {
+        navigate('/v1/vocab-bank');
       } else {
         navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
       }

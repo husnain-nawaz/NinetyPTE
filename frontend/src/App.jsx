@@ -56,6 +56,7 @@ import {
   PTECoreAnalyticsPage,
   PTECoreExamPatternPage,
   PTECoreStrategyVideosPage,
+  PTECoreVocabBankPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -93,6 +94,7 @@ function AppContent() {
     location.pathname.startsWith('/core-youtube-videos') ||
     location.pathname.startsWith('/v1/vocab-bank') ||
     location.pathname.startsWith('/vocab-bank') ||
+    location.pathname.startsWith('/core-vocab-bank') ||
     location.pathname.startsWith('/v1/grammar') ||
     location.pathname.startsWith('/grammar') ||
     location.pathname.startsWith('/v1/prediction') ||
@@ -363,6 +365,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEVocabBankPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/vocab-bank"
+            element={
+              <ProtectedRoute>
+                <PTECoreVocabBankPage syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-vocab-bank"
+            element={
+              <ProtectedRoute>
+                <PTECoreVocabBankPage syncPortalMode />
               </ProtectedRoute>
             }
           />
