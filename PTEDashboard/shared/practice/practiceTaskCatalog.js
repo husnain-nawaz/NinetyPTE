@@ -11,6 +11,95 @@ const READ_ALOUD_SEED_ROWS = [
   { id: '1001639', title: 'Methane', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 5 },
 ];
 
+const REPEAT_SENTENCE_SEED_ROWS = [
+  {
+    id: '2003380',
+    title: 'RS3380',
+    difficulty: 'Medium',
+    isNew: true,
+    newPrediction: true,
+    practicedCount: 0,
+    appearedCount: 51,
+    contentSnippet: 'All laboratory equipment must be calibrated before the afternoon chemistry seminar begins.',
+  },
+  {
+    id: '2003379',
+    title: 'RS3379',
+    difficulty: 'Medium',
+    isNew: true,
+    newPrediction: true,
+    practicedCount: 0,
+    appearedCount: 50,
+    contentSnippet: 'Students submitting dissertations early qualify for priority reference library access.',
+  },
+  {
+    id: '2003378',
+    title: 'RS3378',
+    difficulty: 'Medium',
+    prediction: true,
+    practicedCount: 1,
+    appearedCount: 57,
+    contentSnippet: 'Urban greenways significantly lower peak summer temperatures along crowded avenues.',
+  },
+  {
+    id: '2003377',
+    title: 'RS3377',
+    difficulty: 'Medium',
+    practicedCount: 1,
+    appearedCount: 3,
+    contentSnippet: 'The engineering faculty announced an optional workshop on renewable microgrids.',
+  },
+  {
+    id: '2003376',
+    title: 'RS3376',
+    difficulty: 'Medium',
+    practicedCount: 2,
+    appearedCount: 51,
+    contentSnippet: 'Accurate weather forecasting relies on satellite imaging and ocean buoy sensors.',
+  },
+  {
+    id: '2003375',
+    title: 'RS3375',
+    difficulty: 'Medium',
+    practicedCount: 2,
+    appearedCount: 54,
+    contentSnippet: 'Peer review ensures experimental data can be reproduced by independent researchers.',
+  },
+  {
+    id: '2003374',
+    title: 'RS3374',
+    difficulty: 'Medium',
+    practicedCount: 7,
+    appearedCount: 6,
+    contentSnippet: 'Please return all borrowed reference volumes to the main desk before Friday.',
+  },
+  {
+    id: '2003373',
+    title: 'RS3373',
+    difficulty: 'Medium',
+    practicedCount: 1,
+    appearedCount: 7,
+    contentSnippet: 'Freshwater aquifers replenish slowly compared with seasonal surface reservoirs.',
+  },
+  {
+    id: '2003372',
+    title: 'RS3372',
+    difficulty: 'Medium',
+    practicedCount: 6,
+    appearedCount: 7,
+    contentSnippet: 'Clear visual charts allow policy makers to compare regional employment trends.',
+  },
+  {
+    id: '2003371',
+    title: 'RS3371',
+    difficulty: 'Medium',
+    prediction: true,
+    practicedCount: 9,
+    appearedCount: 55,
+    contentSnippet: 'Museum visitors may explore the newly restored maritime gallery this weekend.',
+  },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -55,10 +144,13 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RS',
     title: 'Repeat Sentence',
     totalQuestions: 3174,
-    startId: 2003174,
-    continueItem: { id: '2002891', title: 'Library Orientation' },
+    startId: 2003380,
+    continueItem: { id: '2001147', title: 'RS1147' },
+    supportsDisplayContent: true,
+    hasAudioPrompt: true,
     instruction: 'You will hear a sentence. Please repeat the sentence exactly as you hear it. You will hear the sentence only once.',
     promptText: 'All laboratory equipment must be calibrated before the afternoon chemistry seminar begins.',
+    seedRows: REPEAT_SENTENCE_SEED_ROWS,
   },
   'speaking/describe-image': {
     skill: 'speaking',
@@ -316,9 +408,20 @@ export function resolvePracticeTask(skill, taskSlug, isCoreMode = false) {
   const totalQuestions =
     isCoreMode && raw.coreTotalQuestions ? raw.coreTotalQuestions : raw.totalQuestions;
 
+  const isAudioListeningTask =
+    raw.hasAudioPrompt ||
+    raw.skill === 'listening' ||
+    ['repeat-sentence', 'retell-lecture', 'answer-short-question', 'summarize-group-discussion', 'respond-to-a-situation'].includes(raw.slug);
+
+  const isShortCodeTask =
+    raw.supportsDisplayContent ||
+    ['repeat-sentence', 'answer-short-question', 'write-from-dictation'].includes(raw.slug);
+
   return {
     ...raw,
     totalQuestions,
+    hasAudioPrompt: isAudioListeningTask,
+    supportsDisplayContent: isShortCodeTask,
     badgeColor: SKILL_BADGE_COLORS[raw.skill] || '#eb8c44',
   };
 }
@@ -340,17 +443,22 @@ export function buildTaskQuestionList(taskMeta) {
     const idNum = taskMeta.startId - idx;
     const topic = SAMPLE_TOPIC_WORDS[idx % SAMPLE_TOPIC_WORDS.length];
     const difficulty = DIFFICULTIES[(idx + 1) % DIFFICULTIES.length];
-    const prediction = idx % 3 === 1;
-    const practicedCount = idx < 18 ? 1 : 0;
+    const isNew = idx < 2;
+    const newPrediction = isNew;
+    const prediction = !newPrediction && idx % 3 === 1;
+    const practicedCount = idx < 18 ? (idx % 5) + 1 : 0;
     const appearedCount = ((idx * 17) % 140) + 3;
 
     items.push({
       id: String(idNum),
-      title: `${topic} ${taskMeta.code}-${total - idx}`,
+      title: taskMeta.slug === 'repeat-sentence' ? `RS${3380 - idx}` : `${topic} ${taskMeta.code}-${total - idx}`,
       difficulty,
+      isNew,
+      newPrediction,
       prediction,
       practicedCount,
       appearedCount,
+      contentSnippet: `Practice statement covering ${topic.toLowerCase()} for ${taskMeta.title}.`,
       bookmarked: false,
     });
   }

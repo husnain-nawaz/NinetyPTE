@@ -3,7 +3,10 @@ import {
   ChevronLeft,
   Info,
   Mic,
+  Pause,
+  Play,
   RotateCcw,
+  Volume2,
 } from 'lucide-react';
 import PTEDashboardHeader from '../PTEDashboardHeader';
 import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
@@ -29,6 +32,8 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
   const [activeBottomTab, setActiveBottomTab] = useState('forum');
   const [submittedNotice, setSubmittedNotice] = useState('');
   const [difficultyVote, setDifficultyVote] = useState('');
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
 
   const questions = useMemo(
     () =>
@@ -135,12 +140,35 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
 
         {/* Interactive Prompt & Response Area */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-5">
-          <p className="text-sm sm:text-[15px] leading-relaxed text-slate-700">
-            {taskMeta.promptText}
-          </p>
+          {taskMeta.hasAudioPrompt && (
+            <div className="rounded-xl bg-slate-50 border border-slate-200/80 px-4 py-3 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setAudioPlaying((p) => !p)}
+                aria-label={audioPlaying ? 'Pause prompt audio' : 'Play prompt audio'}
+                className="w-8 h-8 rounded-full bg-[#0d5488] hover:bg-[#093e66] text-white flex items-center justify-center shrink-0 cursor-pointer"
+              >
+                {audioPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
+              </button>
+              <span className="text-[11px] font-mono font-semibold text-slate-600 shrink-0">00:00</span>
+              <div className="h-1.5 flex-1 rounded-full bg-slate-200 overflow-hidden">
+                <div className={`h-full rounded-full bg-[#00b4c6] transition-all ${audioPlaying ? 'w-1/2' : 'w-0'}`} />
+              </div>
+              <Volume2 className="w-4 h-4 text-slate-400 shrink-0" />
+            </div>
+          )}
+
+          {(!taskMeta.hasAudioPrompt || showAnswer) && (
+            <p className="text-sm sm:text-[15px] leading-relaxed text-slate-700">
+              {activeQuestion.contentSnippet || taskMeta.promptText}
+            </p>
+          )}
 
           {taskMeta.skill === 'speaking' ? (
             <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-6 flex flex-col items-center gap-3 text-center">
+              {taskMeta.hasAudioPrompt && (
+                <p className="text-xs font-semibold text-slate-500">Recording will start soon</p>
+              )}
               <button
                 type="button"
                 onClick={handleSubmitAttempt}
@@ -199,6 +227,15 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Redo</span>
               </button>
+              {taskMeta.hasAudioPrompt && (
+                <button
+                  type="button"
+                  onClick={() => setShowAnswer((prev) => !prev)}
+                  className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-[#0c4a7e] hover:bg-slate-50 transition cursor-pointer"
+                >
+                  {showAnswer ? 'Hide Answer' : 'Answer'}
+                </button>
+              )}
             </div>
           </div>
 

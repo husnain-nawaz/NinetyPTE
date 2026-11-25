@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   Activity,
   ArrowDownUp,
+  ArrowLeftRight,
   Bookmark,
   ChevronDown,
   ChevronLeft,
@@ -31,7 +32,10 @@ function downloadTaskMaterial(taskMeta, questions) {
     `Total Listed Questions: ${taskMeta.totalQuestions}`,
     '',
     ...questions.slice(0, 40).map(
-      (q, i) => `${i + 1}. #${q.id} — ${q.title} [${q.difficulty}] (Appeared ${q.appearedCount}x)`
+      (q, i) =>
+        `${i + 1}. #${q.id} — ${q.title} [${q.difficulty}] (Appeared ${q.appearedCount}x)${
+          q.contentSnippet ? ` :: ${q.contentSnippet}` : ''
+        }`
     ),
   ].join('\n');
 
@@ -61,13 +65,16 @@ export default function QuestionBankSidebarDrawer({
   onResetPractice,
 }) {
   const [practiceStatus, setPracticeStatus] = useState('all'); // 'all' | 'practiced' | 'not_practiced'
+  const [displayContent, setDisplayContent] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [showContinueBanner, setShowContinueBanner] = useState(true);
   const [predictionOnly, setPredictionOnly] = useState(false);
   const [bookmarkFilter, setBookmarkFilter] = useState('all'); // 'all' | 'bookmarked' | 'unbookmarked'
   const [levelFilter, setLevelFilter] = useState('all'); // 'all' | 'Easy' | 'Medium' | 'Difficult'
+  const [priorityFilter, setPriorityFilter] = useState('all'); // 'all' | 'new' | 'new_prediction'
   const [bookmarkMenuOpen, setBookmarkMenuOpen] = useState(false);
   const [levelMenuOpen, setLevelMenuOpen] = useState(false);
+  const [priorityMenuOpen, setPriorityMenuOpen] = useState(false);
   const [sortMode, setSortMode] = useState('newest'); // 'newest' | 'oldest' | 'appeared'
   const [currentPage, setCurrentPage] = useState(1);
   const [goToPageInput, setGoToPageInput] = useState('');
@@ -77,14 +84,17 @@ export default function QuestionBankSidebarDrawer({
     const matched = questions.filter((q) => {
       if (practiceStatus === 'practiced' && q.practicedCount === 0) return false;
       if (practiceStatus === 'not_practiced' && q.practicedCount > 0) return false;
-      if (predictionOnly && !q.prediction) return false;
+      if (predictionOnly && !q.prediction && !q.newPrediction) return false;
       if (bookmarkFilter === 'bookmarked' && !q.bookmarked) return false;
       if (bookmarkFilter === 'unbookmarked' && q.bookmarked) return false;
       if (levelFilter !== 'all' && q.difficulty !== levelFilter) return false;
+      if (priorityFilter === 'new' && !q.isNew) return false;
+      if (priorityFilter === 'new_prediction' && !q.newPrediction) return false;
       if (
         query &&
         !q.title.toLowerCase().includes(query) &&
-        !q.id.toLowerCase().includes(query)
+        !q.id.toLowerCase().includes(query) &&
+        !(q.contentSnippet || '').toLowerCase().includes(query)
       ) {
         return false;
       }
@@ -103,6 +113,7 @@ export default function QuestionBankSidebarDrawer({
     levelFilter,
     practiceStatus,
     predictionOnly,
+    priorityFilter,
     questions,
     searchInput,
     sortMode,
@@ -113,6 +124,7 @@ export default function QuestionBankSidebarDrawer({
     predictionOnly ||
     bookmarkFilter !== 'all' ||
     levelFilter !== 'all' ||
+    priorityFilter !== 'all' ||
     searchInput.trim().length > 0;
 
   const displayTotalQuestions = hasActiveFilter
@@ -189,7 +201,7 @@ export default function QuestionBankSidebarDrawer({
           </div>
         </div>
 
-        {/* Status Checkboxes + Search + Download */}
+        {/* Status Checkboxes + Display Content Switch + Search + Download */}
         <div className="px-5 sm:px-6 pb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600">
             {[
@@ -210,6 +222,28 @@ export default function QuestionBankSidebarDrawer({
                 <span>{opt.label}</span>
               </label>
             ))}
+
+            {taskMeta.supportsDisplayContent && (
+              <div className="inline-flex items-center gap-2 pl-1">
+                <span className="text-[11px] font-bold text-slate-700">Display Content</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={displayContent}
+                  aria-label="Display Content"
+                  onClick={() => setDisplayContent((prev) => !prev)}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors cursor-pointer ${
+                    displayContent ? 'bg-[#00b4c6]' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 rounded-full bg-white shadow transition-transform ${
+                      displayContent ? 'translate-x-4' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
@@ -223,7 +257,7 @@ export default function QuestionBankSidebarDrawer({
                 }}
                 placeholder="Content / Title / Number"
                 aria-label="Search practice questions"
-                className="w-48 sm:w-52 rounded-full border border-slate-200 bg-white pl-3.5 pr-9 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#00b4c6]"
+                className="w-44 sm:w-48 rounded-full border border-slate-200 bg-white pl-3.5 pr-9 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#00b4c6]"
               />
               <span className="absolute right-0.5 w-7 h-7 rounded-full bg-[#00b4c6] text-white flex items-center justify-center pointer-events-none">
                 <Search className="w-3.5 h-3.5" />
@@ -253,6 +287,7 @@ export default function QuestionBankSidebarDrawer({
                   prediction: true,
                   practicedCount: 1,
                   appearedCount: 64,
+                  contentSnippet: taskMeta.promptText,
                 });
                 onClose();
               }}
@@ -287,6 +322,7 @@ export default function QuestionBankSidebarDrawer({
                 setPredictionOnly(false);
                 setBookmarkFilter('all');
                 setLevelFilter('all');
+                setPriorityFilter('all');
                 setSearchInput('');
                 setCurrentPage(1);
               }}
@@ -317,6 +353,7 @@ export default function QuestionBankSidebarDrawer({
                 onClick={() => {
                   setBookmarkMenuOpen((prev) => !prev);
                   setLevelMenuOpen(false);
+                  setPriorityMenuOpen(false);
                 }}
                 className={`inline-flex items-center gap-1 font-semibold cursor-pointer ${
                   bookmarkFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-700 hover:text-[#00b4c6]'
@@ -359,6 +396,7 @@ export default function QuestionBankSidebarDrawer({
                 onClick={() => {
                   setLevelMenuOpen((prev) => !prev);
                   setBookmarkMenuOpen(false);
+                  setPriorityMenuOpen(false);
                 }}
                 className={`inline-flex items-center gap-1 font-semibold cursor-pointer ${
                   levelFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-700 hover:text-[#00b4c6]'
@@ -391,7 +429,52 @@ export default function QuestionBankSidebarDrawer({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Tag / New Filter Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setPriorityMenuOpen((prev) => !prev);
+                  setLevelMenuOpen(false);
+                  setBookmarkMenuOpen(false);
+                }}
+                title="Filter New / Prediction items"
+                aria-label="Filter New items"
+                className={`inline-flex items-center gap-0.5 p-1 rounded hover:bg-slate-100 cursor-pointer ${
+                  priorityFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-400'
+                }`}
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+                <ChevronDown className="w-3 h-3" />
+              </button>
+
+              {priorityMenuOpen && (
+                <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-slate-200 bg-white py-1 shadow-lg z-20">
+                  {[
+                    { id: 'all', label: 'All Updates' },
+                    { id: 'new', label: 'New Only' },
+                    { id: 'new_prediction', label: 'New Prediction' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setPriorityFilter(opt.id);
+                        setPriorityMenuOpen(false);
+                        setCurrentPage(1);
+                      }}
+                      className={`block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50 cursor-pointer ${
+                        priorityFilter === opt.id ? 'text-[#00b4c6] font-bold' : 'text-slate-600'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={() => setSortMode((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
@@ -443,61 +526,81 @@ export default function QuestionBankSidebarDrawer({
                       onClose();
                     }
                   }}
-                  className={`rounded-xl border px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5 cursor-pointer transition ${
+                  className={`rounded-xl border px-4 py-2.5 cursor-pointer transition space-y-1.5 ${
                     isSelected
                       ? 'border-[#00b4c6] bg-[#f4fbfc]'
                       : 'border-slate-200/80 bg-white hover:border-[#00b4c6]/60'
                   }`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-xs font-bold text-[#00a8bd] shrink-0">#{q.id}</span>
-                    <span className="text-xs sm:text-[13px] font-semibold text-slate-700 truncate">
-                      {q.title}
-                    </span>
-                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-xs font-bold text-[#00a8bd] shrink-0">#{q.id}</span>
+                      <span className="text-xs sm:text-[13px] font-semibold text-slate-700 truncate">
+                        {q.title}
+                      </span>
+                    </div>
 
-                  <div className="flex flex-wrap items-center gap-2 shrink-0 text-[10.5px] font-semibold">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 ${
-                        LEVEL_STYLES[q.difficulty] || LEVEL_STYLES.Medium
-                      }`}
-                    >
+                    <div className="flex flex-wrap items-center gap-2 shrink-0 text-[10.5px] font-semibold">
                       <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          LEVEL_DOT_STYLES[q.difficulty] || LEVEL_DOT_STYLES.Medium
+                        className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 ${
+                          LEVEL_STYLES[q.difficulty] || LEVEL_STYLES.Medium
                         }`}
-                      />
-                      {q.difficulty}
-                    </span>
-
-                    {q.prediction && (
-                      <span className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[#0c4a7e]">
-                        Prediction
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            LEVEL_DOT_STYLES[q.difficulty] || LEVEL_DOT_STYLES.Medium
+                          }`}
+                        />
+                        {q.difficulty}
                       </span>
-                    )}
 
-                    {q.practicedCount > 0 && (
-                      <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-600">
-                        Practiced ({q.practicedCount})
+                      {q.isNew && (
+                        <span className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[#0c4a7e]">
+                          New
+                        </span>
+                      )}
+
+                      {q.newPrediction && (
+                        <span className="rounded border border-cyan-200 bg-cyan-50/40 px-2 py-0.5 text-[#0c4a7e]">
+                          New Prediction
+                        </span>
+                      )}
+
+                      {q.prediction && (
+                        <span className="rounded border border-slate-200 bg-white px-2 py-0.5 text-[#0c4a7e]">
+                          Prediction
+                        </span>
+                      )}
+
+                      {q.practicedCount > 0 && (
+                        <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-600">
+                          Practiced ({q.practicedCount})
+                        </span>
+                      )}
+
+                      <span className="rounded border border-cyan-200 bg-cyan-50/40 px-2 py-0.5 text-[#00a8bd]">
+                        Appeared ({q.appearedCount})
                       </span>
-                    )}
 
-                    <span className="rounded border border-cyan-200 bg-cyan-50/40 px-2 py-0.5 text-[#00a8bd]">
-                      Appeared ({q.appearedCount})
-                    </span>
-
-                    <button
-                      type="button"
-                      aria-label={q.bookmarked ? 'Remove bookmark' : 'Bookmark question'}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleBookmark(q.id);
-                      }}
-                      className="p-1 rounded text-[#00b4c6] hover:bg-cyan-50 cursor-pointer"
-                    >
-                      <Bookmark className={`w-3.5 h-3.5 ${q.bookmarked ? 'fill-[#00b4c6]' : ''}`} />
-                    </button>
+                      <button
+                        type="button"
+                        aria-label={q.bookmarked ? 'Remove bookmark' : 'Bookmark question'}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleBookmark(q.id);
+                        }}
+                        className="p-1 rounded text-[#00b4c6] hover:bg-cyan-50 cursor-pointer"
+                      >
+                        <Bookmark className={`w-3.5 h-3.5 ${q.bookmarked ? 'fill-[#00b4c6]' : ''}`} />
+                      </button>
+                    </div>
                   </div>
+
+                  {displayContent && q.contentSnippet && (
+                    <p className="text-[11px] text-slate-500 pl-1 border-l-2 border-[#00b4c6]/40">
+                      {q.contentSnippet}
+                    </p>
+                  )}
                 </div>
               );
             })
