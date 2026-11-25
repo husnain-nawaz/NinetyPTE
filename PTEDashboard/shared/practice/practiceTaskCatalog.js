@@ -605,13 +605,13 @@ export const PRACTICE_TASKS_BY_KEY = {
     continueItem: { id: '9000176', title: 'Forgiveness' },
     hideDownloadButton: true,
     mcqOptions: [
-      { id: 'A', label: 'Candidates should attach two recent professional references with their portfolio.', correct: true },
-      { id: 'B', label: 'Interviews are restricted exclusively to applicants residing outside the city.', correct: false },
-      { id: 'C', label: 'Successful applicants receive a structured four-week onboarding mentorship.', correct: true },
-      { id: 'D', label: 'Paper application forms must be mailed after the online portal closes.', correct: false },
+      { id: 'A', label: 'Applicants must hold a valid driver’s license and maintain a clean driving record with no speeding fines.', correct: true },
+      { id: 'B', label: 'Candidates are restricted from working local routes unless they supply a commercial truck.', correct: false },
+      { id: 'C', label: 'Applicants must carry a valid passport and be available to accept local route assignments.', correct: true },
+      { id: 'D', label: 'Previous delivery or courier experience is discouraged for entry-level drivers.', correct: false },
     ],
     instruction: 'Read the text and answer the question by selecting all the correct responses. More than one response is correct.',
-    promptText: 'Which TWO conditions apply to candidates applying for the advertised role according to the passage?',
+    promptText: 'Job description: This driving position requires a responsible candidate with a valid driver’s license, valid passport, driving experience, availability for local routes, and no speeding tickets or fines. Which requirements apply to applicants?',
     seedRows: READING_MCM_SEED_ROWS,
   },
   'reading/reorder-paragraphs': {
