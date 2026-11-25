@@ -39,6 +39,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
   const [blankSelections, setBlankSelections] = useState({});
   const [selectedChoices, setSelectedChoices] = useState([]);
   const [paragraphOrder, setParagraphOrder] = useState(() => taskMeta.reorderParagraphs || []);
+  const [highlightedWords, setHighlightedWords] = useState([]);
 
   const questions = useMemo(
     () =>
@@ -411,6 +412,34 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 );
               })}
             </div>
+          ) : taskMeta.highlightIncorrectWords ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-xs sm:text-sm leading-relaxed text-slate-700">
+              {taskMeta.highlightIncorrectWords.text.split(/\s+/).map((token, idx) => {
+                const cleanWord = token.replace(/^[^a-zA-Z0-9']+|[^a-zA-Z0-9']+$/g, '');
+                const isAnswerWord = taskMeta.highlightIncorrectWords.incorrect.includes(cleanWord);
+                const isSelected = highlightedWords.includes(idx);
+                return (
+                  <button
+                    key={`${idx}-${token}`}
+                    type="button"
+                    onClick={() =>
+                      setHighlightedWords((prev) =>
+                        prev.includes(idx) ? prev.filter((item) => item !== idx) : [...prev, idx]
+                      )
+                    }
+                    className={`rounded px-1.5 py-0.5 transition cursor-pointer ${
+                      showAnswer && isAnswerWord
+                        ? 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-300'
+                        : isSelected
+                          ? 'bg-amber-200/80 text-amber-950 font-semibold border border-amber-300'
+                          : 'hover:bg-cyan-50 hover:text-[#0c4a7e]'
+                    }`}
+                  >
+                    {token}
+                  </button>
+                );
+              })}
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -515,6 +544,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                   setBlankSelections({});
                   setSelectedChoices([]);
                   setParagraphOrder(taskMeta.reorderParagraphs || []);
+                  setHighlightedWords([]);
                   setSubmittedNotice('');
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
@@ -526,6 +556,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 taskMeta.hasImagePrompt ||
                 taskMeta.hasDropdownBlanks ||
                 Boolean(taskMeta.dragDropWordBank) ||
+                Boolean(taskMeta.highlightIncorrectWords) ||
                 Array.isArray(taskMeta.typedBlanksAnswers) ||
                 Array.isArray(taskMeta.mcqOptions) ||
                 Array.isArray(taskMeta.reorderParagraphs)) && (

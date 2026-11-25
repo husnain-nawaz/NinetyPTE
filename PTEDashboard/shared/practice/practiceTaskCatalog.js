@@ -321,6 +321,19 @@ const SELECT_MISSING_WORD_SEED_ROWS = [
   { id: '18000205', title: 'First Clock', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
 ];
 
+const HIGHLIGHT_INCORRECT_WORDS_SEED_ROWS = [
+  { id: '16000527', title: 'Einstein', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '16000526', title: 'Quantum Mechanics', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '16000525', title: 'Sacred Calling', difficulty: 'Medium', practicedCount: 1, appearedCount: 4 },
+  { id: '16000524', title: 'Understanding Color', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '16000523', title: 'Height', difficulty: 'Medium', practicedCount: 1, appearedCount: 10 },
+  { id: '16000522', title: 'Frog', difficulty: 'Difficult', practicedCount: 1, appearedCount: 6 },
+  { id: '16000521', title: 'Baby Smile', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '16000520', title: 'Snack Sample', difficulty: 'Medium', practicedCount: 1, appearedCount: 5 },
+  { id: '16000519', title: 'Happy New Year', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '16000518', title: 'Black Mamba', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -704,12 +717,19 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'highlight-incorrect-words',
     code: 'HIW',
     title: 'Highlight Incorrect Words',
-    totalQuestions: 890,
-    coreTotalQuestions: 888,
-    startId: 9900890,
-    continueItem: { id: '9900712', title: 'Coastal Salt Marshes' },
-    instruction: 'You will hear a recording. Below is a transcription of the recording. Some words in the transcription differ from what the speaker said. Click on the words that differ.',
-    promptText: 'Coastal salt marshes shelter juvenile fish and absorb storm surges along low-lying estuaries.',
+    totalQuestions: 515,
+    coreTotalQuestions: 515,
+    startId: 16000527,
+    continueItem: { id: '16000521', title: 'Baby Smile' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    highlightIncorrectWords: {
+      text: 'Albert Einstein developed the theory of relativity after studying electrical engineering and theoretical chemistry in Zurich before publishing four groundbreaking scientific letters.',
+      incorrect: ['chemistry', 'letters'],
+    },
+    instruction: 'You will hear a recording. Below is a transcription of the recording. Some words in the transcription differ from what the speaker said. Please click on the words that are different.',
+    promptText: 'Spoken transcript replaces "chemistry" with "physics" and "letters" with "papers".',
+    seedRows: HIGHLIGHT_INCORRECT_WORDS_SEED_ROWS,
   },
   'listening/write-from-dictation': {
     skill: 'listening',
