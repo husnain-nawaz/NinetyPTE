@@ -391,7 +391,7 @@ export default function PTEDashboardMainSections({
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-base sm:text-lg font-bold text-slate-800">PTE Video Guide</h2>
           <Link
-            to="/pte-online-course"
+            to="/v1/youtube-videos/1"
             className="rounded-full border border-slate-200 px-4 py-1.5 text-xs font-semibold text-slate-600 hover:border-cyan-400 hover:text-[#0097a7]"
           >
             View All

@@ -48,6 +48,7 @@ import {
   PTEAnalyticsPage,
   PTEQuestionWeightagePage,
   PTEPracticeHistoryPage,
+  PTEStrategyVideosPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -74,6 +75,8 @@ function AppContent() {
     location.pathname.startsWith('/question-weightage') ||
     location.pathname.startsWith('/v1/practice-history') ||
     location.pathname.startsWith('/practice-history') ||
+    location.pathname.startsWith('/v1/youtube-videos') ||
+    location.pathname.startsWith('/youtube-videos') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -244,6 +247,22 @@ function AppContent() {
                 <PTEPracticeHistoryPage />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/v1/youtube-videos"
+            element={<Navigate to="/v1/youtube-videos/1" replace />}
+          />
+          <Route
+            path="/v1/youtube-videos/:page"
+            element={
+              <ProtectedRoute>
+                <PTEStrategyVideosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/youtube-videos"
+            element={<Navigate to="/v1/youtube-videos/1" replace />}
           />
           <Route
             path="/super-dashboard"

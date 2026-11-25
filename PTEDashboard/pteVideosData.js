@@ -1,0 +1,96 @@
+const PALETTES = [
+  { bg: 'from-slate-900 via-[#0e2d47] to-[#1e1b4b]', accent: 'bg-red-600' },
+  { bg: 'from-[#1a1033] via-[#2c1654] to-[#0f172a]', accent: 'bg-sky-500' },
+  { bg: 'from-slate-950 via-slate-900 to-[#3f1414]', accent: 'bg-amber-500' },
+  { bg: 'from-[#06283d] via-[#133b5c] to-[#0c1b2a]', accent: 'bg-cyan-500' },
+  { bg: 'from-[#1f0d2b] via-[#361047] to-[#0f172a]', accent: 'bg-rose-600' },
+  { bg: 'from-[#0d2238] via-[#173654] to-[#2e1a12]', accent: 'bg-orange-500' },
+  { bg: 'from-[#072b28] via-[#0c4a43] to-[#0f172a]', accent: 'bg-emerald-600' },
+  { bg: 'from-[#1e1b4b] via-[#312e81] to-[#0f172a]', accent: 'bg-indigo-600' },
+];
+
+const RAW_PAGE_1_VIDEOS = [
+  ['PTE AI Score vs Human Score: How Accurate Is the Scoring?', 'a month ago', 'AI SCORE vs HUMAN', 'Speaking & Writing', '11:24'],
+  ['Practising PTE SWT Every Day? Why Is Your Score Still Stuck in the 70s?', 'a month ago', 'WHY SWT STUCK AT 70?', 'Writing', '09:18'],
+  ['I Analysed 100 PTE Speaking Responses: 7 Mistakes You Must Avoid!', 'a month ago', '7 SPEAKING MISTAKES', 'Speaking', '14:02'],
+  ['PTE Respond to a Situation: Practice Questions + Model Answers', '2 months ago', 'RESPOND TO SITUATION', 'Speaking', '12:45'],
+  ['Took the Latest PTE Exam | Full Result & Expert Analysis', '2 months ago', 'LATEST PTE RESULT', 'Exam Review', '16:10'],
+  ['PTE Academic & Core Exam Experience | What to Expect (Real Talk)', '2 months ago', 'ACADEMIC & CORE TALK', 'Exam Guide', '13:35'],
+  ['PTE Updates: All the Latest Changes You Need to Know Before Your Exam', '2 months ago', 'PTE UPDATES 2026', 'Exam News', '10:50'],
+  ['PTE Repeat Sentence: 15-Minute Daily Plan to Improve Your Score', '3 months ago', 'RS 15-MIN DAILY PLAN', 'Speaking', '08:40'],
+  ['Experiment Results Are Finally Out | The Result Will Surprise You!', '3 months ago', 'EXPERIMENT RESULTS', 'Writing', '15:12'],
+  ['How I Scored 90 in PTE Writing | Tips That Actually Worked', '4 months ago', '90 IN PTE WRITING', 'Writing', '11:55'],
+  ['10 PTE Mistakes You Must Avoid in 2026', '4 months ago', '10 PTE MISTAKES', 'Strategy', '12:18'],
+  ['How This Student Improved PTE Score from 50 to 83 in Just 2 Weeks', '4 months ago', '50 TO 83 IN 2 WEEKS', 'Success Story', '09:42'],
+  ['The Biggest Lie About PTE Templates in 2026', '5 months ago', 'HUMAN vs TEMPLATES', 'Strategy', '13:05'],
+  ['PTE Academic 2026: New Changes That Will Affect Your Score', '6 months ago', 'WHAT ACTUALLY CHANGED?', 'Updates', '11:30'],
+  ['How to Score High in PTE Academic | Top Scoring Questions Strategy', '6 months ago', 'TOP SCORING QUESTIONS', 'Strategy', '14:22'],
+  ['How to Score 90 in PTE Writing | Marks Distribution Explained', '6 months ago', 'WRITING MARKS 90/90', 'Writing', '10:15'],
+  ['PTE vs LANGUAGECERT: A Direct Comparison (Don\'t Book Your Exam Until Watching)', '6 months ago', 'PTE vs LANGUAGECERT', 'Comparison', '12:50'],
+  ['English Test Comparison 2026: PTE vs IELTS vs LanguageCert Explained', '6 months ago', 'PTE vs IELTS vs LC', 'Comparison', '15:40'],
+  ['PTE Templates: Can You Still Score High? Detailed Explanation', '7 months ago', 'DO TEMPLATES WORK?', 'Strategy', '11:12'],
+  ['PTE Last-Minute Tips 2026: Do THIS to Score 79+ (24 Hours Before)', '7 months ago', 'LAST MINUTE TIPS', 'Exam Prep', '08:55'],
+  ['PTE Summarize Group Discussion - Strategy That Actually Works', '7 months ago', 'GROUP DISCUSSION', 'Speaking', '13:18'],
+  ['Scoring High in PTE with Templates - Is It Still Possible?', '8 months ago', '60 TO 90 TEMPLATES', 'Strategy', '10:44'],
+  ['PTE for Beginners: Top 10 Frequently Asked Questions Answered', '8 months ago', 'TOP 10 FAQ ANSWERS', 'Beginners', '14:00'],
+  ['Score 90 in PTE | Master Plan Explained in 20 Minutes', '8 months ago', '90 IN 20 MINUTES', 'Master Plan', '19:48'],
+  ['PTE Essay Writing Explained | Everything You Need to Score 79+', '8 months ago', 'PTE ESSAY WRITING', 'Writing', '13:26'],
+  ['Auxiliary Verbs for PTE Preparation | Full Grammar Lesson', '8 months ago', 'GRAMMAR LESSON', 'Grammar', '16:04'],
+  ['PTE Exam Experiment Result Feb 2026 - What Changed My Score', '9 months ago', 'EXPERIMENT FEB 2026', 'Analysis', '12:08'],
+  ['Real PTE Exam Experiment Feb 2026 - Don\'t Book Before Watching', '9 months ago', 'REAL EXAM TEST', 'Analysis', '11:52'],
+  ['PTE Speaking Pronunciation Tips to Score 90', '9 months ago', 'MASTER PRONUNCIATION', 'Speaking', '10:25'],
+  ['January 2026 PTE Changes - Everything You Must Know!', '9 months ago', 'PTE CHANGES GUIDE', 'Updates', '09:38'],
+  ['PTE Score 2026: How Each Question Type Affects Your Score', '10 months ago', 'SCORE WEIGHTAGE', 'Scoring', '13:14'],
+  ['Why Hard Practice is Ruining Your PTE Score', '10 months ago', 'WHY LOW SCORE?', 'Mindset', '08:20'],
+  ['How to Improve Note-Taking Skills in PTE | Easy Strategies', '10 months ago', 'PTE NOTE-TAKING', 'Listening', '10:45'],
+  ['Are Predictions Really Useful for PTE Preparation? Explained Clearly', '10 months ago', 'ARE PREDICTIONS USEFUL?', 'Strategy', '09:10'],
+  ['PTE Exam Listening: Select Missing Word [Explained & Listening Practice]', '10 months ago', 'SELECT MISSING WORD', 'Listening', '11:02'],
+  ['PTE Listening Fill in the Blanks: High-Score Tricks & Common Mistakes', '10 months ago', 'STOP LOSING FIB MARKS', 'Listening', '12:35'],
+  ['Are Templates Still Useful for High Scores in PTE Academic 2026?', 'a year ago', 'TEMPLATES IN 2026', 'Strategy', '10:15'],
+  ['Master Write From Dictation (WFD) to Boost Your PTE Score', 'a year ago', 'WRITE FROM DICTATION', 'Listening', '14:30'],
+  ['Answering the Most Asked PTE Questions of 2025', 'a year ago', 'MOST ASKED QUESTIONS', 'FAQ', '13:45'],
+  ['PTE AI Scoring Secret That Boosts Your Score', 'a year ago', 'AI SCORING SECRET', 'Scoring', '09:50'],
+  ['PTE Listening Multiple Choice Single Answer | Quick Solving Tips', 'a year ago', 'LISTENING MCQ SINGLE', 'Listening', '08:15'],
+  ['Stop Losing Marks in PTE Highlight Incorrect Words | Proven Strategy', 'a year ago', 'HIGHLIGHT INCORRECT', 'Listening', '10:05'],
+  ['PTE Speaking Score 90: How I Achieved It After the New Update (Live Examples!)', 'a year ago', 'SCORED 90 SPEAKING', 'Speaking', '15:20'],
+  ['PTE Reading MCQ Single Answer | Proven Strategy for a High Score', 'a year ago', 'READING MCQ SINGLE', 'Reading', '08:50'],
+  ['PTE Reading MCQ Multiple Answers Made Easy | Practice with Live Examples', 'a year ago', 'READING MCQ MULTIPLE', 'Reading', '11:18'],
+  ['Master PTE Reorder Paragraphs | Stop Guessing & Get Every Question Right', 'a year ago', 'REORDER PARAGRAPHS', 'Reading', '13:42'],
+  ['Get a Superior Score in PTE Academic on Your First Attempt | Proven Tips & Tricks', 'a year ago', 'FIRST ATTEMPT SUPERIOR', 'Master Plan', '14:10'],
+  ['Improve PTE Repeat Sentence in 4 Weeks | Just 15 Minutes a Day!', 'a year ago', '4-WEEK RS PLAN', 'Speaking', '09:58'],
+];
+
+const RAW_PAGE_2_VIDEOS = [
+  ['PTE Core Write Email Masterclass: Hit All Bullet Points for CLB 9+', 'a year ago', 'CORE WRITE EMAIL', 'PTE Core', '11:40'],
+  ['PTE Reading Fill in the Blanks (Dropdown) Collocation Patterns', 'a year ago', 'DROPDOWN COLLOCATIONS', 'Reading', '13:05'],
+  ['Describe Image Line Graph & Process Diagram Live Templates', 'a year ago', 'DESCRIBE IMAGE LIVE', 'Speaking', '12:22'],
+  ['Summarize Spoken Text 50-70 Word Structure Without Grammar Errors', 'a year ago', 'SST 50-70 WORDS', 'Listening', '10:15'],
+  ['Reading & Writing Fill in the Blanks Dual Weightage Walkthrough', 'a year ago', 'R&W FIB WEIGHTAGE', 'Reading', '14:18'],
+  ['PTE Core Respond to a Situation Everyday Register Examples', 'a year ago', 'CORE SITUATION TIPS', 'PTE Core', '09:30'],
+  ['Common Microphone Position Errors That Hurt Oral Fluency', 'a year ago', 'MIC CHECK GUIDE', 'Speaking', '07:45'],
+  ['Full 2-Hour Mock Test Pacing Strategy for PTE 79+', 'a year ago', '2-HOUR PACING PLAN', 'Mock Tests', '15:00'],
+];
+
+function hydrateVideo([title, timeAgo, badgeText, category, duration], index, pageNum) {
+  const palette = PALETTES[index % PALETTES.length];
+  return {
+    id: `vid-p${pageNum}-${index + 1}`,
+    title,
+    timeAgo,
+    badgeText,
+    category,
+    duration,
+    bg: palette.bg,
+    accent: palette.accent,
+  };
+}
+
+export const STRATEGY_VIDEOS_BY_PAGE = {
+  1: RAW_PAGE_1_VIDEOS.map((item, idx) => hydrateVideo(item, idx, 1)),
+  2: RAW_PAGE_2_VIDEOS.map((item, idx) => hydrateVideo(item, idx + 2, 2)),
+};
+
+export const ALL_STRATEGY_VIDEOS = [
+  ...STRATEGY_VIDEOS_BY_PAGE[1],
+  ...STRATEGY_VIDEOS_BY_PAGE[2],
+];
