@@ -73,10 +73,12 @@ export default function QuestionBankSidebarDrawer({
   const [levelFilter, setLevelFilter] = useState('all'); // 'all' | 'Easy' | 'Medium' | 'Difficult'
   const [priorityFilter, setPriorityFilter] = useState('all'); // 'all' | 'new' | 'new_prediction'
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [questionTypeFilter, setQuestionTypeFilter] = useState('all');
   const [bookmarkMenuOpen, setBookmarkMenuOpen] = useState(false);
   const [levelMenuOpen, setLevelMenuOpen] = useState(false);
   const [priorityMenuOpen, setPriorityMenuOpen] = useState(false);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [questionTypeMenuOpen, setQuestionTypeMenuOpen] = useState(false);
   const [sortMode, setSortMode] = useState('newest'); // 'newest' | 'oldest' | 'appeared'
   const [currentPage, setCurrentPage] = useState(1);
   const [goToPageInput, setGoToPageInput] = useState('');
@@ -93,6 +95,7 @@ export default function QuestionBankSidebarDrawer({
       if (priorityFilter === 'new' && !q.isNew) return false;
       if (priorityFilter === 'new_prediction' && !q.newPrediction) return false;
       if (categoryFilter !== 'all' && q.imageType !== categoryFilter) return false;
+      if (questionTypeFilter !== 'all' && q.questionType !== questionTypeFilter) return false;
       if (
         query &&
         !q.title.toLowerCase().includes(query) &&
@@ -118,6 +121,7 @@ export default function QuestionBankSidebarDrawer({
     practiceStatus,
     predictionOnly,
     priorityFilter,
+    questionTypeFilter,
     questions,
     searchInput,
     sortMode,
@@ -130,6 +134,7 @@ export default function QuestionBankSidebarDrawer({
     levelFilter !== 'all' ||
     priorityFilter !== 'all' ||
     categoryFilter !== 'all' ||
+    questionTypeFilter !== 'all' ||
     searchInput.trim().length > 0;
 
   const displayTotalQuestions = hasActiveFilter
@@ -331,6 +336,7 @@ export default function QuestionBankSidebarDrawer({
                 setLevelFilter('all');
                 setPriorityFilter('all');
                 setCategoryFilter('all');
+                setQuestionTypeFilter('all');
                 setSearchInput('');
                 setCurrentPage(1);
               }}
@@ -435,6 +441,48 @@ export default function QuestionBankSidebarDrawer({
                 </div>
               )}
             </div>
+
+            {Array.isArray(taskMeta.questionTypeOptions) && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuestionTypeMenuOpen((prev) => !prev);
+                    setLevelMenuOpen(false);
+                    setBookmarkMenuOpen(false);
+                    setCategoryMenuOpen(false);
+                    setPriorityMenuOpen(false);
+                  }}
+                  className={`inline-flex items-center gap-1 font-semibold cursor-pointer ${
+                    questionTypeFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-700 hover:text-[#00b4c6]'
+                  }`}
+                >
+                  <span>{questionTypeFilter === 'all' ? 'Question Type' : questionTypeFilter}</span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+
+                {questionTypeMenuOpen && (
+                  <div className="absolute left-0 top-full mt-1.5 w-36 rounded-xl border border-slate-200 bg-white py-1 shadow-lg z-20">
+                    {['all', ...taskMeta.questionTypeOptions].map((qType) => (
+                      <button
+                        key={qType}
+                        type="button"
+                        onClick={() => {
+                          setQuestionTypeFilter(qType);
+                          setQuestionTypeMenuOpen(false);
+                          setCurrentPage(1);
+                        }}
+                        className={`block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50 cursor-pointer ${
+                          questionTypeFilter === qType ? 'text-[#00b4c6] font-bold' : 'text-slate-600'
+                        }`}
+                      >
+                        {qType === 'all' ? 'All Types' : qType}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2.5">

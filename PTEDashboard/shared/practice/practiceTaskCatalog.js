@@ -113,6 +113,19 @@ const DESCRIBE_IMAGE_SEED_ROWS = [
   { id: '3001439', title: 'Types of Dwellings', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 53, imageType: 'Pie Chart' },
 ];
 
+const RETELL_LECTURE_SEED_ROWS = [
+  { id: '4000604', title: 'Biological Factors', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 60, questionType: 'Audio Only' },
+  { id: '4000603', title: 'Four Dimensions', difficulty: 'Medium', practicedCount: 1, appearedCount: 59, questionType: 'Audio + Slide' },
+  { id: '4000602', title: 'Increased Productivity', difficulty: 'Medium', practicedCount: 2, appearedCount: 6, questionType: 'Audio Only' },
+  { id: '4000601', title: 'Pragmatism', difficulty: 'Medium', practicedCount: 9, appearedCount: 5, questionType: 'Video Lecture' },
+  { id: '4000599', title: 'Part Time Job', difficulty: 'Medium', practicedCount: 3, appearedCount: 60, questionType: 'Audio Only' },
+  { id: '4000597', title: 'Gas Giants', difficulty: 'Medium', practicedCount: 1, appearedCount: 73, questionType: 'Audio + Slide' },
+  { id: '4000596', title: 'Television', difficulty: 'Medium', practicedCount: 0, appearedCount: 4, questionType: 'Audio Only' },
+  { id: '4000595', title: 'Shy Fish', difficulty: 'Difficult', practicedCount: 1, appearedCount: 108, questionType: 'Video Lecture' },
+  { id: '4000594', title: 'Practice', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 112, questionType: 'Audio Only' },
+  { id: '4000593', title: 'Dissociation of Personalities', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 107, questionType: 'Audio + Slide' },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -187,10 +200,14 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RL',
     title: 'Re-Tell Lecture',
     totalQuestions: 578,
-    startId: 4000578,
-    continueItem: { id: '4000410', title: 'Deep Ocean Currents' },
+    startId: 4000604,
+    continueItem: { id: '4000602', title: 'Increased Productivity' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    questionTypeOptions: ['Audio Only', 'Audio + Slide', 'Video Lecture'],
     instruction: 'You will hear a lecture. After listening to the lecture, in 10 seconds, please speak into the microphone and retell what you have just heard from the lecture in your own words.',
-    promptText: 'Audio Lecture Topic: Thermohaline circulation patterns and regional climate moderation.',
+    promptText: 'Audio Lecture Topic: Biological Factors shaping long-term adaptation and cognitive performance.',
+    seedRows: RETELL_LECTURE_SEED_ROWS,
   },
   'speaking/answer-short-question': {
     skill: 'speaking',
@@ -478,6 +495,9 @@ export function buildTaskQuestionList(taskMeta) {
       appearedCount,
       imageType: taskMeta.categoryOptions
         ? taskMeta.categoryOptions[idx % taskMeta.categoryOptions.length]
+        : undefined,
+      questionType: taskMeta.questionTypeOptions
+        ? taskMeta.questionTypeOptions[idx % taskMeta.questionTypeOptions.length]
         : undefined,
       contentSnippet: `Practice statement covering ${topic.toLowerCase()} for ${taskMeta.title}.`,
       bookmarked: false,
