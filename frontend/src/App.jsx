@@ -57,6 +57,7 @@ import {
   PTECoreExamPatternPage,
   PTECoreStrategyVideosPage,
   PTECoreVocabBankPage,
+  PTECoreStudyToolsPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -99,6 +100,7 @@ function AppContent() {
     location.pathname.startsWith('/grammar') ||
     location.pathname.startsWith('/v1/prediction') ||
     location.pathname.startsWith('/prediction') ||
+    location.pathname.startsWith('/core-prediction') ||
     location.pathname.startsWith('/v1/templates') ||
     location.pathname.startsWith('/templates') ||
     location.pathname.startsWith('/pte-dashboard') ||
@@ -429,6 +431,30 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEStudyToolsPage initialTab="predictions" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/prediction"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="predictions" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/predictions"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="predictions" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-prediction"
+            element={
+              <ProtectedRoute>
+                <PTECoreStudyToolsPage initialTab="predictions" syncPortalMode />
               </ProtectedRoute>
             }
           />

@@ -106,6 +106,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         navigate('/v1/question-weightage');
       } else if (location.pathname.includes('vocab-bank')) {
         navigate('/v1/vocab-bank');
+      } else if (location.pathname.includes('prediction')) {
+        navigate('/v1/prediction');
       } else {
         navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
       }
