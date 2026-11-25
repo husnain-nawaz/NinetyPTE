@@ -50,7 +50,7 @@ import {
   PTEPracticeHistoryPage,
   PTEStrategyVideosPage,
   PTEVocabBankPage,
-  PTEGrammarPage,
+  PTEStudyToolsPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -83,6 +83,10 @@ function AppContent() {
     location.pathname.startsWith('/vocab-bank') ||
     location.pathname.startsWith('/v1/grammar') ||
     location.pathname.startsWith('/grammar') ||
+    location.pathname.startsWith('/v1/prediction') ||
+    location.pathname.startsWith('/prediction') ||
+    location.pathname.startsWith('/v1/templates') ||
+    location.pathname.startsWith('/templates') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -290,7 +294,7 @@ function AppContent() {
             path="/v1/grammar"
             element={
               <ProtectedRoute>
-                <PTEGrammarPage />
+                <PTEStudyToolsPage initialTab="grammar" />
               </ProtectedRoute>
             }
           />
@@ -298,7 +302,55 @@ function AppContent() {
             path="/grammar"
             element={
               <ProtectedRoute>
-                <PTEGrammarPage />
+                <PTEStudyToolsPage initialTab="grammar" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/prediction"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="predictions" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/predictions"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="predictions" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/prediction"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="predictions" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/predictions"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="predictions" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/templates"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="templates" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/templates"
+            element={
+              <ProtectedRoute>
+                <PTEStudyToolsPage initialTab="templates" />
               </ProtectedRoute>
             }
           />
