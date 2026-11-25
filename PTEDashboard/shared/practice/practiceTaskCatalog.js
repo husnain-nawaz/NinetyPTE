@@ -308,6 +308,19 @@ const LISTENING_MCS_SEED_ROWS = [
   { id: '17000210', title: 'Genes and Environment', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
 ];
 
+const SELECT_MISSING_WORD_SEED_ROWS = [
+  { id: '18000214', title: 'Faint Sound', difficulty: 'Medium', practicedCount: 2, appearedCount: 2 },
+  { id: '18000213', title: 'Surfing', difficulty: 'Medium', practicedCount: 1, appearedCount: 9 },
+  { id: '18000212', title: 'Presentation', difficulty: 'Medium', practicedCount: 1, appearedCount: 7 },
+  { id: '18000211', title: 'Paper Money', difficulty: 'Medium', practicedCount: 1, appearedCount: 5 },
+  { id: '18000210', title: 'Archaeological Site', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '18000209', title: 'Microscope', difficulty: 'Medium', practicedCount: 1, appearedCount: 7 },
+  { id: '18000208', title: 'Careers', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '18000207', title: "Earth's Climate", difficulty: 'Medium', practicedCount: 1, appearedCount: 6 },
+  { id: '18000206', title: 'Unreliable Narrators', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '18000205', title: 'First Clock', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -669,12 +682,22 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'select-missing-word',
     code: 'SMW',
     title: 'Select Missing Word',
-    totalQuestions: 460,
-    coreTotalQuestions: 450,
-    startId: 9850460,
-    continueItem: { id: '9850318', title: 'Podcast Audio Mixing' },
-    instruction: 'You will hear a recording in which the last word or group of words has been replaced by a beep. Select the best option to complete the recording.',
-    promptText: 'Audio prompt concludes with a brief tone after discussing acoustic feedback control.',
+    totalQuestions: 203,
+    coreTotalQuestions: 203,
+    startId: 18000214,
+    continueItem: { id: '18000207', title: "Earth's Climate" },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    singleChoice: true,
+    mcqOptions: [
+      { id: 'A', label: 'exceeds our normal threshold of hearing', correct: true },
+      { id: 'B', label: 'eliminates background static completely', correct: false },
+      { id: 'C', label: 'reverses acoustic wave frequency', correct: false },
+      { id: 'D', label: 'produces a permanent echo chamber', correct: false },
+    ],
+    instruction: 'You will hear a recording. At the end of the recording the last word or group of words has been replaced by a beep. Select the correct option to complete the recording.',
+    promptText: 'Transcript excerpt covering faint sound measurement concludes as sensitive sensors amplify energy that exceeds our normal threshold of hearing.',
+    seedRows: SELECT_MISSING_WORD_SEED_ROWS,
   },
   'listening/highlight-incorrect-words': {
     skill: 'listening',
