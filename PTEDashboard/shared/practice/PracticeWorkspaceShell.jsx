@@ -322,6 +322,67 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 </div>
               ))}
             </div>
+          ) : taskMeta.dragDropWordBank ? (
+            <div className="space-y-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-2.5 text-xs sm:text-sm">
+                <span className="font-semibold text-[#0c4a7e]">Fill blanks:</span>
+                {taskMeta.dragDropWordBank.answers.map((answerWord, slotIdx) => {
+                  const placedWord = showAnswer ? answerWord : blankSelections[slotIdx];
+                  return (
+                    <button
+                      key={answerWord}
+                      type="button"
+                      onClick={() => {
+                        if (showAnswer || !placedWord) return;
+                        setBlankSelections((prev) => {
+                          const next = { ...prev };
+                          delete next[slotIdx];
+                          return next;
+                        });
+                      }}
+                      className={`min-w-[84px] rounded-lg border px-3 py-1.5 text-xs font-bold transition cursor-pointer ${
+                        showAnswer
+                          ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                          : placedWord
+                            ? 'border-[#00b4c6] bg-cyan-50 text-[#0c4a7e]'
+                            : 'border-dashed border-slate-300 bg-white text-slate-400'
+                      }`}
+                    >
+                      {placedWord || `Blank ${slotIdx + 1}`}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {taskMeta.dragDropWordBank.choices.map((chip) => {
+                  const alreadyUsed = Object.values(blankSelections).includes(chip);
+                  return (
+                    <button
+                      key={chip}
+                      type="button"
+                      disabled={showAnswer || alreadyUsed}
+                      onClick={() => {
+                        const totalSlots = taskMeta.dragDropWordBank.answers.length;
+                        for (let s = 0; s < totalSlots; s += 1) {
+                          if (!blankSelections[s]) {
+                            setBlankSelections((prev) => ({ ...prev, [s]: chip }));
+                            break;
+                          }
+                        }
+                      }}
+                      className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+                        alreadyUsed
+                          ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                          : 'border-slate-200 bg-white text-[#0c4a7e] hover:border-[#00b4c6] hover:bg-cyan-50 cursor-pointer'
+                      }`}
+                    >
+                      {chip}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -436,6 +497,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
               {(taskMeta.hasAudioPrompt ||
                 taskMeta.hasImagePrompt ||
                 taskMeta.hasDropdownBlanks ||
+                Boolean(taskMeta.dragDropWordBank) ||
                 Array.isArray(taskMeta.mcqOptions) ||
                 Array.isArray(taskMeta.reorderParagraphs)) && (
                 <button

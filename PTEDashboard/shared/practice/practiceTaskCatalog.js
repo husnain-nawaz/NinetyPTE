@@ -217,6 +217,19 @@ const REORDER_PARAGRAPHS_SEED_ROWS = [
   { id: '10001074', title: 'Hiring Chefs', difficulty: 'Medium', practicedCount: 1, appearedCount: 5 },
 ];
 
+const READING_DRAG_DROP_SEED_ROWS = [
+  { id: '11001117', title: 'Mountain Forest', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 53 },
+  { id: '11001116', title: 'Recycling Notice', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 122 },
+  { id: '11001115', title: 'Asking for Leave', difficulty: 'Medium', practicedCount: 1, appearedCount: 59 },
+  { id: '11001114', title: 'Lifelong Learning', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '11001113', title: 'Work Preparation', difficulty: 'Medium', practicedCount: 1, appearedCount: 7 },
+  { id: '11001112', title: 'School Preparation', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '11001111', title: 'The Petrified Forest', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 89 },
+  { id: '11001110', title: 'Instinct in Business', difficulty: 'Difficult', practicedCount: 1, appearedCount: 53 },
+  { id: '11001109', title: 'Wind Version 2', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '11001108', title: 'Funeral Violin', difficulty: 'Difficult', practicedCount: 2, appearedCount: 0 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -440,14 +453,21 @@ export const PRACTICE_TASKS_BY_KEY = {
   'reading/fill-in-the-blanks': {
     skill: 'reading',
     slug: 'fill-in-the-blanks',
-    code: 'FIB(DD)',
-    title: 'Reading: Fill in the Blanks',
-    totalQuestions: 967,
+    code: 'RB',
+    title: 'Fill in the Blanks (Drag & Drop)',
+    coreTitle: 'Reading: Fill in the Blanks',
+    totalQuestions: 1067,
     coreTotalQuestions: 898,
-    startId: 9300967,
-    continueItem: { id: '9300811', title: 'Pollination Networks' },
+    startId: 11001117,
+    continueItem: { id: '11001113', title: 'Work Preparation' },
+    dragDropWordBank: {
+      answers: ['canopy', 'moisture', 'elevation', 'timber'],
+      choices: ['canopy', 'moisture', 'elevation', 'timber', 'desert', 'fossil'],
+    },
     instruction: 'In the text below some words are missing. Drag words from the box below to the appropriate place in the text.',
-    promptText: 'Healthy pollinator habitats [strengthen] crop resilience and [stabilize] seasonal orchard yields.',
+    promptText:
+      'High-altitude mountain forests form a dense [canopy] that traps seasonal [moisture] along steep ridges while supporting diverse [elevation] habitats and sustainable [timber] cycles.',
+    seedRows: READING_DRAG_DROP_SEED_ROWS,
   },
   'reading/multiple-choice-single': {
     skill: 'reading',
