@@ -43,7 +43,7 @@ import OnTestDayPage from './pages/OnTestDayPage';
 import ContactPage from './pages/ContactPage';
 import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
-import { PTEDashboard, ProtectedRoute } from '../../PTEDashboard';
+import { PTEDashboard, PTEAnalyticsPage, ProtectedRoute } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
 
 function AppContent() {
@@ -62,6 +62,8 @@ function AppContent() {
   const isDashboard =
     location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/v1/dashboard') ||
+    location.pathname.startsWith('/v1/analytics') ||
+    location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -182,6 +184,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/analytics"
+            element={
+              <ProtectedRoute>
+                <PTEAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <PTEAnalyticsPage />
               </ProtectedRoute>
             }
           />

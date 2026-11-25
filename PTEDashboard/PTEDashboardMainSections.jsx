@@ -83,7 +83,6 @@ export default function PTEDashboardMainSections({
   onSelectVideo,
   onShowHistoryModal,
 }) {
-  const [viewMode, setViewMode] = useState('practice');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
   const [timeframe, setTimeframe] = useState('All');
@@ -107,28 +106,18 @@ export default function PTEDashboardMainSections({
       {/* 1. Pill Switcher + Search Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 shadow-2xs self-start">
-          <button
-            type="button"
-            onClick={() => setViewMode('practice')}
-            className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer ${
-              viewMode === 'practice'
-                ? 'bg-[#2cc9ba] text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
+          <Link
+            to="/dashboard"
+            className="px-6 py-2 rounded-full text-xs sm:text-sm font-bold bg-[#2cc9ba] text-white shadow-xs"
           >
             Practice Progress
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('performance')}
-            className={`px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer ${
-              viewMode === 'performance'
-                ? 'bg-[#2cc9ba] text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
+          </Link>
+          <Link
+            to="/v1/analytics"
+            className="px-6 py-2 rounded-full text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition"
           >
             Performance Progress
-          </button>
+          </Link>
         </div>
 
         <div className="relative w-full sm:w-64">
@@ -165,11 +154,11 @@ export default function PTEDashboardMainSections({
         ))}
       </div>
 
-      {/* 3. Today's Progress / Performance Summary */}
+      {/* 3. Today's Progress */}
       <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <h2 className="text-base sm:text-lg font-bold text-slate-800">
-            {viewMode === 'practice' ? "Today's Progress" : 'Performance Breakdown'}
+            Today&apos;s Progress
           </h2>
           <button
             type="button"
