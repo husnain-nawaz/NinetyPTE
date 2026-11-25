@@ -35,6 +35,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [blankSelections, setBlankSelections] = useState({});
+  const [selectedChoices, setSelectedChoices] = useState([]);
 
   const questions = useMemo(
     () =>
@@ -224,6 +225,42 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 );
               })}
             </div>
+          ) : Array.isArray(taskMeta.mcqOptions) ? (
+            <div className="space-y-2.5">
+              {taskMeta.mcqOptions.map((opt) => {
+                const checked = selectedChoices.includes(opt.id);
+                const highlightCorrect = showAnswer && opt.correct;
+                return (
+                  <label
+                    key={opt.id}
+                    className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-xs sm:text-sm cursor-pointer transition ${
+                      highlightCorrect
+                        ? 'border-emerald-400 bg-emerald-50/70 text-emerald-900'
+                        : checked
+                          ? 'border-[#00b4c6] bg-cyan-50/50 text-slate-900'
+                          : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        setSelectedChoices((prev) =>
+                          prev.includes(opt.id)
+                            ? prev.filter((item) => item !== opt.id)
+                            : [...prev, opt.id]
+                        )
+                      }
+                      className="mt-0.5 rounded border-slate-300 text-[#00b4c6] focus:ring-[#00b4c6]"
+                    />
+                    <span>
+                      <strong className="mr-1.5">{opt.id}.</strong>
+                      {opt.label}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -326,6 +363,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 onClick={() => {
                   setResponseText('');
                   setBlankSelections({});
+                  setSelectedChoices([]);
                   setSubmittedNotice('');
                 }}
                 className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
@@ -333,7 +371,10 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Redo</span>
               </button>
-              {(taskMeta.hasAudioPrompt || taskMeta.hasImagePrompt || taskMeta.hasDropdownBlanks) && (
+              {(taskMeta.hasAudioPrompt ||
+                taskMeta.hasImagePrompt ||
+                taskMeta.hasDropdownBlanks ||
+                Array.isArray(taskMeta.mcqOptions)) && (
                 <button
                   type="button"
                   onClick={() => setShowAnswer((prev) => !prev)}

@@ -191,6 +191,19 @@ const RW_FILL_BLANKS_SEED_ROWS = [
   { id: '12001326', title: 'Workforce Plan', difficulty: 'Medium', practicedCount: 1, appearedCount: 12 },
 ];
 
+const READING_MCM_SEED_ROWS = [
+  { id: '9000198', title: 'Job Opening', difficulty: 'Medium', practicedCount: 1, appearedCount: 4 },
+  { id: '9000197', title: 'Disciplined Inquiry', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '9000196', title: 'Migration', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '9000195', title: 'Genome', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '9000194', title: 'Attention', difficulty: 'Medium', practicedCount: 2, appearedCount: 1 },
+  { id: '9000193', title: 'Human Remains', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '9000192', title: 'Coffee', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '9000191', title: 'Examiner Report', difficulty: 'Difficult', practicedCount: 1, appearedCount: 0 },
+  { id: '9000190', title: 'Eyes', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '9000189', title: 'Tigers', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -376,12 +389,20 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'multiple-choice-multiple',
     code: 'MCM',
     title: 'Multiple Choice, Multiple Answers',
-    totalQuestions: 420,
-    coreTotalQuestions: 410,
-    startId: 9100420,
-    continueItem: { id: '9100302', title: 'Early Printing Presses' },
+    totalQuestions: 188,
+    coreTotalQuestions: 188,
+    startId: 9000198,
+    continueItem: { id: '9000176', title: 'Forgiveness' },
+    hideDownloadButton: true,
+    mcqOptions: [
+      { id: 'A', label: 'Candidates should attach two recent professional references with their portfolio.', correct: true },
+      { id: 'B', label: 'Interviews are restricted exclusively to applicants residing outside the city.', correct: false },
+      { id: 'C', label: 'Successful applicants receive a structured four-week onboarding mentorship.', correct: true },
+      { id: 'D', label: 'Paper application forms must be mailed after the online portal closes.', correct: false },
+    ],
     instruction: 'Read the text and answer the question by selecting all the correct responses. More than one response is correct.',
-    promptText: 'Which TWO historical factors accelerated book affordability across sixteenth-century European towns?',
+    promptText: 'Which TWO conditions apply to candidates applying for the advertised role according to the passage?',
+    seedRows: READING_MCM_SEED_ROWS,
   },
   'reading/reorder-paragraphs': {
     skill: 'reading',
