@@ -269,6 +269,19 @@ const LISTENING_MCM_SEED_ROWS = [
   { id: '14000216', title: 'Good Translation', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
 ];
 
+const LISTENING_FIB_SEED_ROWS = [
+  { id: '15000434', title: 'Family', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '15000433', title: 'Successful Restaurant', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '15000432', title: 'Work in Organization', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '15000431', title: 'Sugar and Health', difficulty: 'Medium', practicedCount: 1, appearedCount: 8 },
+  { id: '15000430', title: 'Building Responsibility', difficulty: 'Medium', practicedCount: 1, appearedCount: 6 },
+  { id: '15000429', title: 'Javelin Competition', difficulty: 'Medium', practicedCount: 1, appearedCount: 7 },
+  { id: '15000428', title: 'Local Farmers', difficulty: 'Medium', practicedCount: 2, appearedCount: 9 },
+  { id: '15000427', title: 'Food Marketing Ethics', difficulty: 'Medium', practicedCount: 1, appearedCount: 15 },
+  { id: '15000426', title: 'Robotic Surgery', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '15000425', title: 'Park', difficulty: 'Easy', practicedCount: 1, appearedCount: 2 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -569,14 +582,18 @@ export const PRACTICE_TASKS_BY_KEY = {
   'listening/fill-in-the-blanks': {
     skill: 'listening',
     slug: 'fill-in-the-blanks',
-    code: 'L:FIB',
+    code: 'FIB',
     title: 'Fill in the Blanks',
-    totalQuestions: 1120,
-    coreTotalQuestions: 1080,
-    startId: 9701120,
-    continueItem: { id: '9700914', title: 'Botanical Classification' },
+    totalQuestions: 421,
+    coreTotalQuestions: 421,
+    startId: 15000434,
+    continueItem: { id: '15000055', title: 'Whales & Dolphins' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    typedBlanksAnswers: ['support', 'communication', 'routines', 'resilience'],
     instruction: 'You will hear a recording. Type the missing words directly into each blank as you listen.',
-    promptText: 'Modern taxonomy relies on genetic [sequencing] alongside morphological [traits] observed in herbarium specimens.',
+    promptText: 'Strong family [support] and open [communication] reinforce healthy daily [routines] and emotional [resilience].',
+    seedRows: LISTENING_FIB_SEED_ROWS,
   },
   'listening/highlight-correct-summary': {
     skill: 'listening',

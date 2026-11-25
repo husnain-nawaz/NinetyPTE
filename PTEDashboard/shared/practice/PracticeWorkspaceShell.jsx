@@ -386,6 +386,31 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 })}
               </div>
             </div>
+          ) : Array.isArray(taskMeta.typedBlanksAnswers) ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-3 text-xs sm:text-sm">
+              <span className="font-semibold text-[#0c4a7e]">Missing words:</span>
+              {taskMeta.typedBlanksAnswers.map((answerWord, slotIdx) => {
+                const value = showAnswer ? answerWord : blankSelections[slotIdx] || '';
+                return (
+                  <input
+                    key={answerWord}
+                    type="text"
+                    value={value}
+                    readOnly={showAnswer}
+                    onChange={(e) =>
+                      setBlankSelections((prev) => ({ ...prev, [slotIdx]: e.target.value }))
+                    }
+                    placeholder={`Blank ${slotIdx + 1}`}
+                    aria-label={`Missing word ${slotIdx + 1}`}
+                    className={`w-32 rounded-lg border px-3 py-1.5 text-xs font-semibold focus:outline-none ${
+                      showAnswer
+                        ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                        : 'border-slate-300 bg-white text-[#0c4a7e] focus:border-[#00b4c6]'
+                    }`}
+                  />
+                );
+              })}
+            </div>
           ) : (
             <div className="space-y-3">
               <textarea
@@ -501,6 +526,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 taskMeta.hasImagePrompt ||
                 taskMeta.hasDropdownBlanks ||
                 Boolean(taskMeta.dragDropWordBank) ||
+                Array.isArray(taskMeta.typedBlanksAnswers) ||
                 Array.isArray(taskMeta.mcqOptions) ||
                 Array.isArray(taskMeta.reorderParagraphs)) && (
                 <button
