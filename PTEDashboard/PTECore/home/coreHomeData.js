@@ -48,7 +48,7 @@ export const CORE_HOME_DATA = {
     ],
     Listening: [
       { name: 'Summarize Spoken Text', done: 41, total: 233, to: '/v1/core/practice/listening/summarize-spoken-text' },
-      { name: 'Multiple Choice, Multiple Answers', done: 28, total: 450, to: '/v1/core/practice/listening/multiple-choice-multiple' },
+      { name: 'Multiple Choice, Multiple Answers', done: 28, total: 193, to: '/v1/core/practice/listening/multiple-choice-multiple' },
       { name: 'Fill in the Blanks', done: 98, total: 1080, to: '/v1/core/practice/listening/fill-in-the-blanks' },
       { name: 'Multiple Choice, Single Answer', done: 24, total: 390, to: '/v1/core/practice/listening/multiple-choice-single' },
       { name: 'Select Missing Word', done: 39, total: 450, to: '/v1/core/practice/listening/select-missing-word' },
