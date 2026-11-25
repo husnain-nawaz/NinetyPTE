@@ -40,7 +40,7 @@ export const CORE_HOME_DATA = {
       { name: 'Write Email', done: 0, total: 177, to: '/v1/core/practice/writing/write-email' },
     ],
     Reading: [
-      { name: 'Reading & Writing: Fill in the Blanks', done: 68, total: 950, to: '/v1/core/practice/reading/reading-writing-fill-in-the-blanks' },
+      { name: 'Reading & Writing Blanks', done: 68, total: 996, to: '/v1/core/practice/reading/reading-writing-fill-in-the-blanks' },
       { name: 'Multiple Choice, Multiple Answers', done: 24, total: 410, to: '/v1/core/practice/reading/multiple-choice-multiple' },
       { name: 'Re-order Paragraphs', done: 42, total: 615, to: '/v1/core/practice/reading/reorder-paragraphs' },
       { name: 'Reading: Fill in the Blanks', done: 52, total: 898, to: '/v1/core/practice/reading/fill-in-the-blanks' },

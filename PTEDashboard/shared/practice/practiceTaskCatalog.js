@@ -217,6 +217,19 @@ const RW_FILL_BLANKS_SEED_ROWS = [
   { id: '12001326', title: 'Workforce Plan', difficulty: 'Medium', practicedCount: 1, appearedCount: 12 },
 ];
 
+const CORE_RW_FILL_BLANKS_SEED_ROWS = [
+  { id: '23001009', title: 'Penicillin', difficulty: 'Medium', practicedCount: 0, appearedCount: 7 },
+  { id: '23001008', title: 'Brain Bus', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 53 },
+  { id: '23001007', title: 'Durham Sailing Club', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 55 },
+  { id: '23001006', title: 'Lute', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 97 },
+  { id: '23001005', title: 'Life in Alberta', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '23001004', title: 'Birthday Invitation', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '23001003', title: 'Catering Inquiry', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '23001002', title: 'Sports Evolution', difficulty: 'Medium', practicedCount: 0, appearedCount: 4 },
+  { id: '23001001', title: 'Job Application', difficulty: 'Easy', newPrediction: true, practicedCount: 0, appearedCount: 691 },
+  { id: '23001000', title: 'Power Hamburge', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 282 },
+];
+
 const READING_MCM_SEED_ROWS = [
   { id: '9000198', title: 'Job Opening', difficulty: 'Medium', practicedCount: 1, appearedCount: 4 },
   { id: '9000197', title: 'Disciplined Inquiry', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
@@ -561,9 +574,9 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'reading-writing-fill-in-the-blanks',
     code: 'RWB',
     title: 'Fill in the Blanks (Dropdown)',
-    coreTitle: 'Reading & Writing: Fill in the Blanks',
+    coreTitle: 'Reading & Writing Blanks',
     totalQuestions: 1165,
-    coreTotalQuestions: 950,
+    coreTotalQuestions: 996,
     startId: 12001335,
     continueItem: { id: '12001335', title: 'Public Education' },
     hasDropdownBlanks: true,
@@ -571,6 +584,15 @@ export const PRACTICE_TASKS_BY_KEY = {
     promptText:
       'Public education systems empower learners to [develop] foundational literacy while [expanding] equitable career pathways across regional communities.',
     seedRows: RW_FILL_BLANKS_SEED_ROWS,
+    coreOverrides: {
+      title: 'Reading & Writing Blanks',
+      totalQuestions: 996,
+      startId: 23001009,
+      continueItem: null,
+      promptText:
+        'Researchers reviewing Alexander Fleming’s early notes highlight how penicillin [inhibited] surrounding bacterial colonies and rapidly [transformed] modern antibiotic medicine.',
+      seedRows: CORE_RW_FILL_BLANKS_SEED_ROWS,
+    },
   },
   'reading/multiple-choice-multiple': {
     skill: 'reading',
