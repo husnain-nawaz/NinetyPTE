@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowDown,
-  ArrowRight,
   BarChart2,
   FileText,
   Info,
@@ -13,6 +12,7 @@ import PTEDashboardHeader from './PTEDashboardHeader';
 import PTEDashboardTealFooter from './PTEDashboardTealFooter';
 import { GRAMMAR_TOPICS } from './pteGrammarData';
 import { PREDICTION_FILES_ACADEMIC, PREDICTION_FILES_CORE } from './ptePredictionsData';
+import { TEMPLATE_FILES_ACADEMIC, TEMPLATE_FILES_CORE } from './pteTemplatesData';
 
 const STUDY_TOOL_TABS = [
   { id: 'templates', label: 'Templates', path: '/v1/templates' },
@@ -22,7 +22,7 @@ const STUDY_TOOL_TABS = [
 
 function downloadStudyResource(item) {
   const bullets = item.examples || item.highlights || [];
-  const sectionLabel = item.examples ? 'Examples:' : 'Included Highlights:';
+  const sectionLabel = item.examples ? 'Examples:' : 'Included Structure / Highlights:';
   const content = [
     `NinetyPTE Study Tool — ${item.title}`,
     `Focus: ${item.focus}`,
@@ -47,8 +47,58 @@ function downloadStudyResource(item) {
   URL.revokeObjectURL(url);
 }
 
+function ResourceCardGrid({
+  items,
+  Icon,
+  iconRadiusClass = 'rounded-full',
+  onSelect,
+}) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          onClick={() => onSelect(item)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(item);
+            }
+          }}
+          className="group rounded-xl border border-slate-200/90 bg-white px-4 py-3.5 hover:border-[#00b4c6] hover:shadow-2xs transition flex items-center justify-between gap-3 cursor-pointer"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <span
+              className={`w-8 h-8 ${iconRadiusClass} bg-[#eff6fd] text-[#0c4a7e] flex items-center justify-center shrink-0`}
+            >
+              <Icon className="w-4 h-4" />
+            </span>
+            <span className="text-xs sm:text-[13.5px] font-semibold text-[#0c4a7e] group-hover:text-[#0097a7] truncate transition-colors">
+              {item.title}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            aria-label={`Download ${item.title}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              downloadStudyResource(item);
+            }}
+            className="w-8 h-8 rounded-full bg-[#fdf2f8] hover:bg-[#fce7f3] text-[#ec4899] flex items-center justify-center shrink-0 transition cursor-pointer"
+          >
+            <ArrowDown className="w-4 h-4" />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /**
- * Shared Study Tools page powering /v1/prediction, /v1/grammar, and /v1/templates
+ * Shared Study Tools page powering /v1/templates, /v1/prediction, and /v1/grammar
  * with tabbed folder navigation, downloadable resource lists, and preview modal.
  */
 export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
@@ -60,6 +110,7 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
   const activeTab = initialTab;
   const isCore = examVariant === 'core';
   const predictionItems = isCore ? PREDICTION_FILES_CORE : PREDICTION_FILES_ACADEMIC;
+  const templateItems = isCore ? TEMPLATE_FILES_CORE : TEMPLATE_FILES_ACADEMIC;
 
   const modalBullets = selectedResource
     ? selectedResource.examples || selectedResource.highlights || []
@@ -95,7 +146,7 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
           {showInfoTip && (
             <div className="absolute left-0 top-full mt-2 w-80 rounded-xl border border-slate-200 bg-white p-3.5 text-xs text-slate-600 shadow-lg z-30">
-              Access weekly PTE prediction files, downloadable grammar rule sheets, and scoring templates inside Study Tools.
+              Access official-style Speaking &amp; Writing templates, weekly PTE prediction files, and downloadable grammar rule sheets inside Study Tools.
             </div>
           )}
         </div>
@@ -123,50 +174,31 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
         {/* Main Tab Content Card */}
         <section className="bg-white rounded-2xl rounded-tl-none border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
+          {activeTab === 'templates' && (
+            <>
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
+                Templates
+              </h2>
+              <ResourceCardGrid
+                items={templateItems}
+                Icon={FileText}
+                iconRadiusClass="rounded-full"
+                onSelect={setSelectedResource}
+              />
+            </>
+          )}
+
           {activeTab === 'predictions' && (
             <>
               <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
                 Predictions
               </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {predictionItems.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setSelectedResource(item)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setSelectedResource(item);
-                      }
-                    }}
-                    className="group rounded-xl border border-slate-200/90 bg-white px-4 py-3.5 hover:border-[#00b4c6] hover:shadow-2xs transition flex items-center justify-between gap-3 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="w-8 h-8 rounded-full bg-[#eff6fd] text-[#0c4a7e] flex items-center justify-center shrink-0">
-                        <BarChart2 className="w-4 h-4" />
-                      </span>
-                      <span className="text-xs sm:text-[13.5px] font-semibold text-[#0c4a7e] group-hover:text-[#0097a7] truncate transition-colors">
-                        {item.title}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      aria-label={`Download ${item.title}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        downloadStudyResource(item);
-                      }}
-                      className="w-8 h-8 rounded-full bg-[#fdf2f8] hover:bg-[#fce7f3] text-[#ec4899] flex items-center justify-center shrink-0 transition cursor-pointer"
-                    >
-                      <ArrowDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <ResourceCardGrid
+                items={predictionItems}
+                Icon={BarChart2}
+                iconRadiusClass="rounded-full"
+                onSelect={setSelectedResource}
+              />
             </>
           )}
 
@@ -175,64 +207,13 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
               <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
                 Grammar
               </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {GRAMMAR_TOPICS.map((topic) => (
-                  <div
-                    key={topic.id}
-                    onClick={() => setSelectedResource(topic)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setSelectedResource(topic);
-                      }
-                    }}
-                    className="group rounded-xl border border-slate-200/90 bg-white px-4 py-3.5 hover:border-[#00b4c6] hover:shadow-2xs transition flex items-center justify-between gap-3 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="w-8 h-8 rounded-lg bg-[#eff6fd] text-[#0c4a7e] flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </span>
-                      <span className="text-xs sm:text-[13.5px] font-semibold text-[#0c4a7e] group-hover:text-[#0097a7] truncate transition-colors">
-                        {topic.title}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      aria-label={`Download ${topic.title}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        downloadStudyResource(topic);
-                      }}
-                      className="w-8 h-8 rounded-full bg-[#fdf2f8] hover:bg-[#fce7f3] text-[#ec4899] flex items-center justify-center shrink-0 transition cursor-pointer"
-                    >
-                      <ArrowDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <ResourceCardGrid
+                items={GRAMMAR_TOPICS}
+                Icon={FileText}
+                iconRadiusClass="rounded-lg"
+                onSelect={setSelectedResource}
+              />
             </>
-          )}
-
-          {activeTab === 'templates' && (
-            <div className="py-8 text-center max-w-lg mx-auto space-y-3">
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-800">
-                PTE Speaking &amp; Writing Templates
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500">
-                Access flexible high-scoring templates for Describe Image, Retell Lecture, Summarize Written Text, Write Essay, and PTE Core Write Email.
-              </p>
-              <Link
-                to="/best-pte-practice-preparation-material"
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#0d5488] hover:bg-[#093e66] text-white px-5 py-2 text-xs font-bold shadow-xs transition"
-              >
-                <span>Open PTE Study Material</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
           )}
         </section>
       </main>
@@ -274,7 +255,7 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
               {modalBullets.length > 0 && (
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    {selectedResource.examples ? 'Examples' : 'Included Highlights'}
+                    {selectedResource.examples ? 'Examples' : 'Key Lines & Structure'}
                   </p>
                   <ul className="space-y-1.5 text-xs text-slate-700 list-disc pl-4">
                     {modalBullets.map((entry) => (
