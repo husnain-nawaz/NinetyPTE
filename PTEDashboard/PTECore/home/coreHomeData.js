@@ -43,7 +43,7 @@ export const CORE_HOME_DATA = {
       { name: 'Reading & Writing Blanks', done: 68, total: 996, to: '/v1/core/practice/reading/reading-writing-fill-in-the-blanks' },
       { name: 'Multiple Choice, Multiple Answers', done: 24, total: 188, to: '/v1/core/practice/reading/multiple-choice-multiple' },
       { name: 'Re-order Paragraphs', done: 42, total: 819, to: '/v1/core/practice/reading/reorder-paragraphs' },
-      { name: 'Reading: Fill in the Blanks', done: 52, total: 898, to: '/v1/core/practice/reading/fill-in-the-blanks' },
+      { name: 'Reading: Fill in the Blanks', done: 52, total: 1067, to: '/v1/core/practice/reading/fill-in-the-blanks' },
       { name: 'Multiple Choice, Single Answer', done: 19, total: 460, to: '/v1/core/practice/reading/multiple-choice-single' },
     ],
     Listening: [

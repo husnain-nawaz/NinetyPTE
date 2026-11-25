@@ -641,7 +641,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     title: 'Fill in the Blanks (Drag & Drop)',
     coreTitle: 'Reading: Fill in the Blanks',
     totalQuestions: 1067,
-    coreTotalQuestions: 898,
+    coreTotalQuestions: 1067,
     startId: 11001117,
     continueItem: { id: '11001113', title: 'Work Preparation' },
     dragDropWordBank: {
