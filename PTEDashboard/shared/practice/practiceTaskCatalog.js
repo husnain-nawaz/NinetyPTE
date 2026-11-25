@@ -282,6 +282,19 @@ const LISTENING_FIB_SEED_ROWS = [
   { id: '15000425', title: 'Park', difficulty: 'Easy', practicedCount: 1, appearedCount: 2 },
 ];
 
+const HIGHLIGHT_CORRECT_SUMMARY_SEED_ROWS = [
+  { id: '19000162', title: 'Sodium', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '19000160', title: 'Mountains', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '19000159', title: 'DNA Model', difficulty: 'Difficult', practicedCount: 1, appearedCount: 0 },
+  { id: '19000158', title: 'Genealogy', difficulty: 'Medium', practicedCount: 1, appearedCount: 6 },
+  { id: '19000157', title: 'Early Humans', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '19000156', title: 'Hand', difficulty: 'Medium', practicedCount: 1, appearedCount: 2 },
+  { id: '19000155', title: 'Great White Sharks', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '19000154', title: 'Business Schools', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '19000153', title: 'Urban Development', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '19000152', title: 'Telecommuting', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -600,11 +613,21 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'highlight-correct-summary',
     code: 'HCS',
     title: 'Highlight Correct Summary',
-    totalQuestions: 410,
-    startId: 9750410,
-    continueItem: { id: '9750290', title: 'Tidal Barrage Engineering' },
-    instruction: 'You will hear a recording. Select the paragraph that best relates to the recording.',
-    promptText: 'Select the option that accurately summarizes the speaker’s comparison of tidal lagoons and turbines.',
+    totalQuestions: 155,
+    startId: 19000162,
+    continueItem: { id: '19000058', title: 'Student Loans' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    singleChoice: true,
+    mcqOptions: [
+      { id: 'A', label: 'The speaker explains how dietary sodium regulates fluid balance while excessive processed intake raises cardiovascular risk.', correct: true },
+      { id: 'B', label: 'Athletes should eliminate all electrolytes prior to endurance events regardless of climate conditions.', correct: false },
+      { id: 'C', label: 'Modern sea salt harvests contain zero trace minerals compared to refined industrial salts.', correct: false },
+      { id: 'D', label: 'Public health guidelines recommend doubling daily processed condiment portions.', correct: false },
+    ],
+    instruction: 'You will hear a recording. Click on the paragraph that best relates to the recording.',
+    promptText: 'Select the paragraph that accurately summarizes the speaker’s audio lecture.',
+    seedRows: HIGHLIGHT_CORRECT_SUMMARY_SEED_ROWS,
   },
   'listening/multiple-choice-single': {
     skill: 'listening',
