@@ -33,16 +33,15 @@ export function PortalLoadGate({
   refreshKey = '',
   delayMs = 180,
 }) {
-  const [hydrating, setHydrating] = useState(loading === undefined);
+  const [readyKey, setReadyKey] = useState(null);
 
   useEffect(() => {
     if (loading !== undefined) return undefined;
-    setHydrating(true);
-    const timer = setTimeout(() => setHydrating(false), delayMs);
+    const timer = setTimeout(() => setReadyKey(refreshKey), delayMs);
     return () => clearTimeout(timer);
   }, [delayMs, loading, refreshKey]);
 
-  const isBusy = loading !== undefined ? Boolean(loading) : hydrating;
+  const isBusy = loading !== undefined ? Boolean(loading) : readyKey !== refreshKey;
   if (isBusy) {
     return <CyanBarsLoader fullScreen />;
   }
