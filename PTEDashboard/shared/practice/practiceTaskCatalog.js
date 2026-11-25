@@ -295,6 +295,19 @@ const HIGHLIGHT_CORRECT_SUMMARY_SEED_ROWS = [
   { id: '19000152', title: 'Telecommuting', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
 ];
 
+const LISTENING_MCS_SEED_ROWS = [
+  { id: '17000219', title: 'Literary Genres', difficulty: 'Medium', practicedCount: 1, appearedCount: 6 },
+  { id: '17000218', title: 'Narcissism', difficulty: 'Medium', practicedCount: 1, appearedCount: 4 },
+  { id: '17000217', title: 'Reasonable Force', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '17000216', title: 'Randall Jarrell', difficulty: 'Medium', practicedCount: 1, appearedCount: 7 },
+  { id: '17000215', title: 'Languages', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '17000214', title: 'Map-making', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '17000213', title: 'Sign Advertising', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '17000212', title: 'Diet', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '17000211', title: 'Stress', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '17000210', title: 'Genes and Environment', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -632,14 +645,24 @@ export const PRACTICE_TASKS_BY_KEY = {
   'listening/multiple-choice-single': {
     skill: 'listening',
     slug: 'multiple-choice-single',
-    code: 'L:MCS',
+    code: 'MCS',
     title: 'Multiple Choice, Single Answer',
-    totalQuestions: 395,
-    coreTotalQuestions: 390,
-    startId: 9800395,
-    continueItem: { id: '9800280', title: 'Regional Rail Punctuality' },
-    instruction: 'Listen to the recording and select the single best answer choice.',
-    promptText: 'Why did the transport planner postpone the express timetable revision?',
+    totalQuestions: 204,
+    coreTotalQuestions: 204,
+    startId: 17000219,
+    continueItem: { id: '17000006', title: 'Political Science' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    singleChoice: true,
+    mcqOptions: [
+      { id: 'A', label: 'Genre conventions evolved gradually as writers adapted earlier forms for new audiences.', correct: true },
+      { id: 'B', label: 'Contemporary novels abandoned all narrative techniques derived from classical drama.', correct: false },
+      { id: 'C', label: 'Oral poetry had no measurable influence on printed prose fiction in Europe.', correct: false },
+      { id: 'D', label: 'Literary critics classify every eighteenth-century essay strictly as lyric verse.', correct: false },
+    ],
+    instruction: 'Listen to the recording and answer the multiple-choice question by selecting the correct response. Only one response is correct.',
+    promptText: 'What key observation does the speaker make regarding how literary genres develop over time?',
+    seedRows: LISTENING_MCS_SEED_ROWS,
   },
   'listening/select-missing-word': {
     skill: 'listening',
