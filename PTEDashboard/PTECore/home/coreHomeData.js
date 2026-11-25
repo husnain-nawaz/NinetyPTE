@@ -44,7 +44,7 @@ export const CORE_HOME_DATA = {
       { name: 'Multiple Choice, Multiple Answers', done: 24, total: 188, to: '/v1/core/practice/reading/multiple-choice-multiple' },
       { name: 'Re-order Paragraphs', done: 42, total: 819, to: '/v1/core/practice/reading/reorder-paragraphs' },
       { name: 'Reading: Fill in the Blanks', done: 52, total: 1067, to: '/v1/core/practice/reading/fill-in-the-blanks' },
-      { name: 'Multiple Choice, Single Answer', done: 19, total: 460, to: '/v1/core/practice/reading/multiple-choice-single' },
+      { name: 'Multiple Choice, Single Answer', done: 19, total: 263, to: '/v1/core/practice/reading/multiple-choice-single' },
     ],
     Listening: [
       { name: 'Summarize Spoken Text', done: 41, total: 580, to: '/v1/core/practice/listening/summarize-spoken-text' },
