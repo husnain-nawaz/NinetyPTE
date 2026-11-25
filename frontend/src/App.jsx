@@ -59,6 +59,7 @@ import {
   PTECoreStrategyVideosPage,
   PTECoreVocabBankPage,
   PTECoreStudyToolsPage,
+  PTEPracticePage,
   PortalProfilePage,
   CyanBarsLoader,
   ProtectedRoute,
@@ -110,6 +111,7 @@ function AppContent() {
     location.pathname.startsWith('/core-templates') ||
     location.pathname.startsWith('/v1/profile') ||
     location.pathname.startsWith('/profile') ||
+    location.pathname.startsWith('/v1/practice') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -567,6 +569,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTECoreAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/practice/:skill/:taskSlug"
+            element={
+              <ProtectedRoute>
+                <PTEPracticePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/practice/:skill"
+            element={
+              <ProtectedRoute>
+                <PTEPracticePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/practice/:skill/:taskSlug"
+            element={
+              <ProtectedRoute>
+                <PTEPracticePage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/practice/:skill"
+            element={
+              <ProtectedRoute>
+                <PTEPracticePage syncCoreMode />
               </ProtectedRoute>
             }
           />

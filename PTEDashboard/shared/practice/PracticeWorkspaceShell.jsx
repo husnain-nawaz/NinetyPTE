@@ -1,0 +1,267 @@
+import { useMemo, useState } from 'react';
+import {
+  ChevronLeft,
+  Info,
+  Mic,
+  RotateCcw,
+} from 'lucide-react';
+import PTEDashboardHeader from '../PTEDashboardHeader';
+import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
+import QuestionBankSidebarDrawer from './QuestionBankSidebarDrawer';
+import { buildTaskQuestionList, resolvePracticeTask } from './practiceTaskCatalog';
+
+/**
+ * Unified student portal practice workspace for both PTE Academic and PTE Core tasks,
+ * housing the shared Question Bank slide-out right sidebar across all task types.
+ */
+export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = false }) {
+  const taskMeta = useMemo(
+    () => resolvePracticeTask(skill, taskSlug, isCoreMode),
+    [isCoreMode, skill, taskSlug]
+  );
+
+  const initialQuestions = useMemo(() => buildTaskQuestionList(taskMeta), [taskMeta]);
+
+  const [questionsById, setQuestionsById] = useState({});
+  const [selectedQuestion, setSelectedQuestion] = useState(() => initialQuestions[0]);
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [responseText, setResponseText] = useState('');
+  const [activeBottomTab, setActiveBottomTab] = useState('forum');
+  const [submittedNotice, setSubmittedNotice] = useState('');
+  const [difficultyVote, setDifficultyVote] = useState('');
+
+  const questions = useMemo(
+    () =>
+      initialQuestions.map((q) => {
+        const override = questionsById[q.id];
+        return override ? { ...q, ...override } : q;
+      }),
+    [initialQuestions, questionsById]
+  );
+
+  const activeQuestion =
+    questions.find((q) => q.id === selectedQuestion?.id) || selectedQuestion || questions[0];
+
+  const handleToggleBookmark = (questionId) => {
+    setQuestionsById((prev) => {
+      const target = questions.find((q) => q.id === questionId);
+      const nextBookmarked = !target?.bookmarked;
+      return {
+        ...prev,
+        [questionId]: { ...prev[questionId], bookmarked: nextBookmarked },
+      };
+    });
+  };
+
+  const handleResetPractice = () => {
+    const resetMap = {};
+    for (const q of initialQuestions) {
+      resetMap[q.id] = { practicedCount: 0, bookmarked: false };
+    }
+    setQuestionsById(resetMap);
+    setResponseText('');
+    setSubmittedNotice('Practice history cleared for this task.');
+  };
+
+  const handleSubmitAttempt = () => {
+    if (!activeQuestion) return;
+    setQuestionsById((prev) => ({
+      ...prev,
+      [activeQuestion.id]: {
+        ...prev[activeQuestion.id],
+        practicedCount: (activeQuestion.practicedCount || 0) + 1,
+      },
+    }));
+    setSubmittedNotice(`Response submitted for #${activeQuestion.id}. AI score saved to My Score.`);
+    setActiveBottomTab('my-score');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans relative">
+      <PTEDashboardHeader />
+
+      {/* Right-Edge Question Sidebar Handle */}
+      {!drawerOpen && (
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open question list sidebar"
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-30 w-9 h-11 rounded-l-full bg-[#00b4c6] hover:bg-[#0097a7] text-white flex items-center justify-center shadow-lg cursor-pointer transition"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span
+              className="w-9 h-9 rounded-full text-white text-xs font-extrabold flex items-center justify-center shadow-2xs"
+              style={{ backgroundColor: taskMeta.badgeColor }}
+            >
+              {taskMeta.code}
+            </span>
+            <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">
+              {taskMeta.title}
+            </h1>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="rounded-full bg-[#00b4c6] hover:bg-[#0097a7] px-4 py-2 text-xs font-bold text-white shadow-xs transition cursor-pointer"
+          >
+            All {taskMeta.totalQuestions} Questions
+          </button>
+        </div>
+
+        <p className="text-xs sm:text-[13px] text-slate-600">{taskMeta.instruction}</p>
+
+        {/* Active Question Banner */}
+        <div className="rounded-xl bg-[#0d5488] text-white px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-xs sm:text-sm font-bold">
+            #{activeQuestion.id} | {activeQuestion.title}
+          </span>
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+            <span className="rounded-full bg-white/15 px-2.5 py-0.5">{activeQuestion.difficulty}</span>
+            {activeQuestion.prediction && (
+              <span className="rounded-full bg-cyan-400/25 px-2.5 py-0.5 text-cyan-100">Prediction</span>
+            )}
+            <span className="rounded-full bg-white/15 px-2.5 py-0.5">
+              Appeared ({activeQuestion.appearedCount})
+            </span>
+          </div>
+        </div>
+
+        {/* Interactive Prompt & Response Area */}
+        <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-5">
+          <p className="text-sm sm:text-[15px] leading-relaxed text-slate-700">
+            {taskMeta.promptText}
+          </p>
+
+          {taskMeta.skill === 'speaking' ? (
+            <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-6 flex flex-col items-center gap-3 text-center">
+              <button
+                type="button"
+                onClick={handleSubmitAttempt}
+                className="w-12 h-12 rounded-full bg-[#eb8c44] hover:bg-[#d97736] text-white flex items-center justify-center shadow transition cursor-pointer"
+                aria-label="Start recording response"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+              <span className="text-xs font-bold text-slate-600">00:00</span>
+            </div>
+          ) : (
+            <textarea
+              rows={5}
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              placeholder={`Enter your ${taskMeta.title} response here...`}
+              className="w-full rounded-xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#00b4c6]"
+            />
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-2.5 text-xs">
+              <span className="text-slate-500 font-medium">How difficult was this question?</span>
+              {['Easy', 'Medium', 'Difficult'].map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => setDifficultyVote(lvl)}
+                  className={`rounded-full border px-3 py-1 font-semibold transition cursor-pointer ${
+                    difficultyVote === lvl
+                      ? 'border-[#00b4c6] bg-cyan-50 text-[#0097a7]'
+                      : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {lvl}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleSubmitAttempt}
+                className="rounded-full bg-[#0d5488] hover:bg-[#093e66] px-5 py-2 text-xs font-bold text-white transition cursor-pointer"
+              >
+                Submit
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setResponseText('');
+                  setSubmittedNotice('');
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Redo</span>
+              </button>
+            </div>
+          </div>
+
+          {submittedNotice && (
+            <p className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-xs font-semibold text-emerald-700">
+              {submittedNotice}
+            </p>
+          )}
+
+          <div className="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-4">
+            <p className="flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 text-[#00b4c6] shrink-0" />
+              <span>AI Scoring is available once you submit your response.</span>
+            </p>
+            <p className="flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 text-[#00b4c6] shrink-0" />
+              <span>Are you using headsets? Always use headsets with a boom microphone for accurate scoring.</span>
+            </p>
+          </div>
+        </section>
+
+        {/* Forum / My Score Footer Panel */}
+        <section className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-3">
+          <div className="flex items-center gap-6 border-b border-slate-100 pb-2 text-xs sm:text-sm font-bold">
+            {[
+              { id: 'forum', label: 'Forum' },
+              { id: 'my-score', label: 'My Score' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveBottomTab(tab.id)}
+                className={`pb-1 transition cursor-pointer ${
+                  activeBottomTab === tab.id
+                    ? 'text-[#0c4a7e] border-b-2 border-[#00b4c6]'
+                    : 'text-slate-400 hover:text-slate-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500">
+            {activeBottomTab === 'forum'
+              ? `Discuss strategy and notes for #${activeQuestion.id} (${activeQuestion.title}).`
+              : `Practiced attempts for #${activeQuestion.id}: ${activeQuestion.practicedCount || 0}.`}
+          </p>
+        </section>
+      </main>
+
+      <PTEDashboardTealFooter />
+
+      <QuestionBankSidebarDrawer
+        key={`${taskMeta.skill}-${taskMeta.slug}`}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        taskMeta={taskMeta}
+        questions={questions}
+        activeQuestionId={activeQuestion.id}
+        onSelectQuestion={setSelectedQuestion}
+        onToggleBookmark={handleToggleBookmark}
+        onResetPractice={handleResetPractice}
+      />
+    </div>
+  );
+}

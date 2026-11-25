@@ -11,7 +11,7 @@ export default function AcademicStrategyVideosPage() {
       videosByPage={STRATEGY_VIDEOS_BY_PAGE}
       totalPages={2}
       paginationBasePath="/v1/youtube-videos"
-      practicePath="/pte-speaking-practice"
+      practicePath="/v1/practice/speaking/read-aloud"
       showBackButton
       backTo="/dashboard"
     />

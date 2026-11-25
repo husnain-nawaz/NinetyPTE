@@ -114,6 +114,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
 
     const isCoreTarget = location.pathname.includes('analytics');
     const isVideos = location.pathname.includes('youtube-videos');
+    const isPractice = location.pathname.includes('/practice/');
     const isSharedTool =
       location.pathname.includes('vocab-bank') ||
       location.pathname.includes('grammar') ||
@@ -129,7 +130,12 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
       location.pathname.includes('core-') ||
       location.pathname.includes('exam-pattern');
 
-    if (nextTrack === 'core' && isVideos) {
+    if (nextTrack === 'core' && isPractice) {
+      const nextPath = location.pathname.startsWith('/v1/core/practice/')
+        ? location.pathname
+        : location.pathname.replace('/v1/practice/', '/v1/core/practice/');
+      navigate(nextPath);
+    } else if (nextTrack === 'core' && isVideos) {
       navigate('/v1/core/youtube-videos');
     } else if (nextTrack === 'core' && isPatternOrWeightage) {
       navigate('/v1/exam-pattern');
@@ -140,7 +146,9 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     } else if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
       navigate('/dashboard');
     } else if (nextTrack === 'academic' && isCoreRoute) {
-      if (isVideos) {
+      if (isPractice) {
+        navigate(location.pathname.replace('/v1/core/practice/', '/v1/practice/'));
+      } else if (isVideos) {
         navigate('/v1/youtube-videos/1');
       } else if (isPatternOrWeightage) {
         navigate('/v1/question-weightage');
@@ -469,28 +477,28 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
               Home ({activeTrackLabel})
             </Link>
             <Link
-              to={isCoreMode ? '/pte-core-speaking-practice' : '/pte-speaking-practice'}
+              to={isCoreMode ? '/v1/core/practice/speaking/read-aloud' : '/v1/practice/speaking/read-aloud'}
               onClick={() => setMobileMenuOpen(false)}
               className="block"
             >
               Speaking Practice
             </Link>
             <Link
-              to={isCoreMode ? '/pte-core-writing-practice' : '/pte-writing-practice'}
+              to={isCoreMode ? '/v1/core/practice/writing/write-email' : '/v1/practice/writing/write-essay'}
               onClick={() => setMobileMenuOpen(false)}
               className="block"
             >
               Writing Practice
             </Link>
             <Link
-              to={isCoreMode ? '/pte-core-reading-practice' : '/pte-reading-practice'}
+              to={isCoreMode ? '/v1/core/practice/reading/reading-writing-fill-in-the-blanks' : '/v1/practice/reading/reading-writing-fill-in-the-blanks'}
               onClick={() => setMobileMenuOpen(false)}
               className="block"
             >
               Reading Practice
             </Link>
             <Link
-              to={isCoreMode ? '/pte-core-listening-practice' : '/pte-listening-practice'}
+              to={isCoreMode ? '/v1/core/practice/listening/write-from-dictation' : '/v1/practice/listening/write-from-dictation'}
               onClick={() => setMobileMenuOpen(false)}
               className="block"
             >

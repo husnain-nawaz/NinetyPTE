@@ -20,7 +20,7 @@ export default function CoreStrategyVideosPage({ syncPortalMode = false }) {
       tutorialHeading="PTE Core Tutorials"
       videosByPage={CORE_STRATEGY_VIDEOS_BY_PAGE}
       totalPages={1}
-      practicePath="/pte-core-speaking-practice"
+      practicePath="/v1/core/practice/speaking/read-aloud"
       showBackButton={false}
     />
   );
