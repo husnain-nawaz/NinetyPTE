@@ -256,6 +256,19 @@ const SUMMARIZE_SPOKEN_TEXT_SEED_ROWS = [
   { id: '13000694', title: 'Credit Card Experiment', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
 ];
 
+const LISTENING_MCM_SEED_ROWS = [
+  { id: '14000228', title: 'Language Skills', difficulty: 'Medium', practicedCount: 2, appearedCount: 4 },
+  { id: '14000225', title: 'English Landscape Garden', difficulty: 'Medium', practicedCount: 1, appearedCount: 11 },
+  { id: '14000223', title: "Rousseau's Beliefs", difficulty: 'Difficult', practicedCount: 1, appearedCount: 5 },
+  { id: '14000222', title: "Children's Education", difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '14000221', title: 'Politics', difficulty: 'Medium', practicedCount: 1, appearedCount: 3 },
+  { id: '14000220', title: 'Poet Laureate', difficulty: 'Medium', practicedCount: 3, appearedCount: 2 },
+  { id: '14000219', title: 'Technological Advances', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 14 },
+  { id: '14000218', title: 'Woodblock Printing', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '14000217', title: 'Use of Technology', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '14000216', title: 'Good Translation', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -535,14 +548,23 @@ export const PRACTICE_TASKS_BY_KEY = {
   'listening/multiple-choice-multiple': {
     skill: 'listening',
     slug: 'multiple-choice-multiple',
-    code: 'L:MCM',
+    code: 'MCM',
     title: 'Multiple Choice, Multiple Answers',
-    totalQuestions: 480,
-    coreTotalQuestions: 450,
-    startId: 9600480,
-    continueItem: { id: '9600399', title: 'Museum Lighting Update' },
-    instruction: 'Listen to the recording and answer the question by selecting all the correct responses.',
-    promptText: 'Which objectives did the curator mention regarding archival gallery lighting?',
+    totalQuestions: 193,
+    coreTotalQuestions: 193,
+    startId: 14000228,
+    continueItem: { id: '14000072', title: 'Fruits and Vegetables' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    mcqOptions: [
+      { id: 'A', label: 'Early immersion exposure improves long-term grammatical fluency.', correct: true },
+      { id: 'B', label: 'Memorizing isolated dictionary lists outperforms contextual dialogue.', correct: false },
+      { id: 'C', label: 'Active conversational feedback reinforces listening comprehension speed.', correct: true },
+      { id: 'D', label: 'Written translation tasks should replace spoken practice entirely.', correct: false },
+    ],
+    instruction: 'Listen to the recording and answer the question by selecting all the correct responses. More than one response is correct.',
+    promptText: 'Which TWO points does the speaker emphasize regarding practical language acquisition?',
+    seedRows: LISTENING_MCM_SEED_ROWS,
   },
   'listening/fill-in-the-blanks': {
     skill: 'listening',
