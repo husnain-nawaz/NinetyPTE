@@ -139,6 +139,19 @@ const ANSWER_SHORT_QUESTION_SEED_ROWS = [
   { id: '5001992', title: 'ASQ1992', difficulty: 'Medium', practicedCount: 0, appearedCount: 0, contentSnippet: 'What freezing temperature in Celsius turns water into ice? (Zero degrees)' },
 ];
 
+const SUMMARIZE_GROUP_DISCUSSION_SEED_ROWS = [
+  { id: '26000203', title: 'Study Places', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '26000202', title: 'A Trip to Iceland', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
+  { id: '26000199', title: 'Course Selection', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '26000198', title: 'Time Management', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '26000197', title: 'Group Discussions', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '26000196', title: 'Morning Timetable', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '26000195', title: 'Large Group Lectures', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '26000194', title: 'Conference Presentation', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '26000193', title: 'Available Classes', difficulty: 'Medium', practicedCount: 1, appearedCount: 0 },
+  { id: '26000192', title: 'Eco-friendly University', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -242,10 +255,13 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'SGD',
     title: 'Summarize Group Discussion',
     totalQuestions: 199,
-    startId: 6000199,
-    continueItem: { id: '6000142', title: 'Hybrid Campus Policy' },
-    instruction: 'You will hear a group discussion among three speakers. Summarize the main viewpoints and conclusion clearly in your own words.',
-    promptText: 'Discussion prompt: Balancing in-person lab collaboration with flexible recorded lectures.',
+    startId: 26000203,
+    continueItem: { id: '26000202', title: 'A Trip to Iceland' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
+    instruction: 'You will hear three people having a discussion. After listening to the discussion, summarize their main viewpoints and conclusion clearly in your response.',
+    promptText: 'Group Discussion Topic: Choosing quiet study places across campus during peak exam weeks.',
+    seedRows: SUMMARIZE_GROUP_DISCUSSION_SEED_ROWS,
   },
   'speaking/respond-to-a-situation': {
     skill: 'speaking',
