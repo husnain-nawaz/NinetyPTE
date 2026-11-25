@@ -36,7 +36,7 @@ export const CORE_HOME_DATA = {
       { name: 'Describe Image', done: 175, total: 1207, to: '/v1/core/practice/speaking/describe-image' },
     ],
     Writing: [
-      { name: 'Summarize Written Text', done: 0, total: 300, to: '/v1/core/practice/writing/summarize-written-text' },
+      { name: 'Summarize Written Text', done: 0, total: 434, to: '/v1/core/practice/writing/summarize-written-text' },
       { name: 'Write Email', done: 0, total: 311, to: '/v1/core/practice/writing/write-email' },
     ],
     Reading: [

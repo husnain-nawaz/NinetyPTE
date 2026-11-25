@@ -178,6 +178,19 @@ const SUMMARIZE_WRITTEN_TEXT_SEED_ROWS = [
   { id: '6000477', title: 'Preschool Program', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 53 },
 ];
 
+const CORE_SUMMARIZE_WRITTEN_TEXT_SEED_ROWS = [
+  { id: '24000439', title: 'Indoor Plants', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '24000438', title: 'Esports', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 104 },
+  { id: '24000437', title: 'Microloans', difficulty: 'Medium', practicedCount: 0, appearedCount: 105 },
+  { id: '24000436', title: 'UK Voting', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+  { id: '24000435', title: 'Coffee Shop', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 210 },
+  { id: '24000434', title: 'Opening Day', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 159 },
+  { id: '24000433', title: 'Card Safety', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 113 },
+  { id: '24000432', title: 'Urbanization', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '24000431', title: 'Climate Change', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '24000430', title: 'Global Health', difficulty: 'Medium', practicedCount: 0, appearedCount: 0 },
+];
+
 const RW_FILL_BLANKS_SEED_ROWS = [
   { id: '12001335', title: 'Public Education', difficulty: 'Medium', isNew: true, newPrediction: true, practicedCount: 2, appearedCount: 55 },
   { id: '12001334', title: 'Resultant Force', difficulty: 'Medium', newPrediction: true, practicedCount: 2, appearedCount: 54 },
@@ -483,7 +496,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'SWT',
     title: 'Summarize Written Text',
     totalQuestions: 442,
-    coreTotalQuestions: 300,
+    coreTotalQuestions: 434,
     startId: 6000486,
     continueItem: { id: '6000226', title: 'Paleolithic People' },
     hideDownloadButton: true,
@@ -491,6 +504,17 @@ export const PRACTICE_TASKS_BY_KEY = {
     promptText:
       'Meaningful personal and professional growth often develops through constructive interpersonal relationships that combine empathy, clear feedback, and shared accountability over time.',
     seedRows: SUMMARIZE_WRITTEN_TEXT_SEED_ROWS,
+    coreOverrides: {
+      totalQuestions: 434,
+      startId: 24000439,
+      continueItem: null,
+      supportsPriorityFilter: true,
+      instruction:
+        'Read the passage below. Summarize the passage in 25 to 50 words. You have 10 minutes to finish this task. Your response will be judged on the quality of your writing and on how well your response presents the key points in the passage.',
+      promptText:
+        'Bringing indoor plants into classrooms and workplaces creates natural visual breaks, softens background acoustic reflections, and helps maintain comfortable room humidity during extended computer tasks.',
+      seedRows: CORE_SUMMARIZE_WRITTEN_TEXT_SEED_ROWS,
+    },
   },
   'writing/write-essay': {
     skill: 'writing',
@@ -771,7 +795,8 @@ export const PRACTICE_TASKS_BY_KEY = {
 
 export function resolvePracticeTask(skill, taskSlug, isCoreMode = false) {
   const key = `${skill || 'speaking'}/${taskSlug || 'read-aloud'}`;
-  const raw = PRACTICE_TASKS_BY_KEY[key] || PRACTICE_TASKS_BY_KEY['speaking/read-aloud'];
+  const base = PRACTICE_TASKS_BY_KEY[key] || PRACTICE_TASKS_BY_KEY['speaking/read-aloud'];
+  const raw = isCoreMode && base.coreOverrides ? { ...base, ...base.coreOverrides } : base;
   const totalQuestions =
     isCoreMode && raw.coreTotalQuestions ? raw.coreTotalQuestions : raw.totalQuestions;
   const title = isCoreMode && raw.coreTitle ? raw.coreTitle : raw.title;
