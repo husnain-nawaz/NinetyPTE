@@ -2,6 +2,7 @@ export { default as PTEDashboard } from './PTEDashboardRouter';
 export { default as PTEAnalyticsPage } from './PTEAnalyticsRouter';
 export { default as PTEStrategyVideosPage } from './PTEStrategyVideosRouter';
 export { default as PTEVocabBankPage } from './PTEVocabBankRouter';
+export { default as PTEStudyToolsPage } from './PTEStudyToolsRouter';
 export { default as PortalProvider } from './shared/PortalProvider';
 export { default as ProtectedRoute } from './shared/ProtectedRoute';
 
@@ -11,7 +12,6 @@ export {
   AcademicAnalyticsPage,
   AcademicQuestionWeightagePage as PTEQuestionWeightagePage,
   AcademicPracticeHistoryPage as PTEPracticeHistoryPage,
-  AcademicStudyToolsPage as PTEStudyToolsPage,
 } from './PTEAcademic';
 
 // Dedicated PTE Core feature exports
@@ -21,6 +21,7 @@ export {
   CoreExamPatternPage as PTECoreExamPatternPage,
   CoreStrategyVideosPage as PTECoreStrategyVideosPage,
   CoreVocabBankPage as PTECoreVocabBankPage,
+  CoreStudyToolsPage as PTECoreStudyToolsPage,
 } from './PTECore';
 
 export { default } from './PTEDashboardRouter';

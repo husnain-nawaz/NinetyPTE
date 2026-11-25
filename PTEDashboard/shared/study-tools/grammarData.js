@@ -112,9 +112,9 @@ export const GRAMMAR_TOPICS = [
   {
     id: 'collocations',
     title: 'Collocations',
-    focus: 'High-Frequency Academic Verb-Noun & Preposition Pairings',
+    focus: 'High-Frequency Verb-Noun & Preposition Pairings',
     summary:
-      'Pearson Reading Fill in the Blanks tests natural word partnerships: "conduct research", "pose a threat", "alleviate poverty", "comply with", "attribute A to B", and "exert influence over".',
+      'PTE Reading Fill in the Blanks tests natural word partnerships: "conduct research", "pose a threat", "alleviate poverty", "comply with", "attribute A to B", and "exert influence over".',
     examples: [
       'Strong collocation: take responsibility, make progress, draw a conclusion.',
       'Fixed prepositions: dependent on, susceptible to, incompatible with.',
