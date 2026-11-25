@@ -1,5 +1,6 @@
 export { default as PTEDashboard } from './PTEDashboard';
 export { default as PTEAnalyticsPage } from './PTEAnalyticsPage';
 export { default as PTEQuestionWeightagePage } from './PTEQuestionWeightagePage';
+export { default as PTEPracticeHistoryPage } from './PTEPracticeHistoryPage';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default } from './PTEDashboard';

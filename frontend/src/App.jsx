@@ -47,6 +47,7 @@ import {
   PTEDashboard,
   PTEAnalyticsPage,
   PTEQuestionWeightagePage,
+  PTEPracticeHistoryPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -71,6 +72,8 @@ function AppContent() {
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/v1/question-weightage') ||
     location.pathname.startsWith('/question-weightage') ||
+    location.pathname.startsWith('/v1/practice-history') ||
+    location.pathname.startsWith('/practice-history') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -223,6 +226,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEQuestionWeightagePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/practice-history"
+            element={
+              <ProtectedRoute>
+                <PTEPracticeHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/practice-history"
+            element={
+              <ProtectedRoute>
+                <PTEPracticeHistoryPage />
               </ProtectedRoute>
             }
           />

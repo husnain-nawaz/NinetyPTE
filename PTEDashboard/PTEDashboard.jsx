@@ -13,7 +13,6 @@ export default function PTEDashboard() {
   const [examVariant, setExamVariant] = useState('academic');
   const [showExpiryToast, setShowExpiryToast] = useState(true);
   const [activeVideo, setActiveVideo] = useState(null);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showReferModal, setShowReferModal] = useState(false);
 
   return (
@@ -31,7 +30,6 @@ export default function PTEDashboard() {
             <PTEDashboardMainSections
               examVariant={examVariant}
               onSelectVideo={setActiveVideo}
-              onShowHistoryModal={() => setShowHistoryModal(true)}
             />
           </div>
 
@@ -158,41 +156,6 @@ export default function PTEDashboard() {
                   Open Full Course Library
                 </Link>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Practice History Modal */}
-      {showHistoryModal && (
-        <div
-          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
-          onClick={() => setShowHistoryModal(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-extrabold text-slate-900">Full Practice History</h3>
-              <button
-                type="button"
-                onClick={() => setShowHistoryModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              No practice sessions recorded yet today. Pick any Speaking, Writing, Reading, or Listening task card to start logging real-time scores.
-            </p>
-            <div className="flex justify-end gap-2">
-              <Link
-                to="/pte-speaking-practice"
-                className="rounded-lg bg-[#2cc9ba] px-4 py-2 text-xs font-bold text-white hover:bg-[#23b5a7]"
-              >
-                Start Speaking Practice
-              </Link>
             </div>
           </div>
         </div>

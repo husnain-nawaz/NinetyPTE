@@ -81,7 +81,6 @@ function DonutRing({ pct }) {
 export default function PTEDashboardMainSections({
   examVariant,
   onSelectVideo,
-  onShowHistoryModal,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
@@ -160,13 +159,12 @@ export default function PTEDashboardMainSections({
           <h2 className="text-base sm:text-lg font-bold text-slate-800">
             Today&apos;s Progress
           </h2>
-          <button
-            type="button"
-            onClick={onShowHistoryModal}
-            className="rounded-full bg-[#0d5488] hover:bg-[#093e66] text-white px-5 py-2 text-xs font-bold transition shadow-2xs cursor-pointer"
+          <Link
+            to="/v1/practice-history"
+            className="rounded-full bg-[#0d5488] hover:bg-[#093e66] text-white px-5 py-2 text-xs font-bold transition shadow-2xs inline-block"
           >
             Show Full Practice History
-          </button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

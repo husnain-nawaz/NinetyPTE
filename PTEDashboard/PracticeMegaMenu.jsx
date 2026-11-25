@@ -24,7 +24,7 @@ const STUDY_TOOL_LINKS = [
   { label: 'Grammar', to: '/pte-writing-practice' },
   { label: 'Vocab Bank', to: '/best-pte-practice-preparation-material' },
   { label: 'Strategy Videos', to: '/pte-online-course' },
-  { label: 'Practice History', to: '/v1/analytics' },
+  { label: 'Practice History', to: '/v1/practice-history' },
   { label: 'Question Weightage', to: '/v1/question-weightage' },
 ];
 
