@@ -50,6 +50,7 @@ import {
   PTEPracticeHistoryPage,
   PTEStrategyVideosPage,
   PTEVocabBankPage,
+  PTEGrammarPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -80,6 +81,8 @@ function AppContent() {
     location.pathname.startsWith('/youtube-videos') ||
     location.pathname.startsWith('/v1/vocab-bank') ||
     location.pathname.startsWith('/vocab-bank') ||
+    location.pathname.startsWith('/v1/grammar') ||
+    location.pathname.startsWith('/grammar') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -280,6 +283,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEVocabBankPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/grammar"
+            element={
+              <ProtectedRoute>
+                <PTEGrammarPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grammar"
+            element={
+              <ProtectedRoute>
+                <PTEGrammarPage />
               </ProtectedRoute>
             }
           />
