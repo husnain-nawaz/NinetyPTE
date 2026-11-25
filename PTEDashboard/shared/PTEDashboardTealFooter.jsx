@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 
 /**
- * Shared teal footer bar rendered at the bottom of PTEDashboard secondary pages
- * (/v1/analytics and /v1/question-weightage).
+ * Shared teal footer bar rendered across secondary student portal pages.
  */
 export default function PTEDashboardTealFooter() {
   return (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   BarChart2,
@@ -12,22 +12,22 @@ import {
   PenLine,
   Sparkles,
 } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
 import {
   ANALYTICS_MOCK_TESTS,
   PROGRESS_TIMELINE_SERIES,
   QUESTION_FILTER_OPTIONS,
   SKILL_SIDE_STATS,
   TIMEFRAME_OPTIONS,
-} from './pteAnalyticsData';
+} from './analyticsData';
 import {
   HalfCircleGauge,
   Last24HoursCommunityChart,
   ProgressAreaChart,
   SkillLegend,
   TaskVerticalBarChart,
-} from './PTEAnalyticsCharts';
+} from './AnalyticsCharts';
 
 const GRAPH_TABS = [
   { id: 'progress', label: 'Progress Graph' },
@@ -92,12 +92,9 @@ function DropdownPill({ options, value, onChange, ariaLabel }) {
 }
 
 /**
- * NinetyPTE Student Analytics page (`/v1/analytics`, `/analytics`) displaying
- * Progress Graph, Score Graph, Time Graph, Mock Test stats, and 24-hour global practice chart.
+ * PTE Academic Performance Progress analytics page (/v1/analytics, /analytics).
  */
-export default function PTEAnalyticsPage() {
-  const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
+export default function AcademicAnalyticsPage() {
   const [activeTab, setActiveTab] = useState('progress');
   const [questionFilter, setQuestionFilter] = useState('All Questions');
   const [timeframe, setTimeframe] = useState('Last 30 days');
@@ -109,14 +106,9 @@ export default function PTEAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Page Heading Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="w-9 h-9 rounded-full bg-[#e5f0fa] text-[#0c4a7e] flex items-center justify-center shadow-2xs">
@@ -136,11 +128,8 @@ export default function PTEAnalyticsPage() {
           </Link>
         </div>
 
-        {/* 1. Primary Graph Card (Progress / Score / Time Tabs) */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-5">
-          {/* Card Controls Toolbar */}
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            {/* 3-Tab Pill Group */}
             <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 self-start shadow-2xs">
               {GRAPH_TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -167,7 +156,6 @@ export default function PTEAnalyticsPage() {
               </div>
             )}
 
-            {/* Right Date / Filter Dropdowns */}
             <div className="flex flex-wrap items-center gap-3 self-start xl:self-auto">
               {activeTab === 'progress' ? (
                 <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs sm:text-[13px] font-semibold text-slate-700 shadow-2xs">
@@ -191,7 +179,6 @@ export default function PTEAnalyticsPage() {
             </div>
           </div>
 
-          {/* Graph Body by Tab */}
           {activeTab === 'progress' && (
             <div className="rounded-2xl border border-slate-200/90 p-5 sm:p-6 space-y-4">
               <SkillLegend />
@@ -211,7 +198,6 @@ export default function PTEAnalyticsPage() {
               </div>
 
               <div className="lg:col-span-3 flex flex-col gap-3.5">
-                {/* 4 Skill Selector Pills */}
                 <div className="grid grid-cols-4 gap-1.5">
                   {SKILL_PILL_LIST.map((skill) => {
                     const selected = activeSkill === skill;
@@ -232,7 +218,6 @@ export default function PTEAnalyticsPage() {
                   })}
                 </div>
 
-                {/* Score Half-Gauge Card */}
                 <div className="flex-1 rounded-2xl border border-slate-200/90 p-4 flex flex-col justify-between">
                   <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#d97736]">
                     <Sparkles className="w-4 h-4" />
@@ -243,7 +228,6 @@ export default function PTEAnalyticsPage() {
                   </div>
                 </div>
 
-                {/* Attempted Question Half-Gauge Card */}
                 <div className="flex-1 rounded-2xl border border-slate-200/90 p-4 flex flex-col justify-between">
                   <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#d97736]">
                     <HelpCircle className="w-4 h-4" />
@@ -303,20 +287,15 @@ export default function PTEAnalyticsPage() {
           )}
         </section>
 
-        {/* 2. Mock Test Card */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
           <h2 className="text-base sm:text-lg font-bold text-slate-800 mb-4">Mock Test</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {ANALYTICS_MOCK_TESTS.map((card) => {
               const pct = Math.max(4, Math.min(100, Math.round((card.done / card.total) * 100)));
-              const toUrl =
-                examVariant === 'core' && card.name === 'Full Mock Test'
-                  ? '/pte-core-mock-test'
-                  : card.to;
               return (
                 <Link
                   key={card.name}
-                  to={toUrl}
+                  to={card.to}
                   className="rounded-xl border border-[#ebd7ed] bg-[#fdf7fd] p-4 sm:p-5 hover:border-fuchsia-400 transition block"
                 >
                   <div className="flex items-center gap-3.5">
@@ -331,10 +310,7 @@ export default function PTEAnalyticsPage() {
                     </div>
                   </div>
                   <div className="mt-3.5 h-2 rounded-full bg-[#eeddf0] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[#d946ef]"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full rounded-full bg-[#d946ef]" style={{ width: `${pct}%` }} />
                   </div>
                 </Link>
               );
@@ -342,7 +318,6 @@ export default function PTEAnalyticsPage() {
           </div>
         </section>
 
-        {/* 3. Total questions practiced in the last 24 hours */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h2 className="text-base sm:text-lg font-bold text-slate-800">

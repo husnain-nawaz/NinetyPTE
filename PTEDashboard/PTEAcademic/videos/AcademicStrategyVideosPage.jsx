@@ -1,17 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight, Play, Search, Video, X } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
-import { ALL_STRATEGY_VIDEOS, STRATEGY_VIDEOS_BY_PAGE } from './pteVideosData';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
+import { ALL_STRATEGY_VIDEOS, STRATEGY_VIDEOS_BY_PAGE } from './videosData';
 
 /**
- * NinetyPTE Strategy Videos / PTE Video Guide library page (`/v1/youtube-videos/:page`).
+ * PTE Academic Strategy Videos / PTE Video Guide library (/v1/youtube-videos/:page).
  */
-export default function PTEStrategyVideosPage() {
+export default function AcademicStrategyVideosPage() {
   const { page } = useParams();
-  const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
 
@@ -33,22 +31,15 @@ export default function PTEStrategyVideosPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Top Heading Row */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="w-9 h-9 rounded-full bg-[#e5f0fa] text-[#0c4a7e] flex items-center justify-center shadow-2xs">
               <Video className="w-4 h-4" />
             </span>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">
-              PTE Video Guide
-            </h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">PTE Video Guide</h1>
           </div>
 
           <Link
@@ -60,12 +51,10 @@ export default function PTEStrategyVideosPage() {
           </Link>
         </div>
 
-        {/* Main White Card Container */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-6">
-          {/* Header Toolbar: Title + Search + Channel Counter */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <h2 className="text-base sm:text-lg font-extrabold text-slate-800">
-              {examVariant === 'core' ? 'PTE Core Tutorials' : 'PTE Academic Tutorials'}
+              PTE Academic Tutorials
             </h2>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -91,7 +80,6 @@ export default function PTEStrategyVideosPage() {
             </div>
           </div>
 
-          {/* 4-Column Tutorial Grid */}
           {visibleVideos.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-7">
               {visibleVideos.map((video) => (
@@ -101,21 +89,16 @@ export default function PTEStrategyVideosPage() {
                   onClick={() => setSelectedVideo(video)}
                   className="group text-left flex flex-col cursor-pointer"
                 >
-                  {/* 16:9 Studio Thumbnail */}
                   <div
                     className={`relative w-full aspect-video rounded-xl overflow-hidden bg-gradient-to-br ${video.bg} p-3.5 flex flex-col justify-between text-white shadow-xs`}
                   >
                     <div className="flex items-center justify-between text-[10px] font-black tracking-wide uppercase">
                       <span className="text-cyan-300">ninetypte</span>
-                      <span className="rounded bg-black/55 px-1.5 py-0.5 text-[10px]">
-                        {video.duration}
-                      </span>
+                      <span className="rounded bg-black/55 px-1.5 py-0.5 text-[10px]">{video.duration}</span>
                     </div>
 
                     <div className="space-y-1 pr-6">
-                      <span
-                        className={`inline-block rounded px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-tight shadow-xs ${video.accent}`}
-                      >
+                      <span className={`inline-block rounded px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-tight shadow-xs ${video.accent}`}>
                         {video.category}
                       </span>
                       <p className="text-sm sm:text-base font-black uppercase tracking-tight leading-tight text-white drop-shadow-xs line-clamp-2">
@@ -123,7 +106,6 @@ export default function PTEStrategyVideosPage() {
                       </p>
                     </div>
 
-                    {/* Centered YouTube Play Overlay */}
                     <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition">
                       <span className="w-12 h-8 rounded-lg bg-[#ff0000]/95 group-hover:scale-110 transition-transform flex items-center justify-center shadow-md">
                         <Play className="w-4 h-4 fill-white text-white ml-0.5" />
@@ -131,13 +113,10 @@ export default function PTEStrategyVideosPage() {
                     </span>
                   </div>
 
-                  {/* Card Title & Timestamp */}
                   <h3 className="mt-2.5 text-xs sm:text-[13px] font-semibold text-slate-800 leading-snug line-clamp-2 group-hover:text-[#0097a7] transition-colors">
                     {video.title}
                   </h3>
-                  <span className="mt-1 text-[11px] font-medium text-slate-400">
-                    {video.timeAgo}
-                  </span>
+                  <span className="mt-1 text-[11px] font-medium text-slate-400">{video.timeAgo}</span>
                 </button>
               ))}
             </div>
@@ -147,7 +126,6 @@ export default function PTEStrategyVideosPage() {
             </div>
           )}
 
-          {/* Pagination Bar */}
           {!normalizedQuery && (
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
               <Link
@@ -168,9 +146,7 @@ export default function PTEStrategyVideosPage() {
                     key={num}
                     to={`/v1/youtube-videos/${num}`}
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition ${
-                      currentPage === num
-                        ? 'bg-[#00b4c6] text-white shadow-xs'
-                        : 'text-slate-600 hover:bg-slate-100'
+                      currentPage === num ? 'bg-[#00b4c6] text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
                     {num}
@@ -196,19 +172,13 @@ export default function PTEStrategyVideosPage() {
 
       <PTEDashboardTealFooter />
 
-      {/* Video Player Preview Modal */}
       {selectedVideo && (
         <div
           className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setSelectedVideo(null)}
         >
-          <div
-            className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              className={`h-60 bg-gradient-to-br ${selectedVideo.bg} p-6 flex flex-col justify-between text-white`}
-            >
+          <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className={`h-60 bg-gradient-to-br ${selectedVideo.bg} p-6 flex flex-col justify-between text-white`}>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black tracking-wide text-cyan-300 uppercase">
                   NinetyPTE · {selectedVideo.category} · {selectedVideo.duration}
@@ -222,11 +192,8 @@ export default function PTEStrategyVideosPage() {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-
               <div className="space-y-2">
-                <span
-                  className={`inline-block rounded px-2.5 py-0.5 text-[11px] font-bold uppercase ${selectedVideo.accent}`}
-                >
+                <span className={`inline-block rounded px-2.5 py-0.5 text-[11px] font-bold uppercase ${selectedVideo.accent}`}>
                   {selectedVideo.badgeText}
                 </span>
                 <h3 className="text-lg font-extrabold leading-snug">{selectedVideo.title}</h3>

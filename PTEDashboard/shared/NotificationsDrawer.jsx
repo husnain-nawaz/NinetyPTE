@@ -44,7 +44,6 @@ export default function NotificationsDrawer({
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[430px] sm:max-w-[460px] h-full bg-white shadow-2xl flex flex-col"
       >
-        {/* Top Drawer Title & Close Button */}
         <div className="px-6 pt-5 pb-3.5 flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-extrabold text-[#47d1c6]">
             Notifications
@@ -59,7 +58,6 @@ export default function NotificationsDrawer({
           </button>
         </div>
 
-        {/* All / Unread + Delete All / Read All Toolbar */}
         <div className="px-6 pb-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <button
@@ -106,7 +104,6 @@ export default function NotificationsDrawer({
           </div>
         </div>
 
-        {/* Notifications Feed */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {visibleItems.length > 0 ? (
             visibleItems.map((item) => (

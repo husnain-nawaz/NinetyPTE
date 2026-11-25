@@ -1,9 +1,19 @@
-export { default as PTEDashboard } from './PTEDashboard';
-export { default as PTEAnalyticsPage } from './PTEAnalyticsPage';
-export { default as PTEQuestionWeightagePage } from './PTEQuestionWeightagePage';
-export { default as PTEPracticeHistoryPage } from './PTEPracticeHistoryPage';
-export { default as PTEStrategyVideosPage } from './PTEStrategyVideosPage';
-export { default as PTEVocabBankPage } from './PTEVocabBankPage';
-export { default as PTEStudyToolsPage } from './PTEStudyToolsPage';
-export { default as ProtectedRoute } from './ProtectedRoute';
-export { default } from './PTEDashboard';
+export { default as PTEDashboard } from './PTEDashboardRouter';
+export { default as PortalProvider } from './shared/PortalProvider';
+export { default as ProtectedRoute } from './shared/ProtectedRoute';
+
+// Dedicated PTE Academic feature exports
+export {
+  AcademicDashboardPage,
+  AcademicAnalyticsPage as PTEAnalyticsPage,
+  AcademicQuestionWeightagePage as PTEQuestionWeightagePage,
+  AcademicPracticeHistoryPage as PTEPracticeHistoryPage,
+  AcademicStrategyVideosPage as PTEStrategyVideosPage,
+  AcademicVocabBankPage as PTEVocabBankPage,
+  AcademicStudyToolsPage as PTEStudyToolsPage,
+} from './PTEAcademic';
+
+// Dedicated PTE Core blank scaffold exports
+export { CoreDashboardPage as PTECoreDashboardPage } from './PTECore';
+
+export { default } from './PTEDashboardRouter';

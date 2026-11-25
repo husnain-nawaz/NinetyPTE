@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, ChevronDown, Clock } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
 
 const HISTORY_PERIOD_OPTIONS = [
   { id: 'today', label: 'Today', days: 0 },
@@ -16,7 +16,6 @@ const RECENT_PRACTICE_ENTRIES = [
   {
     id: 'hist-we-1',
     task: 'Write Essay',
-    module: 'Writing',
     code: 'WE',
     questionTitle: 'Remote Work vs Office Collaboration in Urban Economies',
     score: '52 / 90',
@@ -29,7 +28,6 @@ const RECENT_PRACTICE_ENTRIES = [
   {
     id: 'hist-rs-1',
     task: 'Repeat Sentence',
-    module: 'Speaking',
     code: 'RS',
     questionTitle: 'Academic Library Archives Orientation Announcement',
     score: '74 / 90',
@@ -42,7 +40,6 @@ const RECENT_PRACTICE_ENTRIES = [
   {
     id: 'hist-wfd-1',
     task: 'Write From Dictation',
-    module: 'Listening',
     code: 'WFD',
     questionTitle: 'Climate Research Grant Submission Deadline Update',
     score: '81 / 90',
@@ -55,7 +52,6 @@ const RECENT_PRACTICE_ENTRIES = [
   {
     id: 'hist-fib-1',
     task: 'Fill in the Blanks (Dropdown)',
-    module: 'Reading',
     code: 'FIB(D)',
     questionTitle: 'Early Maritime Navigation Techniques in the Pacific',
     score: '68 / 90',
@@ -68,11 +64,9 @@ const RECENT_PRACTICE_ENTRIES = [
 ];
 
 /**
- * NinetyPTE Student Practice History page (`/v1/practice-history`, `/practice-history`).
+ * PTE Academic Practice History page (/v1/practice-history, /practice-history).
  */
-export default function PTEPracticeHistoryPage() {
-  const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
+export default function AcademicPracticeHistoryPage() {
   const [periodId, setPeriodId] = useState('today');
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -86,14 +80,9 @@ export default function PTEPracticeHistoryPage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[980px] mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-        {/* Top Summary Card with Cyan Top Border */}
         <section className="rounded-2xl bg-white border border-slate-200/90 border-t-[3px] border-t-[#2cc9ba] px-6 py-5 sm:px-7 sm:py-6 shadow-md">
           <Link
             to="/dashboard"
@@ -108,9 +97,7 @@ export default function PTEPracticeHistoryPage() {
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                 Practice History
               </h1>
-              <p className="mt-1 text-xs sm:text-sm text-slate-500">
-                Your recent practice data
-              </p>
+              <p className="mt-1 text-xs sm:text-sm text-slate-500">Your recent practice data</p>
             </div>
 
             <div className="flex flex-wrap items-center gap-5 self-start sm:self-auto">
@@ -165,7 +152,6 @@ export default function PTEPracticeHistoryPage() {
           </div>
         </section>
 
-        {/* Empty State or Activity List */}
         {filteredEntries.length === 0 ? (
           <div className="py-4 text-center">
             <p className="text-xs sm:text-sm font-medium text-slate-400">
@@ -181,9 +167,7 @@ export default function PTEPracticeHistoryPage() {
                 className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-white px-5 py-4 shadow-2xs hover:border-[#2cc9ba] transition"
               >
                 <div className="flex items-start gap-3.5 min-w-0">
-                  <span
-                    className={`rounded-lg px-2.5 py-1 text-[11px] font-bold text-white shrink-0 ${entry.badgeClass}`}
-                  >
+                  <span className={`rounded-lg px-2.5 py-1 text-[11px] font-bold text-white shrink-0 ${entry.badgeClass}`}>
                     {entry.code}
                   </span>
                   <div className="min-w-0">
@@ -210,7 +194,6 @@ export default function PTEPracticeHistoryPage() {
           </section>
         )}
 
-        {/* Informational Note Card */}
         <section className="max-w-[640px] mx-auto rounded-xl border border-[#cde9e6] bg-[#eef8f7] px-6 py-4 shadow-2xs">
           <ul className="list-disc pl-4 space-y-1.5 text-xs sm:text-[13px] leading-relaxed text-slate-600">
             <li>Practice history displays activity from the last 60 days only.</li>
@@ -218,9 +201,7 @@ export default function PTEPracticeHistoryPage() {
               Scores and attempt counts for deleted questions may still appear in this history;
               however, the original questions will no longer be accessible.
             </li>
-            <li>
-              Overall module scores are calculated using Pearson&apos;s dual scoring effect.
-            </li>
+            <li>Overall module scores are calculated using Pearson&apos;s dual scoring effect.</li>
           </ul>
         </section>
       </main>

@@ -1,14 +1,3 @@
-export const INITIAL_NOTIFICATIONS = [
-  {
-    id: 'notif-expiry-3d',
-    title: 'Premium subscription expires in 3 days',
-    message: 'Your Premium subscription is about to expire in 3 days.',
-    date: '25 November, 2026',
-    unread: true,
-    avatarInitials: 'NP',
-  },
-];
-
 export const TOP_SUMMARY_STATS = [
   { key: 'predictions', label: 'Prediction Questions', count: '1,606', pct: 56, targetTab: 'Speaking' },
   { key: 'speaking', label: 'Speaking Questions', count: '9,016', pct: 14, targetTab: 'Speaking' },
@@ -61,25 +50,21 @@ export const SKILL_TAB_META = {
     badgeBg: 'bg-[#d97736]',
     barColor: 'bg-[#d97736]',
     underlineColor: 'border-[#d97736]',
-    pillActive: 'bg-[#d97736] text-white border-[#d97736]',
   },
   Writing: {
     badgeBg: 'bg-[#3b82f6]',
     barColor: 'bg-[#3b82f6]',
     underlineColor: 'border-[#3b82f6]',
-    pillActive: 'bg-[#3b82f6] text-white border-[#3b82f6]',
   },
   Reading: {
     badgeBg: 'bg-[#22c55e]',
     barColor: 'bg-[#22c55e]',
     underlineColor: 'border-[#22c55e]',
-    pillActive: 'bg-[#22c55e] text-white border-[#22c55e]',
   },
   Listening: {
     badgeBg: 'bg-[#0284c7]',
     barColor: 'bg-[#0284c7]',
     underlineColor: 'border-[#0284c7]',
-    pillActive: 'bg-[#0284c7] text-white border-[#0284c7]',
   },
 };
 
@@ -114,30 +99,6 @@ export const PRACTICE_TASKS_ACADEMIC = {
     { name: 'Highlight Incorrect Words', done: 98, total: 890, to: '/pte-listening-practice' },
     { name: 'Write From Dictation', done: 348, total: 1630, to: '/pte-listening-practice' },
   ],
-};
-
-export const PRACTICE_TASKS_CORE = {
-  Speaking: [
-    { name: 'Read Aloud', done: 67, total: 1552, to: '/pte-core-speaking-practice' },
-    { name: 'Repeat Sentence', done: 769, total: 3174, to: '/pte-core-speaking-practice' },
-    { name: 'Describe Image', done: 175, total: 1207, to: '/pte-core-speaking-practice' },
-    { name: 'Respond to a Situation', done: 97, total: 360, to: '/pte-core-speaking-practice' },
-    { name: 'Answer Short Question', done: 57, total: 1946, to: '/pte-core-speaking-practice' },
-  ],
-  Writing: [
-    { name: 'Summarize Written Text', done: 38, total: 340, to: '/pte-core-writing-practice' },
-    { name: 'Write Email', done: 54, total: 410, to: '/pte-core-writing-practice' },
-  ],
-  Reading: PRACTICE_TASKS_ACADEMIC.Reading.map((item) => ({
-    ...item,
-    to: '/pte-core-reading-practice',
-  })),
-  Listening: PRACTICE_TASKS_ACADEMIC.Listening.filter(
-    (item) => item.name !== 'Highlight Correct Summary'
-  ).map((item) => ({
-    ...item,
-    to: '/pte-core-listening-practice',
-  })),
 };
 
 export const MOCK_TEST_CARDS = [
@@ -261,7 +222,7 @@ export const PTE_GUIDE_FAQS = {
     },
     {
       q: 'How to book the test?',
-      a: 'Sign in to your official myPTE portal with passport-matching details, select PTE Academic, UKVI, or PTE Core, pick a nearby centre date, and apply any verified voucher at checkout.',
+      a: 'Sign in to your official myPTE portal with passport-matching details, select PTE Academic or UKVI, pick a nearby centre date, and apply any verified voucher at checkout.',
     },
   ],
   'Speaking Guide': [
@@ -277,7 +238,7 @@ export const PTE_GUIDE_FAQS = {
   'Writing Guide': [
     {
       q: 'How strict is word count in Summarize Written Text and Write Essay?',
-      a: 'Stay strictly within 5–75 words in one single complete sentence for Summarize Written Text, and 200–300 words for Write Essay (or 50–120 words for PTE Core Write Email).',
+      a: 'Stay strictly within 5–75 words in one single complete sentence for Summarize Written Text, and 200–300 words for Write Essay.',
     },
   ],
   'Reading Guide': [
@@ -295,7 +256,7 @@ export const PTE_GUIDE_FAQS = {
   'Score Guide': [
     {
       q: 'How does the 10–90 PTE scale map to IELTS or CLB?',
-      a: 'PTE 65 roughly corresponds to IELTS 7.0 overall, while PTE 79 aligns with IELTS 8.0. Use the NinetyPTE Score Calculator for exact PTE Academic and PTE Core CLB conversions.',
+      a: 'PTE 65 roughly corresponds to IELTS 7.0 overall, while PTE 79 aligns with IELTS 8.0. Use the NinetyPTE Score Calculator for exact equivalencies.',
     },
   ],
 };

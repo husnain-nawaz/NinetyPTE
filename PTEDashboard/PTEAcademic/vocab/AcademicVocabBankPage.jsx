@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   BookOpen,
   BookmarkCheck,
@@ -11,31 +11,21 @@ import {
   Video,
   X,
 } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
-import { VOCAB_DECKS } from './pteVocabBankData';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
+import { VOCAB_DECKS } from './vocabData';
 
 /**
- * NinetyPTE Vocab Bank page (`/v1/vocab-bank`, `/vocab-bank`) featuring the
- * 5 vocabulary decks (My List, R&W FIB Drag & Drop, R&W FIB Dropdown, WFD, Listening FIB)
- * with interactive deck browsing, custom word saving, and progress tracking.
+ * PTE Academic Vocab Bank page (/v1/vocab-bank, /vocab-bank).
  */
-export default function PTEVocabBankPage() {
-  const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
+export default function AcademicVocabBankPage() {
   const [showInfoTip, setShowInfoTip] = useState(false);
   const [activeDeckId, setActiveDeckId] = useState(null);
   const [wordSearch, setWordSearch] = useState('');
   const [customWordInput, setCustomWordInput] = useState('');
   const [customMeaningInput, setCustomMeaningInput] = useState('');
-
   const [savedWords, setSavedWords] = useState([]);
   const [masteredKeys, setMasteredKeys] = useState([]);
-
-  const activeDeck = useMemo(
-    () => VOCAB_DECKS.find((deck) => deck.id === activeDeckId) || null,
-    [activeDeckId]
-  );
 
   const deckSummaries = useMemo(
     () =>
@@ -62,8 +52,7 @@ export default function PTEVocabBankPage() {
     if (!q) return activeDeckSummary.wordsList;
     return activeDeckSummary.wordsList.filter(
       (entry) =>
-        entry.word.toLowerCase().includes(q) ||
-        entry.meaning.toLowerCase().includes(q)
+        entry.word.toLowerCase().includes(q) || entry.meaning.toLowerCase().includes(q)
     );
   }, [activeDeckSummary, wordSearch]);
 
@@ -76,9 +65,7 @@ export default function PTEVocabBankPage() {
 
   const toggleSaveToMyList = (wordObj) => {
     setSavedWords((prev) => {
-      const exists = prev.some(
-        (item) => item.word.toLowerCase() === wordObj.word.toLowerCase()
-      );
+      const exists = prev.some((item) => item.word.toLowerCase() === wordObj.word.toLowerCase());
       return exists
         ? prev.filter((item) => item.word.toLowerCase() !== wordObj.word.toLowerCase())
         : [wordObj, ...prev];
@@ -102,23 +89,16 @@ export default function PTEVocabBankPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Header Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex items-center gap-3">
             <span className="w-9 h-9 rounded-full bg-[#e5f0fa] text-[#0c4a7e] flex items-center justify-center shadow-2xs">
               <BookOpen className="w-4 h-4" />
             </span>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">
-                Vocab Bank
-              </h1>
+              <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">Vocab Bank</h1>
               <button
                 type="button"
                 onClick={() => setShowInfoTip((prev) => !prev)}
@@ -146,7 +126,6 @@ export default function PTEVocabBankPage() {
           </Link>
         </div>
 
-        {/* Main 5-Card Vocab Bank Container */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {deckSummaries.map((deck) => (
@@ -174,10 +153,7 @@ export default function PTEVocabBankPage() {
                       Total Words: <strong className="text-slate-700">{deck.total}</strong>
                     </span>
                     <div className="h-1.5 flex-1 rounded-full bg-slate-100 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[#00b4c6] transition-all"
-                        style={{ width: `${deck.pct}%` }}
-                      />
+                      <div className="h-full rounded-full bg-[#00b4c6] transition-all" style={{ width: `${deck.pct}%` }} />
                     </div>
                   </div>
                 </div>
@@ -193,8 +169,7 @@ export default function PTEVocabBankPage() {
 
       <PTEDashboardTealFooter />
 
-      {/* Interactive Deck Study Modal */}
-      {activeDeck && activeDeckSummary && (
+      {activeDeckSummary && (
         <div
           className="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setActiveDeckId(null)}
@@ -205,9 +180,7 @@ export default function PTEVocabBankPage() {
           >
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-extrabold text-[#0c4a7e]">
-                  {activeDeckSummary.title}
-                </h3>
+                <h3 className="text-base font-extrabold text-[#0c4a7e]">{activeDeckSummary.title}</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Total Words: {activeDeckSummary.total} · {activeDeckSummary.pct}% Mastered
                 </p>
@@ -267,9 +240,7 @@ export default function PTEVocabBankPage() {
               {filteredModalWords.length > 0 ? (
                 <div className="space-y-3">
                   {filteredModalWords.map((item) => {
-                    const isMastered = masteredKeys.includes(
-                      `${activeDeckSummary.id}:${item.word}`
-                    );
+                    const isMastered = masteredKeys.includes(`${activeDeckSummary.id}:${item.word}`);
                     const inMyList = savedWords.some(
                       (saved) => saved.word.toLowerCase() === item.word.toLowerCase()
                     );
@@ -281,25 +252,19 @@ export default function PTEVocabBankPage() {
                       >
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-sm font-extrabold text-slate-900">
-                              {item.word}
-                            </span>
+                            <span className="text-sm font-extrabold text-slate-900">{item.word}</span>
                             {item.pos && (
                               <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 uppercase">
                                 {item.pos}
                               </span>
                             )}
                             {item.ipa && (
-                              <span className="text-xs text-slate-400 font-mono">
-                                {item.ipa}
-                              </span>
+                              <span className="text-xs text-slate-400 font-mono">{item.ipa}</span>
                             )}
                           </div>
                           <p className="text-xs text-slate-600">{item.meaning}</p>
                           {item.example && (
-                            <p className="text-[11px] text-slate-400 italic">
-                              &ldquo;{item.example}&rdquo;
-                            </p>
+                            <p className="text-[11px] text-slate-400 italic">&ldquo;{item.example}&rdquo;</p>
                           )}
                         </div>
 

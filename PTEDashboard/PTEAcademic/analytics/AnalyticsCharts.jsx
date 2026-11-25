@@ -3,7 +3,7 @@ import {
   SKILL_COLORS,
   TASK_METRIC_ITEMS,
   formatMinutesSeconds,
-} from './pteAnalyticsData';
+} from './analyticsData';
 
 export function SkillLegend() {
   return (

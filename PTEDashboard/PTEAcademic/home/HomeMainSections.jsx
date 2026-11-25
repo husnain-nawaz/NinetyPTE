@@ -11,10 +11,10 @@ import {
   Info,
   Layers,
   Mic,
+  Minus,
   PenLine,
   Play,
   Plus,
-  Minus,
   Puzzle,
   RefreshCw,
   Search,
@@ -24,7 +24,6 @@ import {
 import {
   MOCK_TEST_CARDS,
   PRACTICE_TASKS_ACADEMIC,
-  PRACTICE_TASKS_CORE,
   PTE_GUIDE_FAQS,
   PTE_GUIDE_TABS,
   QUICK_TOOL_TILES,
@@ -32,7 +31,7 @@ import {
   TODAYS_SKILLS,
   TOP_SUMMARY_STATS,
   VIDEO_GUIDES,
-} from './pteDashboardData';
+} from './homeData';
 
 const SKILL_ICON = {
   Speaking: Mic,
@@ -76,27 +75,21 @@ function DonutRing({ pct }) {
 }
 
 /**
- * Main left-hand column of PTEDashboard scaled to standard 100% browser proportions.
+ * Left main column of PTE Academic dashboard home page.
  */
-export default function PTEDashboardMainSections({
-  examVariant,
-  onSelectVideo,
-}) {
+export default function HomeMainSections({ onSelectVideo }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
   const [timeframe, setTimeframe] = useState('All');
   const [activeGuideTab, setActiveGuideTab] = useState('About PTE');
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
 
-  const tasksSource =
-    examVariant === 'core' ? PRACTICE_TASKS_CORE : PRACTICE_TASKS_ACADEMIC;
-
   const visibleSkillTasks = useMemo(() => {
-    const tasks = tasksSource[activeSkillTab] || [];
+    const tasks = PRACTICE_TASKS_ACADEMIC[activeSkillTab] || [];
     const q = searchQuery.trim().toLowerCase();
     if (!q) return tasks;
     return tasks.filter((item) => item.name.toLowerCase().includes(q));
-  }, [activeSkillTab, searchQuery, tasksSource]);
+  }, [activeSkillTab, searchQuery]);
 
   const currentFaqs = PTE_GUIDE_FAQS[activeGuideTab] || [];
 
@@ -258,7 +251,6 @@ export default function PTEDashboardMainSections({
           </div>
         </div>
 
-        {/* 4 Skill Tabs */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 border-b border-slate-100 pb-3.5 mb-5">
           {Object.keys(SKILL_TAB_META).map((skillName) => {
             const Icon = SKILL_ICON[skillName];
@@ -289,7 +281,6 @@ export default function PTEDashboardMainSections({
           })}
         </div>
 
-        {/* Task Progress Bars */}
         {visibleSkillTasks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {visibleSkillTasks.map((task) => {
@@ -332,14 +323,10 @@ export default function PTEDashboardMainSections({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {MOCK_TEST_CARDS.map((card) => {
             const pct = Math.max(4, Math.min(100, Math.round((card.done / card.total) * 100)));
-            const toUrl =
-              examVariant === 'core' && card.name === 'Full Mock Test'
-                ? '/pte-core-mock-test'
-                : card.to;
             return (
               <Link
                 key={card.name}
-                to={toUrl}
+                to={card.to}
                 className="rounded-xl border border-[#ebd7ed] bg-[#fdf7fd] p-4 sm:p-5 hover:border-fuchsia-400 transition block"
               >
                 <div className="flex items-center gap-3.5">
@@ -354,10 +341,7 @@ export default function PTEDashboardMainSections({
                   </div>
                 </div>
                 <div className="mt-3.5 h-2 rounded-full bg-[#eeddf0] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#d946ef]"
-                    style={{ width: `${pct}%` }}
-                  />
+                  <div className="h-full rounded-full bg-[#d946ef]" style={{ width: `${pct}%` }} />
                 </div>
               </Link>
             );
@@ -406,7 +390,6 @@ export default function PTEDashboardMainSections({
               onClick={() => onSelectVideo(video)}
               className="group flex items-center gap-3.5 text-left rounded-xl p-1.5 hover:bg-slate-50 transition cursor-pointer"
             >
-              {/* Thumbnail */}
               <div
                 className={`relative w-40 h-24 sm:w-44 shrink-0 rounded-xl overflow-hidden bg-gradient-to-br ${video.bg} p-2.5 flex flex-col justify-between text-white shadow-2xs`}
               >
@@ -474,10 +457,7 @@ export default function PTEDashboardMainSections({
           {currentFaqs.map((faq, idx) => {
             const isOpen = openFaqIdx === idx;
             return (
-              <div
-                key={faq.q}
-                className="rounded-xl border border-slate-200 bg-white overflow-hidden"
-              >
+              <div key={faq.q} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setOpenFaqIdx(isOpen ? null : idx)}

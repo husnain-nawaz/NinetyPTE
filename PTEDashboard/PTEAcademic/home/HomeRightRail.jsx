@@ -20,14 +20,14 @@ import {
   TARGET_PRESETS,
   TODAYS_TASKS_BY_SKILL,
   VIDEO_GUIDES,
-} from './pteDashboardData';
+} from './homeData';
 
 const pad2 = (num) => String(num).padStart(2, '0');
 
 /**
- * Right-hand utility column of PTEDashboard scaled cleanly to 100% browser proportions.
+ * Right-hand utility column of PTE Academic dashboard home page.
  */
-export default function PTEDashboardRightRail({ onSelectVideo }) {
+export default function HomeRightRail({ onSelectVideo }) {
   const [target, setTarget] = useState(TARGET_PRESETS[2]);
   const [editingTarget, setEditingTarget] = useState(false);
 
@@ -46,11 +46,8 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
   const [speechResponse, setSpeechResponse] = useState('');
   const [listeningMicActive, setListeningMicActive] = useState(false);
 
-  // Live countdown ticker when an exam date is set
   useEffect(() => {
-    if (!examDateStr) {
-      return undefined;
-    }
+    if (!examDateStr) return undefined;
     const tick = () => {
       const diffMs = Math.max(0, new Date(examDateStr).getTime() - Date.now());
       const totalSec = Math.floor(diffMs / 1000);
@@ -66,7 +63,6 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
     return () => clearInterval(timer);
   }, [examDateStr]);
 
-  // Smooth simulated pitch reading while analysis is running
   useEffect(() => {
     if (!analyzingPitch) return undefined;
     const interval = setInterval(() => {
@@ -96,9 +92,7 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
 
   const heroVideo = VIDEO_GUIDES[0];
   const activeTasks = TODAYS_TASKS_BY_SKILL[taskSkill] || [];
-  const shownCalendarDays = calendarExpanded
-    ? CALENDAR_WEEKS
-    : CALENDAR_WEEKS.slice(0, 14);
+  const shownCalendarDays = calendarExpanded ? CALENDAR_WEEKS : CALENDAR_WEEKS.slice(0, 14);
 
   return (
     <aside className="space-y-5">
@@ -212,9 +206,7 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
                 <div key={unit.label} className="relative">
                   <div className="text-2xl sm:text-[26px] font-black text-[#0f3554] leading-none">
                     {unit.val}
-                    {idx < 3 && (
-                      <span className="text-slate-300 font-normal ml-1.5">:</span>
-                    )}
+                    {idx < 3 && <span className="text-slate-300 font-normal ml-1.5">:</span>}
                   </div>
                   <div className="text-[11px] text-slate-400 mt-1.5">{unit.label}</div>
                 </div>
@@ -231,29 +223,12 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
 
           <div className="space-y-3.5">
             {[
-              {
-                icon: Link2,
-                bg: 'bg-[#4f8df9]',
-                title: 'Share Link',
-                desc: 'Share your referral link',
-              },
-              {
-                icon: UserPlus,
-                bg: 'bg-[#22c55e]',
-                title: 'Friend Joins',
-                desc: 'Friend signs up & subscribes',
-              },
-              {
-                icon: Gift,
-                bg: 'bg-[#0d5488]',
-                title: 'You Earn',
-                desc: 'Get FREE credit points',
-              },
+              { icon: Link2, bg: 'bg-[#4f8df9]', title: 'Share Link', desc: 'Share your referral link' },
+              { icon: UserPlus, bg: 'bg-[#22c55e]', title: 'Friend Joins', desc: 'Friend signs up & subscribes' },
+              { icon: Gift, bg: 'bg-[#0d5488]', title: 'You Earn', desc: 'Get FREE credit points' },
             ].map(({ icon: StepIcon, bg, title, desc }) => (
               <div key={title} className="flex items-center gap-3.5">
-                <span
-                  className={`w-9 h-9 rounded-full ${bg} text-white flex items-center justify-center shrink-0 shadow-2xs`}
-                >
+                <span className={`w-9 h-9 rounded-full ${bg} text-white flex items-center justify-center shrink-0 shadow-2xs`}>
                   <StepIcon className="w-4 h-4" />
                 </span>
                 <div>
@@ -306,7 +281,6 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
           </div>
         </div>
 
-        {/* Month Calendar */}
         <div>
           <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-700 mb-3.5">
             <button type="button" aria-label="Previous week" className="p-1 text-slate-400 hover:text-slate-700">
@@ -363,7 +337,6 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
           </div>
         </div>
 
-        {/* Today's Task */}
         <div className="rounded-xl border border-slate-100 bg-[#fbfdfe] p-4">
           <h3 className="text-sm font-bold text-slate-800 mb-3">Today&apos;s Task</h3>
           <div className="grid grid-cols-4 gap-2 mb-3.5">
@@ -407,21 +380,9 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
         <h3 className="text-sm font-bold text-slate-800 mb-3.5">Pitch Analyzer</h3>
         <div className="flex items-center gap-5">
           <svg className="w-36 h-20 shrink-0" viewBox="0 0 120 70" aria-hidden="true">
-            <path
-              d="M 14 60 A 46 46 0 0 1 106 60"
-              fill="none"
-              stroke="#e2e8f0"
-              strokeWidth="12"
-              strokeDasharray="3 3"
-            />
+            <path d="M 14 60 A 46 46 0 0 1 106 60" fill="none" stroke="#e2e8f0" strokeWidth="12" strokeDasharray="3 3" />
             {analyzingPitch && (
-              <path
-                d="M 14 60 A 46 46 0 0 1 82 22"
-                fill="none"
-                stroke="#0d5488"
-                strokeWidth="12"
-                strokeDasharray="3 3"
-              />
+              <path d="M 14 60 A 46 46 0 0 1 82 22" fill="none" stroke="#0d5488" strokeWidth="12" strokeDasharray="3 3" />
             )}
             <circle cx="60" cy="60" r="4" fill="#64748b" />
           </svg>
@@ -451,9 +412,7 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
             type="button"
             onClick={() => setQuickTestMode('speech')}
             className={`rounded-full py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
-              quickTestMode === 'speech'
-                ? 'bg-[#634ce6] text-white shadow-xs'
-                : 'text-slate-600'
+              quickTestMode === 'speech' ? 'bg-[#634ce6] text-white shadow-xs' : 'text-slate-600'
             }`}
           >
             Speech Test
@@ -462,9 +421,7 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
             type="button"
             onClick={() => setQuickTestMode('listening')}
             className={`rounded-full py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
-              quickTestMode === 'listening'
-                ? 'bg-[#634ce6] text-white shadow-xs'
-                : 'text-slate-600'
+              quickTestMode === 'listening' ? 'bg-[#634ce6] text-white shadow-xs' : 'text-slate-600'
             }`}
           >
             Listening Test
@@ -476,15 +433,11 @@ export default function PTEDashboardRightRail({ onSelectVideo }) {
             type="button"
             onClick={() => {
               setListeningMicActive((prev) => !prev);
-              if (!speechResponse) {
-                setSpeechResponse('Microphone signal clear.');
-              }
+              if (!speechResponse) setSpeechResponse('Microphone signal clear.');
             }}
             aria-label="Toggle microphone test"
             className={`relative w-24 h-24 rounded-full border flex items-center justify-center shrink-0 transition cursor-pointer ${
-              listeningMicActive
-                ? 'border-[#634ce6] bg-[#f4f1fe]'
-                : 'border-indigo-100 bg-[#faf9ff]'
+              listeningMicActive ? 'border-[#634ce6] bg-[#f4f1fe]' : 'border-indigo-100 bg-[#faf9ff]'
             }`}
           >
             <span className="w-14 h-14 rounded-full border border-indigo-200 flex items-center justify-center text-[#634ce6]">

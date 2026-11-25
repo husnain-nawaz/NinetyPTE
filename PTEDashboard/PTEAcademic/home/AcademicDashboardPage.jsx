@@ -1,45 +1,34 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Play, X } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardMainSections from './PTEDashboardMainSections';
-import PTEDashboardRightRail from './PTEDashboardRightRail';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import HomeMainSections from './HomeMainSections';
+import HomeRightRail from './HomeRightRail';
 
 /**
- * NinetyPTE Student Portal Home Page (`/dashboard`, `/pte-dashboard`, `/v1/dashboard`).
- * Completely decoupled from the public marketing layout.
+ * NinetyPTE PTE Academic Student Portal Home Page (/dashboard, /v1/dashboard).
  */
-export default function PTEDashboard() {
-  const [examVariant, setExamVariant] = useState('academic');
+export default function AcademicDashboardPage() {
   const [showExpiryToast, setShowExpiryToast] = useState(true);
   const [activeVideo, setActiveVideo] = useState(null);
   const [showReferModal, setShowReferModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => setShowReferModal(true)}
-      />
+      <PTEDashboardHeader onOpenReferModal={() => setShowReferModal(true)} />
 
-      {/* Portal Main Container (100% scale proportions) */}
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div className="lg:col-span-8">
-            <PTEDashboardMainSections
-              examVariant={examVariant}
-              onSelectVideo={setActiveVideo}
-            />
+            <HomeMainSections onSelectVideo={setActiveVideo} />
           </div>
 
           <div className="lg:col-span-4">
-            <PTEDashboardRightRail onSelectVideo={setActiveVideo} />
+            <HomeRightRail onSelectVideo={setActiveVideo} />
           </div>
         </div>
       </main>
 
-      {/* Minimal Portal Footer (isolated from marketing site footer) */}
       <footer className="bg-white border-t border-slate-200 px-6 py-6 mt-10">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-[13px] text-slate-500">
           <div className="flex items-center gap-3.5">
@@ -69,7 +58,6 @@ export default function PTEDashboard() {
         </div>
       </footer>
 
-      {/* Bottom-Right Floating Subscription Expiry Notice */}
       {showExpiryToast && (
         <div
           role="status"
@@ -96,7 +84,6 @@ export default function PTEDashboard() {
         </div>
       )}
 
-      {/* Video Guide Preview Modal */}
       {activeVideo && (
         <div
           className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
@@ -106,9 +93,7 @@ export default function PTEDashboard() {
             className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className={`h-52 bg-gradient-to-br ${activeVideo.bg} p-6 flex flex-col justify-between text-white relative`}
-            >
+            <div className={`h-52 bg-gradient-to-br ${activeVideo.bg} p-6 flex flex-col justify-between text-white relative`}>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black tracking-wide text-cyan-300 uppercase">
                   NinetyPTE Video Guide · {activeVideo.duration}
@@ -127,14 +112,10 @@ export default function PTEDashboard() {
                   <Play className="w-5 h-5 fill-white ml-0.5" />
                 </span>
                 <div>
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${activeVideo.badgeBg}`}
-                  >
+                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase ${activeVideo.badgeBg}`}>
                     {activeVideo.tagHighlight}
                   </span>
-                  <h3 className="mt-1 text-base font-extrabold leading-snug">
-                    {activeVideo.title}
-                  </h3>
+                  <h3 className="mt-1 text-base font-extrabold leading-snug">{activeVideo.title}</h3>
                 </div>
               </div>
             </div>
@@ -150,10 +131,10 @@ export default function PTEDashboard() {
                   Close
                 </button>
                 <Link
-                  to="/pte-online-course"
+                  to="/v1/youtube-videos/1"
                   className="rounded-lg bg-[#0d5488] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#093e66]"
                 >
-                  Open Full Course Library
+                  Open Full Video Library
                 </Link>
               </div>
             </div>
@@ -161,7 +142,6 @@ export default function PTEDashboard() {
         </div>
       )}
 
-      {/* Refer & Earn Info Modal */}
       {showReferModal && (
         <div
           className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"

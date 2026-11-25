@@ -8,11 +8,11 @@ import {
   Monitor,
   X,
 } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
-import { GRAMMAR_TOPICS } from './pteGrammarData';
-import { PREDICTION_FILES_ACADEMIC, PREDICTION_FILES_CORE } from './ptePredictionsData';
-import { TEMPLATE_FILES_ACADEMIC, TEMPLATE_FILES_CORE } from './pteTemplatesData';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
+import { GRAMMAR_TOPICS } from './grammarData';
+import { PREDICTION_FILES_ACADEMIC } from './predictionsData';
+import { TEMPLATE_FILES_ACADEMIC } from './templatesData';
 
 const STUDY_TOOL_TABS = [
   { id: 'templates', label: 'Templates', path: '/v1/templates' },
@@ -98,42 +98,29 @@ function ResourceCardGrid({
 }
 
 /**
- * Shared Study Tools page powering /v1/templates, /v1/prediction, and /v1/grammar
- * with tabbed folder navigation, downloadable resource lists, and preview modal.
+ * PTE Academic Study Tools tabbed workspace (/v1/templates, /v1/prediction, /v1/grammar).
  */
-export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
+export default function AcademicStudyToolsPage({ initialTab = 'grammar' }) {
   const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
   const [showInfoTip, setShowInfoTip] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
 
   const activeTab = initialTab;
-  const isCore = examVariant === 'core';
-  const predictionItems = isCore ? PREDICTION_FILES_CORE : PREDICTION_FILES_ACADEMIC;
-  const templateItems = isCore ? TEMPLATE_FILES_CORE : TEMPLATE_FILES_ACADEMIC;
-
   const modalBullets = selectedResource
     ? selectedResource.examples || selectedResource.highlights || []
     : [];
 
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Top Study Tools Heading Row */}
         <div className="relative flex items-center gap-3 mb-6">
           <span className="w-9 h-9 rounded-full bg-[#e5f0fa] text-[#0c4a7e] flex items-center justify-center shadow-2xs">
             <Monitor className="w-4 h-4" />
           </span>
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">
-              Study Tools
-            </h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-[#0c4a7e]">Study Tools</h1>
             <button
               type="button"
               onClick={() => setShowInfoTip((prev) => !prev)}
@@ -146,12 +133,11 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
           {showInfoTip && (
             <div className="absolute left-0 top-full mt-2 w-80 rounded-xl border border-slate-200 bg-white p-3.5 text-xs text-slate-600 shadow-lg z-30">
-              Access official-style Speaking &amp; Writing templates, weekly PTE prediction files, and downloadable grammar rule sheets inside Study Tools.
+              Access PTE Academic Speaking &amp; Writing templates, weekly prediction files, and downloadable grammar rule sheets inside Study Tools.
             </div>
           )}
         </div>
 
-        {/* Folder-Style Tabs: Templates | Predictions | Grammar */}
         <div className="inline-flex items-end rounded-t-xl bg-[#ebf1f7] p-1 pb-0">
           {STUDY_TOOL_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -172,15 +158,12 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
           })}
         </div>
 
-        {/* Main Tab Content Card */}
         <section className="bg-white rounded-2xl rounded-tl-none border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
           {activeTab === 'templates' && (
             <>
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
-                Templates
-              </h2>
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">Templates</h2>
               <ResourceCardGrid
-                items={templateItems}
+                items={TEMPLATE_FILES_ACADEMIC}
                 Icon={FileText}
                 iconRadiusClass="rounded-full"
                 onSelect={setSelectedResource}
@@ -190,11 +173,9 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
           {activeTab === 'predictions' && (
             <>
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
-                Predictions
-              </h2>
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">Predictions</h2>
               <ResourceCardGrid
-                items={predictionItems}
+                items={PREDICTION_FILES_ACADEMIC}
                 Icon={BarChart2}
                 iconRadiusClass="rounded-full"
                 onSelect={setSelectedResource}
@@ -204,9 +185,7 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
           {activeTab === 'grammar' && (
             <>
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">
-                Grammar
-              </h2>
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-800 mb-5">Grammar</h2>
               <ResourceCardGrid
                 items={GRAMMAR_TOPICS}
                 Icon={FileText}
@@ -220,21 +199,15 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
 
       <PTEDashboardTealFooter />
 
-      {/* Shared Study Resource Quick-View & Download Modal */}
       {selectedResource && (
         <div
           className="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-xs flex items-center justify-center p-4"
           onClick={() => setSelectedResource(null)}
         >
-          <div
-            className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-extrabold text-[#0c4a7e]">
-                  {selectedResource.title}
-                </h3>
+                <h3 className="text-base font-extrabold text-[#0c4a7e]">{selectedResource.title}</h3>
                 <p className="text-xs text-slate-500 mt-0.5">{selectedResource.focus}</p>
               </div>
               <button
@@ -248,9 +221,7 @@ export default function PTEStudyToolsPage({ initialTab = 'grammar' }) {
             </div>
 
             <div className="p-6 space-y-4">
-              <p className="text-xs sm:text-sm leading-relaxed text-slate-600">
-                {selectedResource.summary}
-              </p>
+              <p className="text-xs sm:text-sm leading-relaxed text-slate-600">{selectedResource.summary}</p>
 
               {modalBullets.length > 0 && (
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2">

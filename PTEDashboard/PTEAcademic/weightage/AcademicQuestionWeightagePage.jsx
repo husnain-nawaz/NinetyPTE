@@ -1,13 +1,8 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, ListChecks } from 'lucide-react';
-import PTEDashboardHeader from './PTEDashboardHeader';
-import PTEDashboardTealFooter from './PTEDashboardTealFooter';
-import {
-  WEIGHTAGE_LEGEND,
-  WEIGHTAGE_SECTIONS_ACADEMIC,
-  WEIGHTAGE_SECTIONS_CORE,
-} from './pteWeightageData';
+import PTEDashboardHeader from '../../shared/PTEDashboardHeader';
+import PTEDashboardTealFooter from '../../shared/PTEDashboardTealFooter';
+import { WEIGHTAGE_LEGEND, WEIGHTAGE_SECTIONS_ACADEMIC } from './weightageData';
 
 function WeightageBadge({ value, colorClass }) {
   if (!value) return null;
@@ -21,27 +16,14 @@ function WeightageBadge({ value, colorClass }) {
 }
 
 /**
- * NinetyPTE Question Weightage matrix page (`/v1/question-weightage`, `/question-weightage`)
- * breaking down question counts and percentage contributions across Overall, Speaking,
- * Listening, Reading, and Writing.
+ * PTE Academic Question Weightage matrix page (/v1/question-weightage).
  */
-export default function PTEQuestionWeightagePage() {
-  const navigate = useNavigate();
-  const [examVariant, setExamVariant] = useState('academic');
-
-  const isCore = examVariant === 'core';
-  const sections = isCore ? WEIGHTAGE_SECTIONS_CORE : WEIGHTAGE_SECTIONS_ACADEMIC;
-
+export default function AcademicQuestionWeightagePage() {
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-800 flex flex-col font-sans">
-      <PTEDashboardHeader
-        examVariant={examVariant}
-        onChangeExamVariant={setExamVariant}
-        onOpenReferModal={() => navigate('/dashboard')}
-      />
+      <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Page Header Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="w-9 h-9 rounded-full bg-[#e5f0fa] text-[#0c4a7e] flex items-center justify-center shadow-2xs">
@@ -61,12 +43,11 @@ export default function PTEQuestionWeightagePage() {
           </Link>
         </div>
 
-        {/* Marks Distribution Table Card */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-base sm:text-lg font-extrabold text-slate-800">
-                {isCore ? 'PTE Core Marks Distribution' : 'PTE Academic Marks Distribution'}
+                PTE Academic Marks Distribution
               </h2>
               <p className="text-xs sm:text-[13px] text-slate-500 mt-0.5">
                 Complete overview of all question types and scoring
@@ -76,10 +57,7 @@ export default function PTEQuestionWeightagePage() {
             <div className="flex flex-wrap items-center gap-5 text-xs sm:text-[13px] font-semibold text-slate-600">
               {WEIGHTAGE_LEGEND.map((item) => (
                 <span key={item.label} className="inline-flex items-center gap-2">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: item.color }}
-                  />
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                   <span>{item.label}</span>
                 </span>
               ))}
@@ -90,9 +68,7 @@ export default function PTEQuestionWeightagePage() {
             <table className="w-full min-w-[820px] border-collapse text-xs sm:text-[13px]">
               <thead>
                 <tr className="bg-[#064e89] text-white font-bold">
-                  <th colSpan={2} className="py-3.5 px-5 text-left">
-                    Question Type
-                  </th>
+                  <th colSpan={2} className="py-3.5 px-5 text-left">Question Type</th>
                   <th className="py-3.5 px-3 text-center">Questions</th>
                   <th className="py-3.5 px-3 text-center">Overall</th>
                   <th className="py-3.5 px-3 text-center">Speaking</th>
@@ -103,7 +79,7 @@ export default function PTEQuestionWeightagePage() {
               </thead>
 
               <tbody>
-                {sections.map((section, sectionIdx) =>
+                {WEIGHTAGE_SECTIONS_ACADEMIC.map((section, sectionIdx) =>
                   section.rows.map((row, rowIdx) => {
                     const isFirstInSection = rowIdx === 0;
                     const isSectionStartBorder = sectionIdx > 0 && isFirstInSection;
@@ -130,10 +106,7 @@ export default function PTEQuestionWeightagePage() {
                         )}
 
                         <td className="py-3 px-4 font-medium text-slate-700 border-r border-slate-100">
-                          <Link
-                            to={row.to}
-                            className="hover:text-[#00a8bd] hover:underline transition"
-                          >
+                          <Link to={row.to} className="hover:text-[#00a8bd] hover:underline transition">
                             {row.name}
                           </Link>
                         </td>
@@ -147,19 +120,15 @@ export default function PTEQuestionWeightagePage() {
                         <td className="py-3 px-3 text-center border-r border-slate-100">
                           <WeightageBadge value={row.overall} colorClass="bg-[#d946ef]" />
                         </td>
-
                         <td className="py-3 px-3 text-center border-r border-slate-100">
                           <WeightageBadge value={row.speaking} colorClass="bg-[#eb8c44]" />
                         </td>
-
                         <td className="py-3 px-3 text-center border-r border-slate-100">
                           <WeightageBadge value={row.listening} colorClass="bg-[#0b4a7b]" />
                         </td>
-
                         <td className="py-3 px-3 text-center border-r border-slate-100">
                           <WeightageBadge value={row.reading} colorClass="bg-[#22c55e]" />
                         </td>
-
                         <td className="py-3 px-3 text-center">
                           <WeightageBadge value={row.writing} colorClass="bg-[#5ba4f5]" />
                         </td>
@@ -171,9 +140,7 @@ export default function PTEQuestionWeightagePage() {
 
               <tfoot>
                 <tr className="bg-[#064e89] text-white font-bold text-xs sm:text-sm">
-                  <td colSpan={2} className="py-3.5 px-5 uppercase tracking-wide">
-                    TOTALS
-                  </td>
+                  <td colSpan={2} className="py-3.5 px-5 uppercase tracking-wide">TOTALS</td>
                   <td className="py-3.5 px-3 text-center">-</td>
                   <td className="py-3.5 px-3 text-center">100%</td>
                   <td className="py-3.5 px-3 text-center">100%</td>
@@ -186,12 +153,10 @@ export default function PTEQuestionWeightagePage() {
           </div>
         </section>
 
-        {/* Official Weighting Note Card */}
         <section className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
           <h3 className="text-sm font-bold text-slate-800 mb-1.5">Note:</h3>
           <p className="text-xs sm:text-[13px] leading-relaxed text-slate-500">
-            The distribution shown above is approximate and based on Pearson&apos;s official weighting guidelines. Percentages represent the contribution of each question type to the respective skill score. The total possible score is 360 points, which is then scaled to the 90-point{' '}
-            {isCore ? 'PTE Core' : 'PTE Academic'} score range.
+            The distribution shown above is approximate and based on Pearson&apos;s official weighting guidelines. Percentages represent the contribution of each question type to the respective skill score. The total possible score is 360 points, which is then scaled to the 90-point PTE Academic score range.
           </p>
         </section>
       </main>

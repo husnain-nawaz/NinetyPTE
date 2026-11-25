@@ -45,12 +45,14 @@ import AuthPage from './pages/AuthPage';
 import DisclaimerPage from './pages/DisclaimerPage';
 import {
   PTEDashboard,
+  PortalProvider,
   PTEAnalyticsPage,
   PTEQuestionWeightagePage,
   PTEPracticeHistoryPage,
   PTEStrategyVideosPage,
   PTEVocabBankPage,
   PTEStudyToolsPage,
+  PTECoreDashboardPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -71,6 +73,8 @@ function AppContent() {
   const isDashboard =
     location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/v1/dashboard') ||
+    location.pathname.startsWith('/v1/core') ||
+    location.pathname.startsWith('/core-dashboard') ||
     location.pathname.startsWith('/v1/analytics') ||
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/v1/question-weightage') ||
@@ -355,6 +359,22 @@ function AppContent() {
             }
           />
           <Route
+            path="/v1/core/dashboard"
+            element={
+              <ProtectedRoute>
+                <PTECoreDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-dashboard"
+            element={
+              <ProtectedRoute>
+                <PTECoreDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/super-dashboard"
             element={
               <SuperAdminRoute>
@@ -409,9 +429,11 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Scroll smoothly to top on every route navigation */}
-      <ScrollToTop />
-      <AppContent />
+      <PortalProvider>
+        {/* Scroll smoothly to top on every route navigation */}
+        <ScrollToTop />
+        <AppContent />
+      </PortalProvider>
     </BrowserRouter>
   );
 }

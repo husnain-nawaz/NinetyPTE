@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen,
@@ -9,7 +9,7 @@ import {
   Search,
   Sparkles,
 } from 'lucide-react';
-import { SKILL_COLORS } from './pteAnalyticsData';
+import { SKILL_COLORS } from '../analytics/analyticsData';
 
 const SKILL_COLOR_CLASSES = {
   Speaking: 'text-[#eb8c44]',
@@ -28,142 +28,65 @@ const STUDY_TOOL_LINKS = [
   { label: 'Question Weightage', to: '/v1/question-weightage' },
 ];
 
-function getPracticeColumns(examVariant) {
-  const isCore = examVariant === 'core';
-  const speakPath = isCore ? '/pte-core-speaking-practice' : '/pte-speaking-practice';
-  const writePath = isCore ? '/pte-core-writing-practice' : '/pte-writing-practice';
-  const readPath = isCore ? '/pte-core-reading-practice' : '/pte-reading-practice';
-  const listenPath = isCore ? '/pte-core-listening-practice' : '/pte-listening-practice';
-
-  const speakingItems = [
-    { name: 'Read Aloud', to: speakPath, ai: true, weights: [{ pct: '9%', color: 'Speaking' }] },
-    {
-      name: 'Repeat Sentence',
-      to: speakPath,
-      ai: true,
-      weights: [
-        { pct: '16%', color: 'Speaking' },
-        { pct: '17%', color: 'Listening' },
-      ],
-    },
-    { name: 'Describe Image', to: speakPath, ai: true, weights: [{ pct: '31%', color: 'Speaking' }] },
-    !isCore && {
-      name: 'Re-Tell Lecture',
-      to: speakPath,
-      ai: true,
-      weights: [
-        { pct: '13%', color: 'Speaking' },
-        { pct: '13%', color: 'Listening' },
-      ],
-    },
-    { name: 'Answer Short Question', to: speakPath, ai: true, weights: [{ pct: '4%', color: 'Listening' }] },
-    !isCore && {
-      name: 'Summarize Group Discussion',
-      to: speakPath,
-      ai: true,
-      weights: [
-        { pct: '19%', color: 'Speaking' },
-        { pct: '20%', color: 'Listening' },
-      ],
-    },
-    {
-      name: 'Respond to a Situation',
-      to: speakPath,
-      ai: true,
-      weights: [{ pct: '13%', color: 'Speaking' }],
-    },
-  ].filter(Boolean);
-
-  const writingItems = [
-    {
-      name: 'Summarize Written Text',
-      to: writePath,
-      ai: true,
-      weights: [
-        { pct: '23%', color: 'Reading' },
-        { pct: '28%', color: 'Writing' },
-      ],
-    },
-    {
-      name: isCore ? 'Write Email' : 'Write Essay',
-      to: writePath,
-      ai: true,
-      weights: [{ pct: '31%', color: 'Writing' }],
-    },
-  ];
-
-  const readingItems = [
-    { name: 'Fill in the Blanks (Dropdown)', to: readPath, ai: false, weights: [{ pct: '25%', color: 'Reading' }] },
-    { name: 'Multiple Choice, Multiple Answers', to: readPath, ai: false, weights: [{ pct: '5%', color: 'Reading' }] },
-    { name: 'Re-order Paragraphs', to: readPath, ai: false, weights: [{ pct: '9%', color: 'Reading' }] },
-    { name: 'Fill in the Blanks (Drag & Drop)', to: readPath, ai: false, weights: [{ pct: '20%', color: 'Reading' }] },
-    { name: 'Multiple Choice, Single Answer', to: readPath, ai: false, weights: [{ pct: '3%', color: 'Reading' }] },
-  ];
-
-  const listeningItems = [
-    {
-      name: 'Summarize Spoken Text',
-      to: listenPath,
-      ai: true,
-      weights: [
-        { pct: '10%', color: 'Listening' },
-        { pct: '18%', color: 'Writing' },
-      ],
-    },
-    { name: 'Multiple Choice, Multiple Answers', to: listenPath, ai: false, weights: [{ pct: '3%', color: 'Listening' }] },
-    { name: 'Fill in the Blanks', to: listenPath, ai: false, weights: [{ pct: '8%', color: 'Listening' }] },
-    !isCore && {
-      name: 'Highlight Correct Summary',
-      to: listenPath,
-      ai: false,
-      weights: [
-        { pct: '2%', color: 'Reading' },
-        { pct: '3%', color: 'Listening' },
-      ],
-    },
-    { name: 'Multiple Choice, Single Answer', to: listenPath, ai: false, weights: [{ pct: '2%', color: 'Listening' }] },
-    { name: 'Select Missing Word', to: listenPath, ai: false, weights: [{ pct: '1%', color: 'Listening' }] },
-    {
-      name: 'Highlight Incorrect Words',
-      to: listenPath,
-      ai: false,
-      weights: [
-        { pct: '8%', color: 'Reading' },
-        { pct: '13%', color: 'Listening' },
-      ],
-    },
-    {
-      name: 'Write from Dictation',
-      to: listenPath,
-      ai: true,
-      weights: [
-        { pct: '13%', color: 'Listening' },
-        { pct: '23%', color: 'Writing' },
-      ],
-    },
-  ].filter(Boolean);
-
-  return [
-    { title: 'Speaking', Icon: Mic, items: speakingItems },
-    { title: 'Writing', Icon: PenLine, items: writingItems },
-    { title: 'Reading', Icon: BookOpen, items: readingItems },
-    { title: 'Listening', Icon: Headphones, items: listeningItems },
-  ];
-}
+const ACADEMIC_PRACTICE_COLUMNS = [
+  {
+    title: 'Speaking',
+    Icon: Mic,
+    items: [
+      { name: 'Read Aloud', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '9%', color: 'Speaking' }] },
+      { name: 'Repeat Sentence', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '16%', color: 'Speaking' }, { pct: '17%', color: 'Listening' }] },
+      { name: 'Describe Image', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '31%', color: 'Speaking' }] },
+      { name: 'Re-Tell Lecture', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '13%', color: 'Speaking' }, { pct: '13%', color: 'Listening' }] },
+      { name: 'Answer Short Question', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '4%', color: 'Listening' }] },
+      { name: 'Summarize Group Discussion', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '19%', color: 'Speaking' }, { pct: '20%', color: 'Listening' }] },
+      { name: 'Respond to a Situation', to: '/pte-speaking-practice', ai: true, weights: [{ pct: '13%', color: 'Speaking' }] },
+    ],
+  },
+  {
+    title: 'Writing',
+    Icon: PenLine,
+    items: [
+      { name: 'Summarize Written Text', to: '/pte-writing-practice', ai: true, weights: [{ pct: '23%', color: 'Reading' }, { pct: '28%', color: 'Writing' }] },
+      { name: 'Write Essay', to: '/pte-writing-practice', ai: true, weights: [{ pct: '31%', color: 'Writing' }] },
+    ],
+  },
+  {
+    title: 'Reading',
+    Icon: BookOpen,
+    items: [
+      { name: 'Fill in the Blanks (Dropdown)', to: '/pte-reading-practice', ai: false, weights: [{ pct: '25%', color: 'Reading' }] },
+      { name: 'Multiple Choice, Multiple Answers', to: '/pte-reading-practice', ai: false, weights: [{ pct: '5%', color: 'Reading' }] },
+      { name: 'Re-order Paragraphs', to: '/pte-reading-practice', ai: false, weights: [{ pct: '9%', color: 'Reading' }] },
+      { name: 'Fill in the Blanks (Drag & Drop)', to: '/pte-reading-practice', ai: false, weights: [{ pct: '20%', color: 'Reading' }] },
+      { name: 'Multiple Choice, Single Answer', to: '/pte-reading-practice', ai: false, weights: [{ pct: '3%', color: 'Reading' }] },
+    ],
+  },
+  {
+    title: 'Listening',
+    Icon: Headphones,
+    items: [
+      { name: 'Summarize Spoken Text', to: '/pte-listening-practice', ai: true, weights: [{ pct: '10%', color: 'Listening' }, { pct: '18%', color: 'Writing' }] },
+      { name: 'Multiple Choice, Multiple Answers', to: '/pte-listening-practice', ai: false, weights: [{ pct: '3%', color: 'Listening' }] },
+      { name: 'Fill in the Blanks', to: '/pte-listening-practice', ai: false, weights: [{ pct: '8%', color: 'Listening' }] },
+      { name: 'Highlight Correct Summary', to: '/pte-listening-practice', ai: false, weights: [{ pct: '2%', color: 'Reading' }, { pct: '3%', color: 'Listening' }] },
+      { name: 'Multiple Choice, Single Answer', to: '/pte-listening-practice', ai: false, weights: [{ pct: '2%', color: 'Listening' }] },
+      { name: 'Select Missing Word', to: '/pte-listening-practice', ai: false, weights: [{ pct: '1%', color: 'Listening' }] },
+      { name: 'Highlight Incorrect Words', to: '/pte-listening-practice', ai: false, weights: [{ pct: '8%', color: 'Reading' }, { pct: '13%', color: 'Listening' }] },
+      { name: 'Write from Dictation', to: '/pte-listening-practice', ai: true, weights: [{ pct: '13%', color: 'Listening' }, { pct: '23%', color: 'Writing' }] },
+    ],
+  },
+];
 
 /**
- * Full-width PTEDashboard Practice mega-menu displaying all PTE task types,
- * AI-scoring sparkle badges, dual-score skill weightages, search filtering, and Study Tools.
+ * Full-width Practice Mega Menu dedicated to PTE Academic / UKVI tasks and Study Tools.
  */
-export default function PracticeMegaMenu({ examVariant, onClose }) {
+export default function AcademicPracticeMegaMenu({ onClose }) {
   const [query, setQuery] = useState('');
-  const columns = useMemo(() => getPracticeColumns(examVariant), [examVariant]);
   const normalized = query.trim().toLowerCase();
 
   return (
     <div className="absolute left-0 right-0 top-full bg-[#f8fafc] border-b border-slate-200 shadow-2xl z-50">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-4">
-        {/* Top Row: Search Input & Skill Weightage Legend */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative w-full sm:w-64">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -187,10 +110,9 @@ export default function PracticeMegaMenu({ examVariant, onClose }) {
           </div>
         </div>
 
-        {/* 4-Column Task Matrix Card */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {columns.map(({ title, Icon, items }) => {
+            {ACADEMIC_PRACTICE_COLUMNS.map(({ title, Icon, items }) => {
               const filteredItems = normalized
                 ? items.filter((item) => item.name.toLowerCase().includes(normalized))
                 : items;
@@ -244,7 +166,6 @@ export default function PracticeMegaMenu({ examVariant, onClose }) {
           </div>
         </div>
 
-        {/* Bottom Study Tools Strip */}
         <div className="rounded-2xl border border-slate-200/80 bg-white px-5 sm:px-6 py-4 shadow-xs space-y-3">
           <div className="flex items-center gap-2 text-[#0c4a7e] font-bold text-sm">
             <Monitor className="w-4 h-4" />
