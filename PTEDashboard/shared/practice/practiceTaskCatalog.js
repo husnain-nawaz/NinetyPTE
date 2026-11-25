@@ -295,6 +295,19 @@ const SUMMARIZE_SPOKEN_TEXT_SEED_ROWS = [
   { id: '13000694', title: 'Credit Card Experiment', difficulty: 'Medium', practicedCount: 1, appearedCount: 1 },
 ];
 
+const CORE_SUMMARIZE_SPOKEN_TEXT_SEED_ROWS = [
+  { id: '25000233', title: 'Interview Tips', difficulty: 'Medium', newPrediction: true, practicedCount: 0, appearedCount: 249 },
+  { id: '25000232', title: 'Washing Food', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 112 },
+  { id: '25000231', title: 'City of Lights', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '25000230', title: 'Father Guidance', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 73 },
+  { id: '25000229', title: 'Railway Pass', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 1666 },
+  { id: '25000228', title: 'School Lunch Box', difficulty: 'Medium', practicedCount: 0, appearedCount: 83 },
+  { id: '25000227', title: 'Threatening with losses', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 68 },
+  { id: '25000226', title: 'Canadian Skilled Trades', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 1429 },
+  { id: '25000225', title: 'Phone Interview', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 2392 },
+  { id: '25000224', title: 'Railway Cards', difficulty: 'Medium', prediction: true, practicedCount: 0, appearedCount: 107 },
+];
+
 const LISTENING_MCM_SEED_ROWS = [
   { id: '14000228', title: 'Language Skills', difficulty: 'Medium', practicedCount: 2, appearedCount: 4 },
   { id: '14000225', title: 'English Landscape Garden', difficulty: 'Medium', practicedCount: 1, appearedCount: 11 },
@@ -680,7 +693,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'SST',
     title: 'Summarize Spoken Text',
     totalQuestions: 657,
-    coreTotalQuestions: 580,
+    coreTotalQuestions: 233,
     startId: 13000703,
     continueItem: { id: '13000055', title: 'Definitions of Globalization' },
     hideDownloadButton: true,
@@ -689,6 +702,17 @@ export const PRACTICE_TASKS_BY_KEY = {
     instruction: 'You will hear a short lecture. Write a summary for a fellow student who was not present at the lecture. You should write 50-70 words.',
     promptText: 'Audio Lecture: Honeybee colony organization, pollination services, and seasonal hive resilience.',
     seedRows: SUMMARIZE_SPOKEN_TEXT_SEED_ROWS,
+    coreOverrides: {
+      totalQuestions: 233,
+      startId: 25000233,
+      continueItem: null,
+      supportsPriorityFilter: true,
+      instruction:
+        'You will hear a short lecture. Write a summary for a fellow student who was not present at the lecture. You should write 20-30 words. You have 8 minutes to finish this task. Your response will be judged on the quality of your writing and on how well your response presents the key points presented in the lecture.',
+      promptText:
+        'Audio Lecture: Preparing concise examples, researching role requirements, and practicing calm pacing for structured job interviews.',
+      seedRows: CORE_SUMMARIZE_SPOKEN_TEXT_SEED_ROWS,
+    },
   },
   'listening/multiple-choice-multiple': {
     skill: 'listening',
