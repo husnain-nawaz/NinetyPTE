@@ -72,11 +72,12 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     setPortalMode(nextTrack);
     setVariantOpen(false);
     setPracticeOpen(false);
-    // Navigate cleanly to the active track's dashboard home when switching portals
-    if (nextTrack === 'core' && !location.pathname.includes('dashboard')) {
+
+    const isCoreTarget = location.pathname.includes('analytics');
+    if (nextTrack === 'core' && !location.pathname.includes('dashboard') && !isCoreTarget) {
       navigate('/dashboard');
     } else if (nextTrack === 'academic' && location.pathname.includes('/core')) {
-      navigate('/dashboard');
+      navigate(isCoreTarget ? '/v1/analytics' : '/dashboard');
     }
   };
 

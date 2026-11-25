@@ -53,6 +53,7 @@ import {
   PTEVocabBankPage,
   PTEStudyToolsPage,
   PTECoreDashboardPage,
+  PTECoreAnalyticsPage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -75,6 +76,7 @@ function AppContent() {
     location.pathname.startsWith('/v1/dashboard') ||
     location.pathname.startsWith('/v1/core') ||
     location.pathname.startsWith('/core-dashboard') ||
+    location.pathname.startsWith('/core-analytics') ||
     location.pathname.startsWith('/v1/analytics') ||
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/v1/question-weightage') ||
@@ -371,6 +373,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTECoreDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/analytics"
+            element={
+              <ProtectedRoute>
+                <PTECoreAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/core-analytics"
+            element={
+              <ProtectedRoute>
+                <PTECoreAnalyticsPage />
               </ProtectedRoute>
             }
           />
