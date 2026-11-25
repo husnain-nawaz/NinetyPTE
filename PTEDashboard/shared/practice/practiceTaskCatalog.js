@@ -620,7 +620,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RO',
     title: 'Re-order Paragraphs',
     totalQuestions: 819,
-    coreTotalQuestions: 615,
+    coreTotalQuestions: 819,
     startId: 10001083,
     continueItem: { id: '10001048', title: 'Causation in Criminology' },
     hideDownloadButton: true,
