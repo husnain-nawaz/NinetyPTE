@@ -100,6 +100,19 @@ const REPEAT_SENTENCE_SEED_ROWS = [
   },
 ];
 
+const DESCRIBE_IMAGE_SEED_ROWS = [
+  { id: '3001451', title: 'Household of Pet', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 63, imageType: 'Bar Chart' },
+  { id: '3001449', title: 'Music Streaming', difficulty: 'Medium', isNew: true, prediction: true, practicedCount: 0, appearedCount: 50, imageType: 'Line Graph' },
+  { id: '3001448', title: 'Pet Expenditure', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 1, imageType: 'Pie Chart' },
+  { id: '3001447', title: 'Overseas Visitors', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 2, imageType: 'Line Graph' },
+  { id: '3001446', title: 'River Water Speed', difficulty: 'Medium', isNew: true, prediction: true, practicedCount: 1, appearedCount: 87, imageType: 'Process Diagram' },
+  { id: '3001445', title: 'Apartment and House', difficulty: 'Medium', isNew: true, prediction: true, practicedCount: 1, appearedCount: 35, imageType: 'Bar Chart' },
+  { id: '3001444', title: 'Leisure Time', difficulty: 'Medium', practicedCount: 1, appearedCount: 1, imageType: 'Pie Chart' },
+  { id: '3001443', title: 'Taiwan Bicycle Production', difficulty: 'Medium', practicedCount: 1, appearedCount: 0, imageType: 'Table' },
+  { id: '3001442', title: 'Sport Participants', difficulty: 'Medium', practicedCount: 1, appearedCount: 0, imageType: 'Bar Chart' },
+  { id: '3001439', title: 'Types of Dwellings', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 53, imageType: 'Pie Chart' },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -147,6 +160,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     startId: 2003380,
     continueItem: { id: '2001147', title: 'RS1147' },
     supportsDisplayContent: true,
+    supportsPriorityFilter: true,
     hasAudioPrompt: true,
     instruction: 'You will hear a sentence. Please repeat the sentence exactly as you hear it. You will hear the sentence only once.',
     promptText: 'All laboratory equipment must be calibrated before the afternoon chemistry seminar begins.',
@@ -158,10 +172,14 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'DI',
     title: 'Describe Image',
     totalQuestions: 1207,
-    startId: 3001207,
-    continueItem: { id: '3000912', title: 'Global Solar Share' },
-    instruction: 'Look at the chart below. In 25 seconds, please speak into the microphone and describe in detail what the chart is showing.',
-    promptText: 'Chart comparison: Renewable Energy Capacity Growth across Wind, Solar, and Hydro from 2018 to 2026.',
+    startId: 3001451,
+    continueItem: { id: '3001418', title: 'Study Space' },
+    hideDownloadButton: true,
+    hasImagePrompt: true,
+    categoryOptions: ['Bar Chart', 'Line Graph', 'Pie Chart', 'Table', 'Process Diagram', 'Map'],
+    instruction: 'Look at the image below. In 25 seconds, please speak into the microphone and describe in detail what the image is showing.',
+    promptText: 'Chart comparison showing percentage distribution and category peaks across surveyed groups.',
+    seedRows: DESCRIBE_IMAGE_SEED_ROWS,
   },
   'speaking/retell-lecture': {
     skill: 'speaking',
@@ -458,6 +476,9 @@ export function buildTaskQuestionList(taskMeta) {
       prediction,
       practicedCount,
       appearedCount,
+      imageType: taskMeta.categoryOptions
+        ? taskMeta.categoryOptions[idx % taskMeta.categoryOptions.length]
+        : undefined,
       contentSnippet: `Practice statement covering ${topic.toLowerCase()} for ${taskMeta.title}.`,
       bookmarked: false,
     });

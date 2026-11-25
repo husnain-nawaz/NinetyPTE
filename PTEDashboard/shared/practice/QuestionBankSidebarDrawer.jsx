@@ -72,9 +72,11 @@ export default function QuestionBankSidebarDrawer({
   const [bookmarkFilter, setBookmarkFilter] = useState('all'); // 'all' | 'bookmarked' | 'unbookmarked'
   const [levelFilter, setLevelFilter] = useState('all'); // 'all' | 'Easy' | 'Medium' | 'Difficult'
   const [priorityFilter, setPriorityFilter] = useState('all'); // 'all' | 'new' | 'new_prediction'
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [bookmarkMenuOpen, setBookmarkMenuOpen] = useState(false);
   const [levelMenuOpen, setLevelMenuOpen] = useState(false);
   const [priorityMenuOpen, setPriorityMenuOpen] = useState(false);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [sortMode, setSortMode] = useState('newest'); // 'newest' | 'oldest' | 'appeared'
   const [currentPage, setCurrentPage] = useState(1);
   const [goToPageInput, setGoToPageInput] = useState('');
@@ -90,6 +92,7 @@ export default function QuestionBankSidebarDrawer({
       if (levelFilter !== 'all' && q.difficulty !== levelFilter) return false;
       if (priorityFilter === 'new' && !q.isNew) return false;
       if (priorityFilter === 'new_prediction' && !q.newPrediction) return false;
+      if (categoryFilter !== 'all' && q.imageType !== categoryFilter) return false;
       if (
         query &&
         !q.title.toLowerCase().includes(query) &&
@@ -110,6 +113,7 @@ export default function QuestionBankSidebarDrawer({
     return sorted;
   }, [
     bookmarkFilter,
+    categoryFilter,
     levelFilter,
     practiceStatus,
     predictionOnly,
@@ -125,6 +129,7 @@ export default function QuestionBankSidebarDrawer({
     bookmarkFilter !== 'all' ||
     levelFilter !== 'all' ||
     priorityFilter !== 'all' ||
+    categoryFilter !== 'all' ||
     searchInput.trim().length > 0;
 
   const displayTotalQuestions = hasActiveFilter
@@ -264,13 +269,15 @@ export default function QuestionBankSidebarDrawer({
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => downloadTaskMaterial(taskMeta, filteredQuestions)}
-              className="rounded-full bg-[#eb8c44] hover:bg-[#d97736] text-white px-4 py-1.5 text-xs font-bold shadow-2xs transition cursor-pointer"
-            >
-              Download Material
-            </button>
+            {!taskMeta.hideDownloadButton && (
+              <button
+                type="button"
+                onClick={() => downloadTaskMaterial(taskMeta, filteredQuestions)}
+                className="rounded-full bg-[#eb8c44] hover:bg-[#d97736] text-white px-4 py-1.5 text-xs font-bold shadow-2xs transition cursor-pointer"
+              >
+                Download Material
+              </button>
+            )}
           </div>
         </div>
 
@@ -323,6 +330,7 @@ export default function QuestionBankSidebarDrawer({
                 setBookmarkFilter('all');
                 setLevelFilter('all');
                 setPriorityFilter('all');
+                setCategoryFilter('all');
                 setSearchInput('');
                 setCurrentPage(1);
               }}
@@ -430,50 +438,91 @@ export default function QuestionBankSidebarDrawer({
           </div>
 
           <div className="flex items-center gap-2.5">
-            {/* Tag / New Filter Dropdown */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setPriorityMenuOpen((prev) => !prev);
-                  setLevelMenuOpen(false);
-                  setBookmarkMenuOpen(false);
-                }}
-                title="Filter New / Prediction items"
-                aria-label="Filter New items"
-                className={`inline-flex items-center gap-0.5 p-1 rounded hover:bg-slate-100 cursor-pointer ${
-                  priorityFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-400'
-                }`}
-              >
-                <ArrowLeftRight className="w-4 h-4" />
-                <ChevronDown className="w-3 h-3" />
-              </button>
+            {Array.isArray(taskMeta.categoryOptions) && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategoryMenuOpen((prev) => !prev);
+                    setLevelMenuOpen(false);
+                    setBookmarkMenuOpen(false);
+                    setPriorityMenuOpen(false);
+                  }}
+                  className="inline-flex items-center justify-between gap-2 min-w-[76px] rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-[#0c4a7e] hover:border-[#00b4c6] cursor-pointer"
+                >
+                  <span>{categoryFilter === 'all' ? 'All' : categoryFilter}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </button>
 
-              {priorityMenuOpen && (
-                <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-slate-200 bg-white py-1 shadow-lg z-20">
-                  {[
-                    { id: 'all', label: 'All Updates' },
-                    { id: 'new', label: 'New Only' },
-                    { id: 'new_prediction', label: 'New Prediction' },
-                  ].map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => {
-                        setPriorityFilter(opt.id);
-                        setPriorityMenuOpen(false);
-                        setCurrentPage(1);
-                      }}
-                      className={`block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50 cursor-pointer ${
-                        priorityFilter === opt.id ? 'text-[#00b4c6] font-bold' : 'text-slate-600'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                {categoryMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 w-40 rounded-xl border border-slate-200 bg-white py-1 shadow-lg z-20">
+                    {['all', ...taskMeta.categoryOptions].map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          setCategoryFilter(cat);
+                          setCategoryMenuOpen(false);
+                          setCurrentPage(1);
+                        }}
+                        className={`block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50 cursor-pointer ${
+                          categoryFilter === cat ? 'text-[#00b4c6] font-bold' : 'text-slate-600'
+                        }`}
+                      >
+                        {cat === 'all' ? 'All Categories' : cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {taskMeta.supportsPriorityFilter && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPriorityMenuOpen((prev) => !prev);
+                    setLevelMenuOpen(false);
+                    setBookmarkMenuOpen(false);
+                    setCategoryMenuOpen(false);
+                  }}
+                  title="Filter New / Prediction items"
+                  aria-label="Filter New items"
+                  className={`inline-flex items-center gap-0.5 p-1 rounded hover:bg-slate-100 cursor-pointer ${
+                    priorityFilter !== 'all' ? 'text-[#00b4c6]' : 'text-slate-400'
+                  }`}
+                >
+                  <ArrowLeftRight className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+
+                {priorityMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 w-36 rounded-xl border border-slate-200 bg-white py-1 shadow-lg z-20">
+                    {[
+                      { id: 'all', label: 'All Updates' },
+                      { id: 'new', label: 'New Only' },
+                      { id: 'new_prediction', label: 'New Prediction' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setPriorityFilter(opt.id);
+                          setPriorityMenuOpen(false);
+                          setCurrentPage(1);
+                        }}
+                        className={`block w-full px-3 py-1.5 text-left text-xs hover:bg-slate-50 cursor-pointer ${
+                          priorityFilter === opt.id ? 'text-[#00b4c6] font-bold' : 'text-slate-600'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <button
               type="button"

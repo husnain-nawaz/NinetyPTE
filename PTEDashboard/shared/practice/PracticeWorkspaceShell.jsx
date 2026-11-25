@@ -158,7 +158,25 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
             </div>
           )}
 
-          {(!taskMeta.hasAudioPrompt || showAnswer) && (
+          {taskMeta.hasImagePrompt && (
+            <div className="rounded-xl border border-slate-200 bg-[#f8fafc] p-5 flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex items-end gap-3 h-28 px-4 pt-4 pb-2 border-l-2 border-b-2 border-slate-300">
+                <div className="w-8 h-12 rounded-t bg-[#0d5488]" />
+                <div className="w-8 h-20 rounded-t bg-[#00b4c6]" />
+                <div className="w-8 h-16 rounded-t bg-[#eb8c44]" />
+                <div className="w-8 h-24 rounded-t bg-[#22c55e]" />
+              </div>
+              <div className="space-y-1 text-center sm:text-left">
+                <span className="inline-block rounded-full bg-[#e5f0fa] px-2.5 py-0.5 text-[11px] font-bold text-[#0c4a7e]">
+                  {activeQuestion.imageType || 'Chart Visual'}
+                </span>
+                <h3 className="text-sm font-bold text-slate-800">{activeQuestion.title}</h3>
+                <p className="text-xs text-slate-500 max-w-md">{taskMeta.promptText}</p>
+              </div>
+            </div>
+          )}
+
+          {((!taskMeta.hasAudioPrompt && !taskMeta.hasImagePrompt) || showAnswer) && (
             <p className="text-sm sm:text-[15px] leading-relaxed text-slate-700">
               {activeQuestion.contentSnippet || taskMeta.promptText}
             </p>
@@ -166,7 +184,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
 
           {taskMeta.skill === 'speaking' ? (
             <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-6 flex flex-col items-center gap-3 text-center">
-              {taskMeta.hasAudioPrompt && (
+              {(taskMeta.hasAudioPrompt || taskMeta.hasImagePrompt) && (
                 <p className="text-xs font-semibold text-slate-500">Recording will start soon</p>
               )}
               <button
@@ -227,7 +245,7 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Redo</span>
               </button>
-              {taskMeta.hasAudioPrompt && (
+              {(taskMeta.hasAudioPrompt || taskMeta.hasImagePrompt) && (
                 <button
                   type="button"
                   onClick={() => setShowAnswer((prev) => !prev)}
