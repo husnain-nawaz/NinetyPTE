@@ -394,7 +394,7 @@ const WRITE_FROM_DICTATION_SEED_ROWS = [
   { id: '20003757', title: 'WFD3757', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Economic historians examine tax ledgers to understand regional living standards.' },
   { id: '20003756', title: 'WFD3756', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 50, contentSnippet: 'Renewable energy storage remains essential for balancing peak electricity demand.' },
   { id: '20003754', title: 'WFD3754', difficulty: 'Medium', prediction: true, practicedCount: 2, appearedCount: 103, contentSnippet: 'All fieldwork safety protocols must be reviewed prior to leaving the campus.' },
-  { id: '20003753', title: 'WFD3753', difficulty: 'Difficult', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Public transportation subsidies reduce highway congestion during weekday commuting hours.' },
+  { id: '20003753', title: 'WFD3753', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Public transportation subsidies reduce highway congestion during weekday commuting hours.' },
   { id: '20003752', title: 'WFD3752', difficulty: 'Medium', practicedCount: 1, appearedCount: 0, contentSnippet: 'Accurate climate models rely on decades of calibrated ocean temperature measurements.' },
   { id: '20003751', title: 'WFD3751', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 51, contentSnippet: 'Guest lecturers will discuss sustainable architecture in the main auditorium tomorrow.' },
 ];
@@ -849,7 +849,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     hasAudioPrompt: true,
     hasEditorToolbar: true,
     placeholder: 'Type your response here...',
-    instruction: 'You will hear a sentence. Type the sentence in the box below exactly as you hear it.',
+    instruction: 'You will hear a sentence. Type the sentence in the box below exactly as you hear it. You will hear the sentence only once.',
     promptText: 'Students who attend tutorial sessions regularly submit more structured final assignments.',
     seedRows: WRITE_FROM_DICTATION_SEED_ROWS,
   },
