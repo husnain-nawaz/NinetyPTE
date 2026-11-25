@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, Clock, Flame, Calendar, Award } from 'lucide-react';
+import { ChevronRight, Clock, Flame } from 'lucide-react';
 import { getStoredUser, isSuperAdmin } from '../../utils/auth';
 
 export default function HeroSection() {
