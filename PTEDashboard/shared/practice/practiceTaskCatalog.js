@@ -230,6 +230,19 @@ const READING_DRAG_DROP_SEED_ROWS = [
   { id: '11001108', title: 'Funeral Violin', difficulty: 'Difficult', practicedCount: 2, appearedCount: 0 },
 ];
 
+const READING_MCS_SEED_ROWS = [
+  { id: '8000287', title: 'Sports Readiness', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '8000286', title: 'Knowledge', difficulty: 'Medium', practicedCount: 0, appearedCount: 2 },
+  { id: '8000285', title: 'Persistence', difficulty: 'Medium', practicedCount: 0, appearedCount: 3 },
+  { id: '8000284', title: 'Human Development Index', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '8000283', title: 'Glaciers', difficulty: 'Easy', practicedCount: 1, appearedCount: 1 },
+  { id: '8000282', title: 'Fish', difficulty: 'Easy', practicedCount: 0, appearedCount: 3 },
+  { id: '8000281', title: 'Gliese 581', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '8000280', title: "Piaget's theory", difficulty: 'Difficult', practicedCount: 0, appearedCount: 1 },
+  { id: '8000279', title: 'Khmer Empire', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+  { id: '8000278', title: 'Supplements', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -474,12 +487,21 @@ export const PRACTICE_TASKS_BY_KEY = {
     slug: 'multiple-choice-single',
     code: 'MCS',
     title: 'Multiple Choice, Single Answer',
-    totalQuestions: 490,
-    coreTotalQuestions: 460,
-    startId: 9400490,
-    continueItem: { id: '9400350', title: 'Architectural Acoustics' },
+    totalQuestions: 263,
+    coreTotalQuestions: 263,
+    startId: 8000287,
+    continueItem: { id: '8000050', title: 'Unconscious Mind' },
+    hideDownloadButton: true,
+    singleChoice: true,
+    mcqOptions: [
+      { id: 'A', label: 'Athletes benefit most when physical conditioning is paired with structured mental readiness routines.', correct: true },
+      { id: 'B', label: 'Strength training alone eliminates performance anxiety before international matches.', correct: false },
+      { id: 'C', label: 'Coaches discourage warm-up feedback prior to competitive tournaments.', correct: false },
+      { id: 'D', label: 'Sleep duration has minimal effect on reaction speed during endurance events.', correct: false },
+    ],
     instruction: 'Read the text and answer the multiple-choice question by selecting the correct response. Only one response is correct.',
-    promptText: 'What is the main reason the author mentions timber baffle panels in Paragraph 2?',
+    promptText: 'What main conclusion does the writer draw regarding athletic preparation in the passage?',
+    seedRows: READING_MCS_SEED_ROWS,
   },
   'listening/summarize-spoken-text': {
     skill: 'listening',

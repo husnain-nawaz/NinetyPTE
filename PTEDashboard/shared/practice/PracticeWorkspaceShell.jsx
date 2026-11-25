@@ -245,13 +245,16 @@ export default function PracticeWorkspaceShell({ skill, taskSlug, isCoreMode = f
                     }`}
                   >
                     <input
-                      type="checkbox"
+                      type={taskMeta.singleChoice ? 'radio' : 'checkbox'}
+                      name={taskMeta.singleChoice ? 'mcq-single-choice' : undefined}
                       checked={checked}
                       onChange={() =>
                         setSelectedChoices((prev) =>
-                          prev.includes(opt.id)
-                            ? prev.filter((item) => item !== opt.id)
-                            : [...prev, opt.id]
+                          taskMeta.singleChoice
+                            ? [opt.id]
+                            : prev.includes(opt.id)
+                              ? prev.filter((item) => item !== opt.id)
+                              : [...prev, opt.id]
                         )
                       }
                       className="mt-0.5 rounded border-slate-300 text-[#00b4c6] focus:ring-[#00b4c6]"
