@@ -408,6 +408,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'DI',
     title: 'Describe Image',
     totalQuestions: 1207,
+    coreTotalQuestions: 1207,
     startId: 3001451,
     continueItem: { id: '3001418', title: 'Study Space' },
     hideDownloadButton: true,
