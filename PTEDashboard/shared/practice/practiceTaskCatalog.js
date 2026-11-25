@@ -152,6 +152,19 @@ const SUMMARIZE_GROUP_DISCUSSION_SEED_ROWS = [
   { id: '26000192', title: 'Eco-friendly University', difficulty: 'Medium', practicedCount: 0, appearedCount: 1 },
 ];
 
+const RESPOND_TO_SITUATION_SEED_ROWS = [
+  { id: '21000376', title: 'Photography Group', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000375', title: 'Laptop Charger', difficulty: 'Difficult', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000374', title: 'Class to Miss', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000373', title: 'Wrong Bag', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000372', title: 'Skipping Class', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000368', title: 'Advice for Course', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000367', title: 'Dinner and Meeting', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000366', title: 'Missing Class', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000365', title: 'Missing Class', difficulty: 'Difficult', isNew: true, practicedCount: 0, appearedCount: 0 },
+  { id: '21000364', title: 'Food in the Refrigerator', difficulty: 'Medium', isNew: true, practicedCount: 0, appearedCount: 1 },
+];
+
 const SAMPLE_TOPIC_WORDS = [
   'Urban Transit',
   'Marine Ecosystems',
@@ -269,10 +282,13 @@ export const PRACTICE_TASKS_BY_KEY = {
     code: 'RTS',
     title: 'Respond to a Situation',
     totalQuestions: 360,
-    startId: 7000360,
-    continueItem: { id: '7000284', title: 'Rescheduling Appointment' },
+    startId: 21000376,
+    continueItem: { id: '21000360', title: 'Drama Club' },
+    hideDownloadButton: true,
+    hasAudioPrompt: true,
     instruction: 'Listen to and read a description of a situation. You will have 10 seconds to prepare and 40 seconds to speak an appropriate response.',
     promptText: 'You ordered office supplies for a community event tomorrow morning, but the delivery just arrived with two missing boxes. Call the supplier politely to resolve this before closing time.',
+    seedRows: RESPOND_TO_SITUATION_SEED_ROWS,
   },
   'writing/summarize-written-text': {
     skill: 'writing',
