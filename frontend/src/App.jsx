@@ -58,6 +58,7 @@ import {
   PTECoreStrategyVideosPage,
   PTECoreVocabBankPage,
   PTECoreStudyToolsPage,
+  PortalProfilePage,
   ProtectedRoute,
 } from '../../PTEDashboard';
 import { SuperDashboard, SuperAdminRoute } from '../../SuperDashboard';
@@ -105,6 +106,8 @@ function AppContent() {
     location.pathname.startsWith('/v1/templates') ||
     location.pathname.startsWith('/templates') ||
     location.pathname.startsWith('/core-templates') ||
+    location.pathname.startsWith('/v1/profile') ||
+    location.pathname.startsWith('/profile') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
     location.pathname.startsWith('/superadmin');
@@ -505,6 +508,30 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTECoreStudyToolsPage initialTab="grammar" syncPortalMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/profile"
+            element={<Navigate to="/v1/profile/my-profile" replace />}
+          />
+          <Route
+            path="/v1/profile/:section"
+            element={
+              <ProtectedRoute>
+                <PortalProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={<Navigate to="/v1/profile/my-profile" replace />}
+          />
+          <Route
+            path="/profile/:section"
+            element={
+              <ProtectedRoute>
+                <PortalProfilePage />
               </ProtectedRoute>
             }
           />
