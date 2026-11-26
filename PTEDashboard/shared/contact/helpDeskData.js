@@ -52,7 +52,7 @@ export const HELP_DESK_FAQS = {
       q: 'What is Vocab-Bank? How will it help me in my preparation?',
       a: 'Vocabulary is an important aspect of any language & a good vocabulary improves all areas of communication — be it Listening, Speaking, Reading, or Writing.',
       linkLabel: 'Learn More',
-      useVocabLink: true,
+      linkType: 'vocab',
     },
     {
       q: 'How to check if the correct microphone is selected in Chrome?',
@@ -121,30 +121,66 @@ export const HELP_DESK_FAQS = {
   ],
   'Mock Test': [
     {
-      q: 'How many scored mock tests are included in Premium plans?',
-      a: 'Active Premium subscribers receive unlimited access across Full Mock Tests, Sectional Mock Tests, Timed Sectional tests, and Create Your Own Mock Tests.',
+      q: 'How can I access Mock Tests?',
+      a: 'You need to click on Mock Test from the Dashboard & it will take you to a list of available mock tests.',
+      linkLabel: 'Learn More',
+      linkType: 'mock-tests',
     },
     {
-      q: 'How long does it take to receive my Mock Test scorecard?',
-      a: 'AI-scored full and sectional mock reports are generated almost immediately after submitting the final module.',
+      q: 'Are the mock tests available for free?',
+      a: 'A free sample mock test is available so you can experience the exam interface. Full access to all Scored Full Mock Tests, Sectional Mock Tests, Timed Sectional tests, and Create Your Own Mock Tests requires an active Premium subscription.',
     },
     {
-      q: 'Can I pause a Timed Mock Test and resume later?',
-      a: 'Untimed practice can be resumed anytime, whereas Timed Mock Tests simulate real Pearson countdown conditions from start to finish.',
+      q: 'How can I view scores for the previously attempted mock tests?',
+      a: 'Open Mock Tests from the top portal navigation bar and check your completed attempts or Scorecards view to review detailed AI scoring and skill breakdowns.',
+    },
+    {
+      q: 'Do I need to complete the mock test in one-go?',
+      a: 'Standard practice mock sessions allow saving progress and returning later, whereas Timed Mock Tests follow real Pearson exam timing and are best completed in one sitting.',
+    },
+    {
+      q: 'Will I be able to continue my previously saved mock test?',
+      a: 'Yes, any previously saved or in-progress mock test displays a Resume option in your Mock Tests list so you can continue right where you left off.',
+    },
+    {
+      q: 'How can I purchase the mock test?',
+      a: 'Mock tests are included with every NinetyPTE Premium plan rather than sold individually. Visit the Buy Subscription page to choose a 10, 30, 60, or 90-day plan or redeem an access voucher.',
     },
   ],
   Subscription: [
     {
-      q: 'Where can I view or upgrade my active subscription?',
-      a: 'Click Buy in the top portal navigation bar to choose a 10, 30, 60, or 90-day plan, redeem a voucher, or view itemized Stripe receipts in Payment History.',
+      q: 'How can I upgrade my account?',
+      a: 'You will need to purchase a Premium subscription which will give you unlimited access to all the features that are restricted for a free user.',
+      linkLabel: 'Learn More',
+      linkType: 'subscription',
     },
     {
-      q: 'Does one subscription cover both PTE Academic and PTE Core?',
-      a: 'Yes, switch seamlessly between PTE A / UKVI and PTE Core from the top track selector without purchasing a separate account.',
+      q: "Why can't I access some of the features like AI scoring?",
+      a: 'AI scoring, detailed diagnostics, and unlimited mock tests are unlocked exclusively for active Premium subscribers. Free accounts have limited trial access.',
     },
     {
-      q: 'What happens if my payment succeeds but access is delayed?',
-      a: 'Refresh the page or click Raise A Ticket from Buy Subscription or Leave a Message here with your Transaction ID for rapid resolution.',
+      q: 'How do I make the payment?',
+      a: 'Click Buy in the top portal navigation bar, select your preferred plan duration, and complete checkout securely using your card or redeem a valid NinetyPTE voucher code.',
+    },
+    {
+      q: 'What happens after my Premium access expires?',
+      a: 'Your account reverts to the free tier once the plan ends, while all of your saved practice history, Vocab-Bank entries, and past mock test scorecards remain safely preserved until you renew.',
+    },
+    {
+      q: 'Where can I see my purchase history?',
+      a: 'Open the Buy Subscription page and click Payment History to view your past plan activations, transaction IDs, and downloadable receipts.',
+    },
+    {
+      q: 'Is the Premium access transferable?',
+      a: 'No. Premium subscriptions are licensed strictly to a single student account and cannot be transferred or shared across multiple accounts.',
+    },
+    {
+      q: 'How many mock tests will I get when I upgrade to a Premium plan?',
+      a: 'Upgrading to a Premium plan grants unlimited access to Full Mock Tests, Sectional Mock Tests, Timed Sectional tests, and Create Your Own Mock Tests across your active subscription period.',
+    },
+    {
+      q: 'I am unable to make the payment. Why?',
+      a: 'Payment failures commonly occur due to international online transactions being disabled on the card, insufficient funds, 3D Secure timeouts, or browser pop-up blockers. Try enabling online payments with your bank or contact our support team via Raise A Ticket or Live Chat.',
     },
   ],
 };

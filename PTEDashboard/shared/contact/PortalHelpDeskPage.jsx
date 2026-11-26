@@ -37,7 +37,11 @@ const CHANNEL_ICONS = {
 export default function PortalHelpDeskPage({ syncCoreMode = false }) {
   const { portalMode, setPortalMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
-  const vocabPath = isCoreMode ? '/v1/core/vocab-bank' : '/v1/vocab-bank';
+  const faqLinks = {
+    vocab: isCoreMode ? '/v1/core/vocab-bank' : '/v1/vocab-bank',
+    'mock-tests': isCoreMode ? '/pte-core-mock-test' : '/mock-tests',
+    subscription: isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription',
+  };
 
   const [activeFaqTab, setActiveFaqTab] = useState('Practice');
   const [openFaqIdx, setOpenFaqIdx] = useState(0);
@@ -317,9 +321,9 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
                   {isOpen && (
                     <div className="px-5 pb-4 pt-1 text-xs text-slate-500 leading-relaxed space-y-1.5">
                       <p>{faq.a}</p>
-                      {faq.useVocabLink && (
+                      {faq.linkType && faqLinks[faq.linkType] && (
                         <Link
-                          to={vocabPath}
+                          to={faqLinks[faq.linkType]}
                           className="inline-block font-bold text-[#0b4a7b] underline hover:text-[#00a8bd]"
                         >
                           {faq.linkLabel}
