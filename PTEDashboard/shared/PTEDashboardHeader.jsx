@@ -97,8 +97,12 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     location.pathname === '/core-dashboard';
 
   const homePath = isCoreMode ? '/v1/core/dashboard' : '/dashboard';
+  const mockTestsPath = isCoreMode
+    ? '/v1/core/mock-test/mock-test-list'
+    : '/v1/mock-test/mock-test-list';
   const buyPath = isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
   const contactPath = isCoreMode ? '/v1/core/contact' : '/v1/contact';
+  const isMockTestRoute = location.pathname.includes('/mock-test');
   const isBuyRoute =
     location.pathname.includes('buy-subscription') ||
     location.pathname.includes('buy/subscription');
@@ -178,8 +182,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                 </div>
 
                 <Link
-                  to={isCoreMode ? '/pte-core-mock-test' : '/mock-tests'}
-                  className="hover:text-[#00b4c6] transition"
+                  to={mockTestsPath}
+                  className={isMockTestRoute ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6] transition'}
                 >
                   Mock Tests
                 </Link>
@@ -464,9 +468,9 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
               Listening Practice
             </Link>
             <Link
-              to={isCoreMode ? '/pte-core-mock-test' : '/mock-tests'}
+              to={mockTestsPath}
               onClick={() => setMobileMenuOpen(false)}
-              className="block"
+              className={isMockTestRoute ? 'block text-[#00b4c6]' : 'block'}
             >
               Mock Tests
             </Link>

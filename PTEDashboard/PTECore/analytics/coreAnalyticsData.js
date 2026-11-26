@@ -52,9 +52,9 @@ export const CORE_ANALYTICS_DATA = {
   chartTasks: CORE_TASKS,
   communityTasks: CORE_TASKS,
   mockTests: [
-    { name: 'Full Mock Test', done: 0, total: 148, to: '/pte-core-mock-test' },
-    { name: 'Sectional Mock Test', done: 0, total: 473, to: '/pte-core-mock-test' },
-    { name: 'Timed Sectional Mock Test', done: 0, total: 80, to: '/pte-core-mock-test' },
+    { name: 'Full Mock Test', done: 0, total: 148, to: '/v1/core/mock-test/mock-test-list' },
+    { name: 'Sectional Mock Test', done: 0, total: 473, to: '/v1/core/mock-test/mock-test-list/sectional-mock-test' },
+    { name: 'Timed Sectional Mock Test', done: 0, total: 80, to: '/v1/core/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list' },
   ],
   timelineByTimeframe: {
     'Last 1 day': {

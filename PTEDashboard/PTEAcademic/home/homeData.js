@@ -59,9 +59,9 @@ export const ACADEMIC_HOME_DATA = {
     ],
   },
   mockTestCards: [
-    { name: 'Full Mock Test', done: 9, total: 194, to: '/mock-tests' },
-    { name: 'Sectional Mock Test', done: 29, total: 517, to: '/pte-sectional-mock-test' },
-    { name: 'Timed Mock Test', done: 1, total: 80, to: '/pte-full-mock-test' },
+    { name: 'Full Mock Test', done: 9, total: 194, to: '/v1/mock-test/mock-test-list' },
+    { name: 'Sectional Mock Test', done: 29, total: 517, to: '/v1/mock-test/mock-test-list/sectional-mock-test' },
+    { name: 'Timed Mock Test', done: 1, total: 80, to: '/v1/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list' },
   ],
   quickToolTiles: [
     { key: 'predictions', label: 'Predictions', to: '/v1/prediction' },
@@ -69,9 +69,9 @@ export const ACADEMIC_HOME_DATA = {
     { key: 'vocab', label: 'Vocab Bank', to: '/v1/vocab-bank' },
     { key: 'feedback', label: 'Score Feedback', to: '/pte-score-calculator' },
     { key: 'compatibility', label: 'Compatibility', to: '/on-test-day' },
-    { key: 'full-mock', label: 'Full Mock Test', to: '/mock-tests' },
-    { key: 'sectional-mock', label: 'Sectional Mock Test', to: '/pte-sectional-mock-test' },
-    { key: 'timed-mock', label: 'Timed Mock Test', to: '/pte-full-mock-test' },
+    { key: 'full-mock', label: 'Full Mock Test', to: '/v1/mock-test/mock-test-list' },
+    { key: 'sectional-mock', label: 'Sectional Mock Test', to: '/v1/mock-test/mock-test-list/sectional-mock-test' },
+    { key: 'timed-mock', label: 'Timed Mock Test', to: '/v1/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list' },
   ],
   todaysTasksBySkill: {
     Speaking: [

@@ -63,6 +63,8 @@ import {
   PortalProfilePage,
   PortalBuySubscriptionPage,
   PortalHelpDeskPage,
+  PortalMockTestsPage,
+  PortalScoreHistoryPage,
   CyanBarsLoader,
   ProtectedRoute,
 } from '../../PTEDashboard';
@@ -117,6 +119,7 @@ function AppContent() {
     location.pathname.includes('buy/subscription') ||
     location.pathname.startsWith('/v1/contact') ||
     location.pathname.startsWith('/v1/help-desk') ||
+    location.pathname.startsWith('/v1/mock-test') ||
     location.pathname.startsWith('/v1/practice') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
@@ -617,6 +620,94 @@ function AppContent() {
                 <PortalHelpDeskPage syncCoreMode />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage initialMode="full" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-list/sectional-mock-test"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage initialMode="sectional" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage initialMode="timed" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-result-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage initialTopTab="scores" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/score-history"
+            element={
+              <ProtectedRoute>
+                <PortalScoreHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-tests"
+            element={<Navigate to="/v1/mock-test/mock-test-list" replace />}
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage syncCoreMode initialMode="full" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-list/sectional-mock-test"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage syncCoreMode initialMode="sectional" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage syncCoreMode initialMode="timed" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list"
+            element={
+              <ProtectedRoute>
+                <PortalMockTestsPage syncCoreMode initialTopTab="scores" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/score-history"
+            element={
+              <ProtectedRoute>
+                <PortalScoreHistoryPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-tests"
+            element={<Navigate to="/v1/core/mock-test/mock-test-list" replace />}
           />
           <Route
             path="/v1/core/dashboard"

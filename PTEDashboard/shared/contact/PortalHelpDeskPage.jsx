@@ -39,7 +39,7 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
   const isCoreMode = portalMode === 'core' || syncCoreMode;
   const faqLinks = {
     vocab: isCoreMode ? '/v1/core/vocab-bank' : '/v1/vocab-bank',
-    'mock-tests': isCoreMode ? '/pte-core-mock-test' : '/mock-tests',
+    'mock-tests': isCoreMode ? '/v1/core/mock-test/mock-test-list' : '/v1/mock-test/mock-test-list',
     subscription: isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription',
   };
 

@@ -53,9 +53,9 @@ export const ACADEMIC_ANALYTICS_DATA = {
   chartTasks: ACADEMIC_TASKS.slice(0, 18),
   communityTasks: ACADEMIC_TASKS,
   mockTests: [
-    { name: 'Full Mock Test', done: 9, total: 194, to: '/mock-tests' },
-    { name: 'Sectional Mock Test', done: 29, total: 517, to: '/pte-sectional-mock-test' },
-    { name: 'Timed Sectional Mock Test', done: 1, total: 80, to: '/pte-full-mock-test' },
+    { name: 'Full Mock Test', done: 9, total: 194, to: '/v1/mock-test/mock-test-list' },
+    { name: 'Sectional Mock Test', done: 29, total: 517, to: '/v1/mock-test/mock-test-list/sectional-mock-test' },
+    { name: 'Timed Sectional Mock Test', done: 1, total: 80, to: '/v1/mock-test/mock-test-list/timed-section-mock-test/timed-section-mock-test-list' },
   ],
   timelineByTimeframe: {
     'Last 1 day': {
