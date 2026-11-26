@@ -4,6 +4,7 @@ export { default as PTEStrategyVideosPage } from './PTEStrategyVideosRouter';
 export { default as PTEVocabBankPage } from './PTEVocabBankRouter';
 export { default as PTEStudyToolsPage } from './PTEStudyToolsRouter';
 export { default as PTEPracticePage } from './PTEPracticeWorkspaceRouter';
+export { PracticeArenaShell } from './practice-arena';
 export { default as PortalProfilePage } from './shared/profile/PortalProfilePage';
 export { default as PortalBuySubscriptionPage } from './shared/subscription/PortalBuySubscriptionPage';
 export { default as PortalHelpDeskPage } from './shared/contact/PortalHelpDeskPage';

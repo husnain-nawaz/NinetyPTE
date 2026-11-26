@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePortal } from './shared/portalContext';
-import PracticeWorkspaceShell from './shared/practice/PracticeWorkspaceShell';
+import PracticeArenaShell from './practice-arena';
 
 /**
  * Routes /v1/practice/:skill/:taskSlug and /v1/core/practice/:skill/:taskSlug
- * to PracticeWorkspaceShell using the active exam track catalog.
+ * to PracticeArenaShell using the active exam track catalog.
  */
 export default function PTEPracticeWorkspaceRouter({ syncCoreMode = false }) {
   const { skill, taskSlug } = useParams();
@@ -20,7 +20,7 @@ export default function PTEPracticeWorkspaceRouter({ syncCoreMode = false }) {
   const isCoreMode = syncCoreMode || portalMode === 'core';
 
   return (
-    <PracticeWorkspaceShell
+    <PracticeArenaShell
       key={`${isCoreMode ? 'core' : 'acad'}-${skill}-${taskSlug}`}
       skill={skill}
       taskSlug={taskSlug}

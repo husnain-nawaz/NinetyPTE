@@ -1,5 +1,65 @@
+const READ_ALOUD_RETURNING_BOOK_TEXT =
+  'When returning a borrowed book, if there are missing pages, experts say transparency is key. Librarians and etiquette coaches note a recent rise in damaged book disputes, often caused by silent returns or unreported defects. "If something goes wrong, acknowledge it", says one Toronto librarian. "A simple apology and an offer to make it right prevent a small mistake from becoming a big misunderstanding".';
+
+export const INITIAL_FORUM_POSTS = [
+  {
+    id: 'fp-1',
+    author: 'Jacobs Chow',
+    createdAt: '23/11/2026 03:24',
+    dateOnly: '23/11/2026',
+    badge: 'Appeared',
+    text: '',
+    likes: 3,
+  },
+  {
+    id: 'fp-2',
+    author: 'HAZEL JEAN',
+    createdAt: '21/11/2026 07:58',
+    dateOnly: '21/11/2026',
+    badge: 'Appeared',
+    text: '',
+    likes: 2,
+  },
+  {
+    id: 'fp-3',
+    author: 'Dareen Al hafez',
+    createdAt: '21/11/2026 01:36',
+    dateOnly: '20/11/2026',
+    badge: 'Appeared',
+    text: '',
+    likes: 1,
+  },
+  {
+    id: 'fp-4',
+    author: 'satwinder kaur',
+    createdAt: '13/11/2026 13:31',
+    dateOnly: '13/11/2026',
+    badge: 'Appeared',
+    text: 'one line strategy use kr skhe hai',
+    likes: 4,
+  },
+  {
+    id: 'fp-5',
+    author: 'Gurdeep Singh',
+    createdAt: '11/11/2026 06:28',
+    dateOnly: '11/11/2026',
+    badge: 'Appeared',
+    text: '',
+    likes: 1,
+  },
+  {
+    id: 'fp-6',
+    author: 'Nadia Khan',
+    createdAt: '09/11/2026 10:15',
+    dateOnly: '09/11/2026',
+    badge: 'Appeared',
+    text: 'Focus on natural punctuation pauses around quotes.',
+    likes: 2,
+  },
+];
+
 const READ_ALOUD_SEED_ROWS = [
-  { id: '1001648', title: 'Returning Book', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 128 },
+  { id: '1001648', title: 'Returning Book', difficulty: 'Medium', prediction: false, practicedCount: 1, appearedCount: 128, contentSnippet: READ_ALOUD_RETURNING_BOOK_TEXT },
   { id: '1001647', title: 'Smart Cooking', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 86 },
   { id: '1001646', title: 'Community Gardening', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 116 },
   { id: '1001645', title: 'Visit to Canada', difficulty: 'Medium', prediction: true, practicedCount: 1, appearedCount: 284 },
@@ -434,8 +494,7 @@ export const PRACTICE_TASKS_BY_KEY = {
     startId: 1001648,
     continueItem: { id: '1001234', title: 'Social Media' },
     instruction: 'Look at the text below. In 35 seconds, you must read this text aloud as naturally and clearly as possible. You have 35 seconds to read aloud.',
-    promptText:
-      'When returning a borrowed book, remember that there has been a recent rise in damaged bindings, says one Toronto librarian, noting most tears stem from simple misunderstanding.',
+    promptText: READ_ALOUD_RETURNING_BOOK_TEXT,
     seedRows: READ_ALOUD_SEED_ROWS,
   },
   'speaking/repeat-sentence': {
