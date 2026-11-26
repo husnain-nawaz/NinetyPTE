@@ -17,6 +17,7 @@ import {
   Video,
 } from 'lucide-react';
 import { getStoredUser } from '../../../frontend/src/utils/auth';
+import { usePortal } from '../portalContext';
 import PaymentReceiptModal from './PaymentReceiptModal';
 import {
   COUNTRY_DIAL_CODES,
@@ -88,6 +89,9 @@ function TogglePreferenceRow({ Icon, label, enabled, onToggle }) {
 }
 
 function PlanComparisonCard({ title, badgeLabel, features, isActivePlan, ctaLabel }) {
+  const { portalMode } = usePortal();
+  const buyPath = portalMode === 'core' ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
+
   return (
     <div
       className={`rounded-2xl p-5 flex flex-col justify-between space-y-5 ${
@@ -137,7 +141,7 @@ function PlanComparisonCard({ title, badgeLabel, features, isActivePlan, ctaLabe
       {ctaLabel && (
         <div>
           <Link
-            to="/pricing"
+            to={buyPath}
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#a21caf] to-[#c026d3] hover:from-[#86198f] hover:to-[#a21caf] px-7 py-2 text-xs font-bold text-white shadow-sm transition"
           >
             {ctaLabel}

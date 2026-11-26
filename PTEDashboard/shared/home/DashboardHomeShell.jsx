@@ -72,7 +72,7 @@ export default function DashboardHomeShell({ data, showExpiryToast = false }) {
             Your Premium subscription is about to expire in 3 days.
           </p>
           <Link
-            to="/pricing"
+            to={isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription'}
             className="shrink-0 rounded-lg bg-white text-[#7e22ce] px-3.5 py-1.5 text-xs font-bold hover:bg-purple-50 transition"
           >
             Renew

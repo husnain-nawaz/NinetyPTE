@@ -61,6 +61,7 @@ import {
   PTECoreStudyToolsPage,
   PTEPracticePage,
   PortalProfilePage,
+  PortalBuySubscriptionPage,
   CyanBarsLoader,
   ProtectedRoute,
 } from '../../PTEDashboard';
@@ -111,6 +112,7 @@ function AppContent() {
     location.pathname.startsWith('/core-templates') ||
     location.pathname.startsWith('/v1/profile') ||
     location.pathname.startsWith('/profile') ||
+    location.pathname.includes('buy-subscription') ||
     location.pathname.startsWith('/v1/practice') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
@@ -537,6 +539,30 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PortalProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/buy-subscription"
+            element={
+              <ProtectedRoute>
+                <PortalBuySubscriptionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/buy-subscription"
+            element={
+              <ProtectedRoute>
+                <PortalBuySubscriptionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/buy-subscription"
+            element={
+              <ProtectedRoute>
+                <PortalBuySubscriptionPage syncCoreMode />
               </ProtectedRoute>
             }
           />

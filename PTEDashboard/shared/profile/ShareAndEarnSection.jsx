@@ -16,6 +16,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react';
+import { usePortal } from '../portalContext';
 import {
   REFERRAL_CODE,
   REFERRAL_LINK,
@@ -69,6 +70,8 @@ function RewardTierGrid({ tiers, Icon, iconClassName }) {
  * Share & Earn referral dashboard section inside /v1/profile/share-and-earn.
  */
 export default function ShareAndEarnSection() {
+  const { portalMode } = usePortal();
+  const buyPath = portalMode === 'core' ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
   const [copied, setCopied] = useState(false);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [redeemNotice, setRedeemNotice] = useState('');
@@ -289,7 +292,7 @@ export default function ShareAndEarnSection() {
                   <div className="px-4 pb-3.5 text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2.5 bg-slate-50/50">
                     {faq.a}{' '}
                     {idx === 6 && (
-                      <Link to="/pricing" className="text-[#00a8bd] font-semibold hover:underline">
+                      <Link to={buyPath} className="text-[#00a8bd] font-semibold hover:underline">
                         View Plans
                       </Link>
                     )}

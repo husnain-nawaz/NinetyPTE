@@ -97,6 +97,8 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
     location.pathname === '/core-dashboard';
 
   const homePath = isCoreMode ? '/v1/core/dashboard' : '/dashboard';
+  const buyPath = isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
+  const isBuyRoute = location.pathname.includes('buy-subscription');
 
   const openPracticeMenu = () => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
@@ -179,7 +181,10 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                   Mock Tests
                 </Link>
 
-                <Link to="/pricing" className="hover:text-[#00b4c6] transition">
+                <Link
+                  to={buyPath}
+                  className={isBuyRoute ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6] transition'}
+                >
                   Buy
                 </Link>
 
@@ -462,7 +467,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
             >
               Mock Tests
             </Link>
-            <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block">
+            <Link to={buyPath} onClick={() => setMobileMenuOpen(false)} className="block">
               Buy Subscription
             </Link>
             <Link to="/book-exam" onClick={() => setMobileMenuOpen(false)} className="block text-[#0d5488]">
