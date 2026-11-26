@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -26,6 +26,7 @@ import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
 import { usePortal } from '../portalContext';
 import PaymentReceiptModal from '../profile/PaymentReceiptModal';
 import { PAYMENT_HISTORY_RECORDS } from '../profile/profileData';
+import QuerySupportModal from './QuerySupportModal';
 import {
   BUY_SUBSCRIPTION_FAQS,
   MOCK_TEST_PACKS,
@@ -212,12 +213,47 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
   const [supportNotice, setSupportNotice] = useState('');
   const [checkoutDone, setCheckoutDone] = useState(false);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [queryModalOpen, setQueryModalOpen] = useState(false);
+
+  const hasShownQueryModalRef = useRef(false);
+  const scrollBurstCountRef = useRef(0);
+  const lastScrollTimeRef = useRef(0);
 
   useEffect(() => {
     if (syncCoreMode) {
       setPortalMode('core');
     }
   }, [setPortalMode, syncCoreMode]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        hasShownQueryModalRef.current ||
+        selectedPlan ||
+        voucherModalOpen ||
+        supportModalMode ||
+        selectedReceipt
+      ) {
+        return;
+      }
+
+      if (window.scrollY < 140) return;
+
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current >= 250) {
+        lastScrollTimeRef.current = now;
+        scrollBurstCountRef.current += 1;
+      }
+
+      if (scrollBurstCountRef.current >= 3 || (scrollBurstCountRef.current >= 2 && window.scrollY >= 360)) {
+        hasShownQueryModalRef.current = true;
+        setQueryModalOpen(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [selectedPlan, selectedReceipt, supportModalMode, voucherModalOpen]);
 
   const plans = activeTab === 'mock-tests' ? MOCK_TEST_PACKS : SUBSCRIPTION_PLANS;
 
@@ -630,6 +666,8 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
           </form>
         </ActionDialog>
       )}
+
+      <QuerySupportModal isOpen={queryModalOpen} onClose={() => setQueryModalOpen(false)} />
     </div>
   );
 }

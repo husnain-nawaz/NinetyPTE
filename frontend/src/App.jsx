@@ -113,6 +113,7 @@ function AppContent() {
     location.pathname.startsWith('/v1/profile') ||
     location.pathname.startsWith('/profile') ||
     location.pathname.includes('buy-subscription') ||
+    location.pathname.includes('buy/subscription') ||
     location.pathname.startsWith('/v1/practice') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
@@ -551,6 +552,14 @@ function AppContent() {
             }
           />
           <Route
+            path="/v1/buy/subscription"
+            element={
+              <ProtectedRoute>
+                <PortalBuySubscriptionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/buy-subscription"
             element={
               <ProtectedRoute>
@@ -560,6 +569,14 @@ function AppContent() {
           />
           <Route
             path="/v1/core/buy-subscription"
+            element={
+              <ProtectedRoute>
+                <PortalBuySubscriptionPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/buy/subscription"
             element={
               <ProtectedRoute>
                 <PortalBuySubscriptionPage syncCoreMode />

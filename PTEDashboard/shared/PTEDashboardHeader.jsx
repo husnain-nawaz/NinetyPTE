@@ -98,7 +98,9 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
 
   const homePath = isCoreMode ? '/v1/core/dashboard' : '/dashboard';
   const buyPath = isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
-  const isBuyRoute = location.pathname.includes('buy-subscription');
+  const isBuyRoute =
+    location.pathname.includes('buy-subscription') ||
+    location.pathname.includes('buy/subscription');
 
   const openPracticeMenu = () => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
