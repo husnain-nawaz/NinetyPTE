@@ -27,6 +27,7 @@ import { usePortal } from '../portalContext';
 import PaymentReceiptModal from '../profile/PaymentReceiptModal';
 import { PAYMENT_HISTORY_RECORDS } from '../profile/profileData';
 import QuerySupportModal from './QuerySupportModal';
+import RaiseTicketModal from './RaiseTicketModal';
 import {
   BUY_SUBSCRIPTION_FAQS,
   MOCK_TEST_PACKS,
@@ -207,10 +208,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
   const [voucherModalOpen, setVoucherModalOpen] = useState(false);
   const [voucherCode, setVoucherCode] = useState('');
   const [voucherStatus, setVoucherStatus] = useState('');
-  const [supportModalMode, setSupportModalMode] = useState(null); // 'ticket' | 'bulk' | null
-  const [supportSubject, setSupportSubject] = useState('');
-  const [supportMessage, setSupportMessage] = useState('');
-  const [supportNotice, setSupportNotice] = useState('');
+  const [ticketModalCategory, setTicketModalCategory] = useState(null);
   const [checkoutDone, setCheckoutDone] = useState(false);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [queryModalOpen, setQueryModalOpen] = useState(false);
@@ -231,7 +229,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
         hasShownQueryModalRef.current ||
         selectedPlan ||
         voucherModalOpen ||
-        supportModalMode ||
+        ticketModalCategory ||
         selectedReceipt
       ) {
         return;
@@ -253,7 +251,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [selectedPlan, selectedReceipt, supportModalMode, voucherModalOpen]);
+  }, [selectedPlan, selectedReceipt, ticketModalCategory, voucherModalOpen]);
 
   const plans = activeTab === 'mock-tests' ? MOCK_TEST_PACKS : SUBSCRIPTION_PLANS;
 
@@ -262,17 +260,6 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
     const trimmed = voucherCode.trim();
     if (!trimmed) return;
     setVoucherStatus(`Voucher "${trimmed.toUpperCase()}" validated and ready to apply at checkout.`);
-  };
-
-  const handleSupportSubmit = (e) => {
-    e.preventDefault();
-    setSupportNotice('Your request has been logged for our NinetyPTE support desk.');
-    setTimeout(() => {
-      setSupportNotice('');
-      setSupportSubject('');
-      setSupportMessage('');
-      setSupportModalMode(null);
-    }, 1500);
   };
 
   return (
@@ -284,10 +271,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
         <div className="flex items-center justify-end gap-2.5">
           <button
             type="button"
-            onClick={() => {
-              setSupportModalMode('ticket');
-              setSupportSubject('Subscription Access Support');
-            }}
+            onClick={() => setTicketModalCategory('Technical')}
             className="inline-flex items-center gap-1.5 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-4 py-1.5 text-xs font-semibold shadow-2xs transition cursor-pointer"
           >
             <HelpCircle className="w-3.5 h-3.5" />
@@ -295,10 +279,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setSupportModalMode('bulk');
-              setSupportSubject('Contact Support / Inquiry');
-            }}
+            onClick={() => setTicketModalCategory('Billing & Payment')}
             className="inline-flex items-center gap-1.5 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-4 py-1.5 text-xs font-semibold shadow-2xs transition cursor-pointer"
           >
             <Phone className="w-3.5 h-3.5" />
@@ -425,10 +406,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
             </h2>
             <button
               type="button"
-              onClick={() => {
-                setSupportModalMode('bulk');
-                setSupportSubject('Bulk Institute / Partner Purchase');
-              }}
+              onClick={() => setTicketModalCategory('Bulk & Partner Inquiry')}
               className="rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-6 py-2 text-xs font-bold transition cursor-pointer"
             >
               Contact Us
@@ -629,43 +607,11 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
         </ActionDialog>
       )}
 
-      {supportModalMode && (
-        <ActionDialog
-          title={supportModalMode === 'bulk' ? 'Bulk & Partner Inquiry' : 'Raise A Ticket'}
-          subtitle="Our NinetyPTE support team replies promptly."
-          onClose={() => setSupportModalMode(null)}
-        >
-          <form onSubmit={handleSupportSubmit} className="space-y-3">
-            <input
-              type="text"
-              value={supportSubject}
-              onChange={(e) => setSupportSubject(e.target.value)}
-              placeholder="Subject"
-              required
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#00b4c6]"
-            />
-            <textarea
-              rows={3}
-              value={supportMessage}
-              onChange={(e) => setSupportMessage(e.target.value)}
-              placeholder="Describe your inquiry or include your Transaction ID..."
-              required
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#00b4c6]"
-            />
-            {supportNotice && (
-              <p className="rounded-lg bg-emerald-50 border border-emerald-200 px-3.5 py-2 text-xs font-semibold text-emerald-700">
-                {supportNotice}
-              </p>
-            )}
-            <button
-              type="submit"
-              className="w-full rounded-full bg-[#0b4a7b] hover:bg-[#08385f] py-2.5 text-xs font-bold text-white transition cursor-pointer"
-            >
-              Submit Request
-            </button>
-          </form>
-        </ActionDialog>
-      )}
+      <RaiseTicketModal
+        isOpen={Boolean(ticketModalCategory)}
+        initialCategory={ticketModalCategory || 'Technical'}
+        onClose={() => setTicketModalCategory(null)}
+      />
 
       <QuerySupportModal isOpen={queryModalOpen} onClose={() => setQueryModalOpen(false)} />
     </div>
