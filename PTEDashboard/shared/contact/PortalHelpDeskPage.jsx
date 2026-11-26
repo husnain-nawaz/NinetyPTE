@@ -52,13 +52,7 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
   const currentFaqs = HELP_DESK_FAQS[activeFaqTab] || [];
 
   const handleChannelClick = (channelId) => {
-    if (channelId === 'chat') {
-      setQueryModalOpen(true);
-    } else if (channelId === 'sales') {
-      setTicketCategory('Bulk & Partner Inquiry');
-    } else {
-      setTicketCategory('Technical');
-    }
+    setTicketCategory(channelId === 'sales' ? 'Bulk & Partner Inquiry' : 'Technical');
   };
 
   return (
@@ -101,13 +95,24 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
                 </div>
 
                 <div className="relative z-10">
-                  <button
-                    type="button"
-                    onClick={() => handleChannelClick(channel.id)}
-                    className={`rounded-full px-5 py-2 text-xs font-bold shadow-2xs transition cursor-pointer ${channel.btnClass}`}
-                  >
-                    {channel.buttonLabel}
-                  </button>
+                  {channel.href ? (
+                    <a
+                      href={channel.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-block rounded-full px-5 py-2 text-xs font-bold shadow-2xs transition ${channel.btnClass}`}
+                    >
+                      {channel.buttonLabel}
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleChannelClick(channel.id)}
+                      className={`rounded-full px-5 py-2 text-xs font-bold shadow-2xs transition cursor-pointer ${channel.btnClass}`}
+                    >
+                      {channel.buttonLabel}
+                    </button>
+                  )}
                 </div>
 
                 <ChannelIcon
@@ -243,11 +248,9 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
 
               <div className="relative z-10">
                 <a
-                  href="#whatsapp-channel"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setQueryModalOpen(true);
-                  }}
+                  href={DIRECT_CONTACT_DETAILS.whatsappChannelHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block rounded-full bg-[#16a34a] hover:bg-[#15803d] text-white px-5 py-1.5 text-[11px] font-bold transition"
                 >
                   WhatsApp Channel

@@ -4,6 +4,7 @@ export const HELP_DESK_CHANNELS = [
     title: 'Chat with Us',
     desc: 'Get in touch and let us know how we can help.',
     buttonLabel: 'Chat Now',
+    href: 'https://wa.me/61470260221',
     cardClass: 'border-[#f3daf0] bg-gradient-to-br from-[#fcf4f9] to-white',
     iconClass: 'bg-[#fae6f7] text-[#d936c7]',
     titleClass: 'text-[#d936c7]',
@@ -37,6 +38,8 @@ export const HELP_DESK_CHANNELS = [
 export const DIRECT_CONTACT_DETAILS = {
   phone: '+61 470 260 221',
   phoneHref: 'tel:+61470260221',
+  whatsappHref: 'https://wa.me/61470260221',
+  whatsappChannelHref: 'https://whatsapp.com/channel/ninetypte',
   email: 'help@ninetypte.com',
   emailHref: 'mailto:help@ninetypte.com',
 };
