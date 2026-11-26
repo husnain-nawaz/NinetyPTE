@@ -145,7 +145,7 @@ export default function DashboardHomeMain({ data, onSelectVideo }) {
             Today&apos;s Progress
           </h2>
           <Link
-            to="/v1/practice-history"
+            to={isCoreMode ? '/v1/core/practice-history' : '/v1/practice-history'}
             className="rounded-full bg-[#0d5488] hover:bg-[#093e66] text-white px-5 py-2 text-xs font-bold transition shadow-2xs inline-block"
           >
             Show Full Practice History

@@ -65,6 +65,7 @@ import {
   PortalHelpDeskPage,
   PortalMockTestsPage,
   PortalScoreHistoryPage,
+  PortalSectionPracticeHistoryPage,
   CyanBarsLoader,
   ProtectedRoute,
 } from '../../PTEDashboard';
@@ -98,6 +99,8 @@ function AppContent() {
     location.pathname.startsWith('/core-exam-pattern') ||
     location.pathname.startsWith('/v1/practice-history') ||
     location.pathname.startsWith('/practice-history') ||
+    location.pathname.startsWith('/v1/section-practice-history') ||
+    location.pathname.startsWith('/section-practice-history') ||
     location.pathname.startsWith('/v1/youtube-videos') ||
     location.pathname.startsWith('/youtube-videos') ||
     location.pathname.startsWith('/core-youtube-videos') ||
@@ -322,6 +325,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PTEPracticeHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/practice-history"
+            element={
+              <ProtectedRoute>
+                <PTEPracticeHistoryPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/section-practice-history"
+            element={
+              <ProtectedRoute>
+                <PortalSectionPracticeHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/section-practice-history"
+            element={
+              <ProtectedRoute>
+                <PortalSectionPracticeHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/section-practice-history"
+            element={
+              <ProtectedRoute>
+                <PortalSectionPracticeHistoryPage syncCoreMode />
               </ProtectedRoute>
             }
           />
