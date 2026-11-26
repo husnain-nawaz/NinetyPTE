@@ -607,11 +607,13 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
         </ActionDialog>
       )}
 
-      <RaiseTicketModal
-        isOpen={Boolean(ticketModalCategory)}
-        initialCategory={ticketModalCategory || 'Technical'}
-        onClose={() => setTicketModalCategory(null)}
-      />
+      {ticketModalCategory && (
+        <RaiseTicketModal
+          key={ticketModalCategory}
+          initialCategory={ticketModalCategory}
+          onClose={() => setTicketModalCategory(null)}
+        />
+      )}
 
       <QuerySupportModal isOpen={queryModalOpen} onClose={() => setQueryModalOpen(false)} />
     </div>

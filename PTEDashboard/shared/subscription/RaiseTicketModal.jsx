@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronDown, Upload, X } from 'lucide-react';
 
 const TICKET_CATEGORIES = [
@@ -14,22 +14,13 @@ const TICKET_CATEGORIES = [
  * Raise A Ticket / Contact Us dialog featuring Title, Category select,
  * Message textarea, and optional dashed file attachment upload zone.
  */
-export default function RaiseTicketModal({ isOpen, initialCategory = 'Technical', onClose }) {
+export default function RaiseTicketModal({ initialCategory = 'Technical', onClose }) {
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState(initialCategory);
+  const [category, setCategory] = useState(initialCategory || 'Technical');
   const [message, setMessage] = useState('');
   const [attachedFile, setAttachedFile] = useState(null);
   const [submittedNotice, setSubmittedNotice] = useState('');
-
-  useEffect(() => {
-    if (isOpen) {
-      setCategory(initialCategory || 'Technical');
-      setSubmittedNotice('');
-    }
-  }, [initialCategory, isOpen]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
