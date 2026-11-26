@@ -1,16 +1,6 @@
 import { useState } from 'react';
 import { Mail, MessageCircle, X } from 'lucide-react';
-import { COUNTRY_DIAL_CODES } from '../profile/profileData';
-
-const DIAL_FLAG_LABELS = {
-  '+92': '🇵🇰 +92',
-  '+91': '🇮🇳 +91',
-  '+61': '🇦🇺 +61',
-  '+44': '🇬🇧 +44',
-  '+1': '🇺🇸 +1',
-  '+971': '🇦🇪 +971',
-  '+65': '🇸🇬 +65',
-};
+import PhoneDialField from './PhoneDialField';
 
 /**
  * Interactive "I Have a Query" modal opened after multiple scroll interactions on the
@@ -128,31 +118,13 @@ export default function QuerySupportModal({ isOpen, onClose }) {
 
           {/* Phone Number or Email Address Input */}
           {isWhatsApp ? (
-            <div className="relative rounded-xl border border-slate-200 bg-white flex items-center focus-within:border-[#38c6bd] transition">
-              <span className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-slate-400">
-                Phone Number
-              </span>
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                aria-label="Country dial code"
-                className="bg-transparent pl-3 pr-2 py-3 text-xs sm:text-[13px] font-semibold text-slate-700 focus:outline-none border-r border-slate-100 cursor-pointer"
-              >
-                {COUNTRY_DIAL_CODES.map((code) => (
-                  <option key={code} value={code}>
-                    {DIAL_FLAG_LABELS[code] || code}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Enter Your Phone Number"
-                required
-                className="flex-1 bg-transparent px-3.5 py-3 text-xs sm:text-[13px] text-slate-800 placeholder:text-slate-400 focus:outline-none"
-              />
-            </div>
+            <PhoneDialField
+              countryCode={countryCode}
+              onCountryCodeChange={setCountryCode}
+              phoneNumber={phoneNumber}
+              onPhoneNumberChange={setPhoneNumber}
+              focusBorderClass="focus-within:border-[#38c6bd]"
+            />
           ) : (
             <div className="relative rounded-xl border border-slate-200 bg-white focus-within:border-[#38c6bd] transition">
               <span className="absolute -top-2 left-3 bg-white px-1 text-[11px] font-medium text-slate-400">

@@ -16,6 +16,7 @@ import PTEDashboardTealFooter from '../PTEDashboardTealFooter';
 import { usePortal } from '../portalContext';
 import QuerySupportModal from '../subscription/QuerySupportModal';
 import RaiseTicketModal from '../subscription/RaiseTicketModal';
+import InstituteSalesModal from '../subscription/InstituteSalesModal';
 import {
   DIRECT_CONTACT_DETAILS,
   HELP_DESK_CHANNELS,
@@ -41,6 +42,7 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
   const [activeFaqTab, setActiveFaqTab] = useState('Practice');
   const [openFaqIdx, setOpenFaqIdx] = useState(0);
   const [ticketCategory, setTicketCategory] = useState(null);
+  const [salesModalOpen, setSalesModalOpen] = useState(false);
   const [queryModalOpen, setQueryModalOpen] = useState(false);
 
   useEffect(() => {
@@ -52,7 +54,11 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
   const currentFaqs = HELP_DESK_FAQS[activeFaqTab] || [];
 
   const handleChannelClick = (channelId) => {
-    setTicketCategory(channelId === 'sales' ? 'Bulk & Partner Inquiry' : 'Technical');
+    if (channelId === 'sales') {
+      setSalesModalOpen(true);
+    } else {
+      setTicketCategory('Technical');
+    }
   };
 
   return (
@@ -337,6 +343,8 @@ export default function PortalHelpDeskPage({ syncCoreMode = false }) {
           onClose={() => setTicketCategory(null)}
         />
       )}
+
+      <InstituteSalesModal isOpen={salesModalOpen} onClose={() => setSalesModalOpen(false)} />
 
       <QuerySupportModal isOpen={queryModalOpen} onClose={() => setQueryModalOpen(false)} />
     </div>

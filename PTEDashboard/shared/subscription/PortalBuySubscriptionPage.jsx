@@ -28,6 +28,7 @@ import PaymentReceiptModal from '../profile/PaymentReceiptModal';
 import { PAYMENT_HISTORY_RECORDS } from '../profile/profileData';
 import QuerySupportModal from './QuerySupportModal';
 import RaiseTicketModal from './RaiseTicketModal';
+import InstituteSalesModal from './InstituteSalesModal';
 import {
   BUY_SUBSCRIPTION_FAQS,
   MOCK_TEST_PACKS,
@@ -210,6 +211,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
   const [voucherCode, setVoucherCode] = useState('');
   const [voucherStatus, setVoucherStatus] = useState('');
   const [ticketModalCategory, setTicketModalCategory] = useState(null);
+  const [salesModalOpen, setSalesModalOpen] = useState(false);
   const [checkoutDone, setCheckoutDone] = useState(false);
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [queryModalOpen, setQueryModalOpen] = useState(false);
@@ -231,6 +233,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
         selectedPlan ||
         voucherModalOpen ||
         ticketModalCategory ||
+        salesModalOpen ||
         selectedReceipt
       ) {
         return;
@@ -252,7 +255,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [selectedPlan, selectedReceipt, ticketModalCategory, voucherModalOpen]);
+  }, [salesModalOpen, selectedPlan, selectedReceipt, ticketModalCategory, voucherModalOpen]);
 
   const plans = activeTab === 'mock-tests' ? MOCK_TEST_PACKS : SUBSCRIPTION_PLANS;
 
@@ -406,7 +409,7 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
             </h2>
             <button
               type="button"
-              onClick={() => setTicketModalCategory('Bulk & Partner Inquiry')}
+              onClick={() => setSalesModalOpen(true)}
               className="rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-6 py-2 text-xs font-bold transition cursor-pointer"
             >
               Contact Us
@@ -614,6 +617,8 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
           onClose={() => setTicketModalCategory(null)}
         />
       )}
+
+      <InstituteSalesModal isOpen={salesModalOpen} onClose={() => setSalesModalOpen(false)} />
 
       <QuerySupportModal isOpen={queryModalOpen} onClose={() => setQueryModalOpen(false)} />
     </div>
