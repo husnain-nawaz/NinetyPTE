@@ -43,7 +43,7 @@ export default function DashboardHomeShell({ data, showExpiryToast = false }) {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-5 font-medium text-slate-600">
-            <Link to="/contact" className="hover:text-[#0097a7] transition">
+            <Link to={isCoreMode ? '/v1/core/contact' : '/v1/contact'} className="hover:text-[#0097a7] transition">
               Contact
             </Link>
             <Link to="/disclaimer" className="hover:text-[#0097a7] transition">

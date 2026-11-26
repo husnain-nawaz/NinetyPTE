@@ -98,6 +98,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
 
   const homePath = isCoreMode ? '/v1/core/dashboard' : '/dashboard';
   const buyPath = isCoreMode ? '/v1/core/buy-subscription' : '/v1/buy-subscription';
+  const contactPath = isCoreMode ? '/v1/core/contact' : '/v1/contact';
   const isBuyRoute =
     location.pathname.includes('buy-subscription') ||
     location.pathname.includes('buy/subscription');
@@ -347,7 +348,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                       </Link>
 
                       <Link
-                        to="/contact"
+                        to={contactPath}
                         onClick={() => setProfileOpen(false)}
                         className="flex items-center gap-3 px-2.5 py-2.5 text-slate-700 hover:text-[#0c4a7e] font-medium transition"
                       >

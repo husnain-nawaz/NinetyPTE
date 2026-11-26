@@ -62,6 +62,7 @@ import {
   PTEPracticePage,
   PortalProfilePage,
   PortalBuySubscriptionPage,
+  PortalHelpDeskPage,
   CyanBarsLoader,
   ProtectedRoute,
 } from '../../PTEDashboard';
@@ -114,6 +115,8 @@ function AppContent() {
     location.pathname.startsWith('/profile') ||
     location.pathname.includes('buy-subscription') ||
     location.pathname.includes('buy/subscription') ||
+    location.pathname.startsWith('/v1/contact') ||
+    location.pathname.startsWith('/v1/help-desk') ||
     location.pathname.startsWith('/v1/practice') ||
     location.pathname.startsWith('/pte-dashboard') ||
     location.pathname.startsWith('/super-dashboard') ||
@@ -580,6 +583,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PortalBuySubscriptionPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/contact"
+            element={
+              <ProtectedRoute>
+                <PortalHelpDeskPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/help-desk"
+            element={
+              <ProtectedRoute>
+                <PortalHelpDeskPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/contact"
+            element={
+              <ProtectedRoute>
+                <PortalHelpDeskPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/help-desk"
+            element={
+              <ProtectedRoute>
+                <PortalHelpDeskPage syncCoreMode />
               </ProtectedRoute>
             }
           />

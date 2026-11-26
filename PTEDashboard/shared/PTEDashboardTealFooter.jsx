@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom';
+import { usePortal } from './portalContext';
 
 /**
  * Shared teal footer bar rendered across secondary student portal pages.
  */
 export default function PTEDashboardTealFooter() {
+  const { portalMode } = usePortal();
+  const contactPath = portalMode === 'core' ? '/v1/core/contact' : '/v1/contact';
+
   return (
     <footer className="bg-[#38c6bd] text-white px-6 py-5 mt-8">
       <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm font-medium">
         <div className="flex flex-wrap items-center justify-center gap-6">
-          <Link to="/contact" className="hover:underline">
+          <Link to={contactPath} className="hover:underline">
             Contact
           </Link>
           <Link to="/disclaimer" className="hover:underline">

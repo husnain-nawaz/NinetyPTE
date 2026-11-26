@@ -201,7 +201,8 @@ function ActionDialog({ title, subtitle, children, onClose }) {
  * premium feature showcase, Stripe payment history, and FAQ layout.
  */
 export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
-  const { setPortalMode } = usePortal();
+  const { portalMode, setPortalMode } = usePortal();
+  const contactPath = portalMode === 'core' ? '/v1/core/contact' : '/v1/contact';
   const [activeTab, setActiveTab] = useState('subscription');
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -277,14 +278,13 @@ export default function PortalBuySubscriptionPage({ syncCoreMode = false }) {
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Raise A Ticket</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setTicketModalCategory('Billing & Payment')}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-4 py-1.5 text-xs font-semibold shadow-2xs transition cursor-pointer"
+          <Link
+            to={contactPath}
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] text-white px-4 py-1.5 text-xs font-semibold shadow-2xs transition"
           >
             <Phone className="w-3.5 h-3.5" />
             <span>Contact Us</span>
-          </button>
+          </Link>
         </div>
 
         {/* Hero Heading + Segmented Tabs + Pricing Cards */}
