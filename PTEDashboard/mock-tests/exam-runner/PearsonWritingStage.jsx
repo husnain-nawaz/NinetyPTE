@@ -85,17 +85,21 @@ export default function PearsonWritingStage({
 
   return (
     <div className="max-w-5xl space-y-5">
-      <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-        {instruction}
-      </p>
+      {instruction && (
+        <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          {instruction}
+        </p>
+      )}
 
-      <div
-        className={`text-xs sm:text-[13px] leading-relaxed space-y-3 whitespace-pre-line ${
-          darkMode ? 'text-zinc-200' : 'text-slate-700'
-        }`}
-      >
-        {promptPassage}
-      </div>
+      {promptPassage && (
+        <div
+          className={`text-xs sm:text-[13px] leading-relaxed space-y-3 whitespace-pre-line ${
+            darkMode ? 'text-zinc-200' : 'text-slate-700'
+          }`}
+        >
+          {promptPassage}
+        </div>
+      )}
 
       {/* Classic Pearson Teal-Framed Textarea with Toolbar & Word Count Bar */}
       <div className="border-2 border-[#007a96] overflow-hidden shadow-2xs">

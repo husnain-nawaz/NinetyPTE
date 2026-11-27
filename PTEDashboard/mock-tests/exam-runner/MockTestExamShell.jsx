@@ -4,6 +4,7 @@ import ExamCentreNoiseModal from './ExamCentreNoiseModal';
 import { ExamNextConfirmDialog, ExamNoticeDialog } from './ExamDialogs';
 import {
   HeadphoneCheckScreen,
+  HeadphoneReminderScreen,
   ImportantExamModal,
   MicrophoneCheckScreen,
   PartIntroScreen,
@@ -203,6 +204,10 @@ export default function MockTestExamShell({
     setSpeakingStatus({ phase: 'prep', recordingElapsed: 0 });
 
     if (pendingPartIntro) {
+      if (pendingPartIntro === '3-headset') {
+        setPendingPartIntro(3);
+        return;
+      }
       setPendingPartIntro(null);
       return;
     }
@@ -228,7 +233,7 @@ export default function MockTestExamShell({
 
         if (currentItem && nextItem && currentItem.partLabel !== nextItem.partLabel) {
           setPartIntroSeconds(119);
-          setPendingPartIntro(nextItem.skillGroup === 'Reading' ? 2 : 3);
+          setPendingPartIntro(nextItem.skillGroup === 'Reading' ? 2 : '3-headset');
         }
 
         setSession((prev) => ({
@@ -294,6 +299,23 @@ export default function MockTestExamShell({
       if (activeQuestionItem.skillGroup === 'Writing' && !currentAns?.responseText?.trim()) {
         setNoticeMessage('Please finish answering this question before moving to the next.');
         return;
+      }
+
+      if (activeQuestionItem.skillGroup === 'Listening') {
+        const slug = activeQuestionItem.taskMeta?.slug;
+        const hasListeningAnswer =
+          slug === 'summarize-spoken-text' || slug === 'write-from-dictation'
+            ? Boolean(currentAns?.responseText?.trim())
+            : slug === 'fill-in-the-blanks'
+              ? Object.values(currentAns?.blankSelections || {}).some((v) => String(v || '').trim())
+              : slug === 'highlight-incorrect-words'
+                ? (currentAns?.highlightedWords || []).length > 0
+                : (currentAns?.selectedChoices || []).length > 0;
+
+        if (!hasListeningAnswer) {
+          setNoticeMessage('Please finish answering this question before moving to the next.');
+          return;
+        }
       }
 
       if (
@@ -494,6 +516,8 @@ export default function MockTestExamShell({
             onExit={() => onSaveAndExit(null)}
             darkMode={darkMode}
           />
+        ) : pendingPartIntro === '3-headset' ? (
+          <HeadphoneReminderScreen darkMode={darkMode} />
         ) : pendingPartIntro ? (
           <PartIntroScreen
             partSpec={pendingPartIntro === 2 ? part2Spec : part3Spec}

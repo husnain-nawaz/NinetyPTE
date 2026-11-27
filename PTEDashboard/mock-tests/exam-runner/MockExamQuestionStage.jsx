@@ -1,9 +1,9 @@
 import { CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import TaskResponseInputs from '../../practice-arena/TaskResponseInputs';
 import AudioPromptSpeakingStage from './AudioPromptSpeakingStage';
 import PearsonDragDropBlanksStage from './PearsonDragDropBlanksStage';
 import PearsonDropdownBlanksStage from './PearsonDropdownBlanksStage';
+import PearsonListeningStage from './PearsonListeningStage';
 import PearsonMcqStage from './PearsonMcqStage';
 import PearsonReorderStage from './PearsonReorderStage';
 import PearsonWritingStage from './PearsonWritingStage';
@@ -62,8 +62,6 @@ export function MockExamQuestionStage({
   const responseText = savedAnswer?.responseText || '';
   const blankSelections = savedAnswer?.blankSelections || {};
   const selectedChoices = savedAnswer?.selectedChoices || [];
-  const paragraphOrder = savedAnswer?.paragraphOrder || taskMeta.reorderParagraphs || [];
-  const highlightedWords = savedAnswer?.highlightedWords || [];
 
   const updateAnswer = (patch) => {
     onSaveAnswer({
@@ -267,63 +265,14 @@ export function MockExamQuestionStage({
   }
 
   return (
-    <div className="max-w-4xl space-y-5">
-      <div className="space-y-1.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-[#00738e] px-2.5 py-0.5 text-[11px] font-bold text-white">
-            {taskMeta.code}
-          </span>
-          <h2 className={`text-sm sm:text-base font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            {taskMeta.title}
-          </h2>
-        </div>
-        <p className={`text-xs sm:text-[13px] italic ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
-          {taskMeta.instruction}
-        </p>
-      </div>
-
-      <TaskResponseInputs
-        taskMeta={taskMeta}
-        activeQuestion={question}
-        showAnswer={false}
-        darkMode={darkMode}
-        responseText={responseText}
-        onChangeResponseText={(val) =>
-          updateAnswer({
-            responseText: typeof val === 'function' ? val(responseText) : val,
-            answered: true,
-          })
-        }
-        blankSelections={blankSelections}
-        onChangeBlankSelections={(val) =>
-          updateAnswer({
-            blankSelections: typeof val === 'function' ? val(blankSelections) : val,
-            answered: true,
-          })
-        }
-        selectedChoices={selectedChoices}
-        onChangeSelectedChoices={(val) =>
-          updateAnswer({
-            selectedChoices: typeof val === 'function' ? val(selectedChoices) : val,
-            answered: true,
-          })
-        }
-        paragraphOrder={paragraphOrder}
-        onChangeParagraphOrder={(val) =>
-          updateAnswer({
-            paragraphOrder: typeof val === 'function' ? val(paragraphOrder) : val,
-            answered: true,
-          })
-        }
-        highlightedWords={highlightedWords}
-        onChangeHighlightedWords={(val) =>
-          updateAnswer({
-            highlightedWords: typeof val === 'function' ? val(highlightedWords) : val,
-            answered: true,
-          })
-        }
-      />
-    </div>
+    <PearsonListeningStage
+      taskMeta={taskMeta}
+      question={question}
+      questionIndex={activeItem.index}
+      savedAnswer={savedAnswer}
+      onSaveAnswer={onSaveAnswer}
+      darkMode={darkMode}
+    />
   );
 }
 

@@ -738,3 +738,19 @@ export function PartIntroScreen({ partSpec, darkMode }) {
     </div>
   );
 }
+
+/**
+ * Headphone reminder screen shown cleanly prior to starting Part 3 Listening.
+ */
+export function HeadphoneReminderScreen({ darkMode }) {
+  return (
+    <div className="max-w-3xl space-y-6 pt-2">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-8">
+        <p className={`text-xs sm:text-[13px] ${darkMode ? 'text-zinc-200' : 'text-slate-600'}`}>
+          Remember: to put your headphones on before beginning this section
+        </p>
+        <HeadphonePersonSVG className="w-36 h-24 shrink-0" />
+      </div>
+    </div>
+  );
+}
