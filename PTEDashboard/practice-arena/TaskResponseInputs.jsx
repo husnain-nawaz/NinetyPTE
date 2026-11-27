@@ -19,6 +19,7 @@ export default function TaskResponseInputs({
   onChangeParagraphOrder,
   highlightedWords,
   onChangeHighlightedWords,
+  darkMode = false,
 }) {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
@@ -26,10 +27,27 @@ export default function TaskResponseInputs({
     setAudioPlaying((prev) => !prev);
   };
 
+  const cardShellClass = darkMode
+    ? 'rounded-2xl border border-zinc-600 bg-[#2a2a2a] p-5 sm:p-6 shadow-2xs space-y-5'
+    : 'rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5';
+
+  const wellBoxClass = darkMode
+    ? 'rounded-xl border border-zinc-600 bg-[#232323] p-4'
+    : 'rounded-xl border border-slate-200 bg-slate-50/70 p-4';
+
+  const headingAccentClass = darkMode ? 'font-semibold text-sky-300' : 'font-semibold text-[#0c4a7e]';
+  const bodyTextClass = darkMode
+    ? 'text-sm sm:text-[15px] leading-relaxed text-zinc-100'
+    : 'text-sm sm:text-[15px] leading-relaxed text-slate-700';
+
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5">
+    <div className={cardShellClass}>
       {taskMeta.hasAudioPrompt && (
-        <div className="rounded-xl bg-slate-50 border border-slate-200/80 px-4 py-3 flex items-center gap-3">
+        <div
+          className={`rounded-xl px-4 py-3 flex items-center gap-3 border ${
+            darkMode ? 'bg-[#232323] border-zinc-600' : 'bg-slate-50 border-slate-200/80'
+          }`}
+        >
           <button
             type="button"
             onClick={handleAudioToggle}
@@ -38,23 +56,29 @@ export default function TaskResponseInputs({
           >
             {audioPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
           </button>
-          <span className="text-[11px] font-mono font-semibold text-slate-600 shrink-0">00:00</span>
-          <div className="h-1.5 flex-1 rounded-full bg-slate-200 overflow-hidden">
+          <span
+            className={`text-[11px] font-mono font-semibold shrink-0 ${
+              darkMode ? 'text-zinc-300' : 'text-slate-600'
+            }`}
+          >
+            00:00
+          </span>
+          <div className={`h-1.5 flex-1 rounded-full overflow-hidden ${darkMode ? 'bg-zinc-600' : 'bg-slate-200'}`}>
             <div className={`h-full rounded-full bg-[#00b4c6] transition-all ${audioPlaying ? 'w-1/2' : 'w-0'}`} />
           </div>
-          <Volume2 className="w-4 h-4 text-slate-400 shrink-0" />
+          <Volume2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-zinc-400' : 'text-slate-400'}`} />
         </div>
       )}
 
       {(!taskMeta.hasAudioPrompt || showAnswer) && (
-        <p className="text-sm sm:text-[15px] leading-relaxed text-slate-700">
+        <p className={bodyTextClass}>
           {activeQuestion.contentSnippet || taskMeta.promptText}
         </p>
       )}
 
       {taskMeta.hasDropdownBlanks ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-700">
-          <span className="font-semibold text-[#0c4a7e]">Select blanks:</span>
+        <div className={`${wellBoxClass} flex flex-wrap items-center gap-2 text-xs sm:text-sm ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>
+          <span className={headingAccentClass}>Select blanks:</span>
           {['develop', 'expanding'].map((answerWord, blankIdx) => {
             const options = [answerWord, 'restrict', 'observe', 'decline'];
             const chosen = showAnswer ? answerWord : blankSelections[blankIdx] || '';
@@ -66,7 +90,11 @@ export default function TaskResponseInputs({
                   onChangeBlankSelections((prev) => ({ ...prev, [blankIdx]: e.target.value }))
                 }
                 aria-label={`Blank ${blankIdx + 1}`}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-[#0c4a7e] focus:outline-none focus:border-[#00b4c6]"
+                className={`rounded-lg border px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-[#00b4c6] ${
+                  darkMode
+                    ? 'border-zinc-500 bg-[#1f1f1f] text-zinc-100'
+                    : 'border-slate-300 bg-white text-[#0c4a7e]'
+                }`}
               >
                 <option value="">-- Blank {blankIdx + 1} --</option>
                 {options.map((opt) => (
@@ -90,7 +118,11 @@ export default function TaskResponseInputs({
                   highlightCorrect
                     ? 'border-emerald-400 bg-emerald-50/70 text-emerald-900'
                     : checked
-                    ? 'border-[#00b4c6] bg-cyan-50/50 text-slate-900'
+                    ? darkMode
+                      ? 'border-[#00b4c6] bg-cyan-950/60 text-white'
+                      : 'border-[#00b4c6] bg-cyan-50/50 text-slate-900'
+                    : darkMode
+                    ? 'border-zinc-600 bg-[#1f1f1f] hover:border-zinc-400 text-zinc-200'
                     : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
                 }`}
               >
@@ -128,11 +160,17 @@ export default function TaskResponseInputs({
               className={`rounded-xl border px-4 py-3 flex items-center justify-between gap-3 text-xs sm:text-sm ${
                 showAnswer
                   ? 'border-emerald-400 bg-emerald-50/70 text-emerald-900'
+                  : darkMode
+                  ? 'border-zinc-600 bg-[#1f1f1f] text-zinc-200'
                   : 'border-slate-200 bg-white text-slate-700'
               }`}
             >
               <div className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-md bg-[#eef6fd] text-[#0c4a7e] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <span
+                  className={`w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 ${
+                    darkMode ? 'bg-zinc-700 text-sky-300' : 'bg-[#eef6fd] text-[#0c4a7e]'
+                  }`}
+                >
                   {showAnswer ? item.correctOrder : item.id}
                 </span>
                 <span>{item.text}</span>
@@ -151,7 +189,11 @@ export default function TaskResponseInputs({
                       })
                     }
                     aria-label="Move paragraph up"
-                    className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-35 cursor-pointer"
+                    className={`p-1.5 rounded border disabled:opacity-35 cursor-pointer ${
+                      darkMode
+                        ? 'border-zinc-500 text-zinc-200 hover:bg-zinc-700'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
                   >
                     <ArrowUp className="w-3.5 h-3.5" />
                   </button>
@@ -166,7 +208,11 @@ export default function TaskResponseInputs({
                       })
                     }
                     aria-label="Move paragraph down"
-                    className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-35 cursor-pointer"
+                    className={`p-1.5 rounded border disabled:opacity-35 cursor-pointer ${
+                      darkMode
+                        ? 'border-zinc-500 text-zinc-200 hover:bg-zinc-700'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
                   >
                     <ArrowDown className="w-3.5 h-3.5" />
                   </button>
@@ -177,8 +223,8 @@ export default function TaskResponseInputs({
         </div>
       ) : taskMeta.dragDropWordBank ? (
         <div className="space-y-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-2.5 text-xs sm:text-sm">
-            <span className="font-semibold text-[#0c4a7e]">Fill blanks:</span>
+          <div className={`${wellBoxClass} flex flex-wrap items-center gap-2.5 text-xs sm:text-sm`}>
+            <span className={headingAccentClass}>Fill blanks:</span>
             {taskMeta.dragDropWordBank.answers.map((answerWord, slotIdx) => {
               const placedWord = showAnswer ? answerWord : blankSelections[slotIdx];
               return (
@@ -197,7 +243,11 @@ export default function TaskResponseInputs({
                     showAnswer
                       ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
                       : placedWord
-                      ? 'border-[#00b4c6] bg-cyan-50 text-[#0c4a7e]'
+                      ? darkMode
+                        ? 'border-[#00b4c6] bg-cyan-950/60 text-white'
+                        : 'border-[#00b4c6] bg-cyan-50 text-[#0c4a7e]'
+                      : darkMode
+                      ? 'border-dashed border-zinc-500 bg-[#1f1f1f] text-zinc-400'
                       : 'border-dashed border-slate-300 bg-white text-slate-400'
                   }`}
                 >
@@ -226,7 +276,11 @@ export default function TaskResponseInputs({
                   }}
                   className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
                     alreadyUsed
-                      ? 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                      ? darkMode
+                        ? 'border-zinc-700 bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                        : 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : darkMode
+                      ? 'border-zinc-600 bg-[#1f1f1f] text-zinc-200 hover:border-[#00b4c6] cursor-pointer'
                       : 'border-slate-200 bg-white text-[#0c4a7e] hover:border-[#00b4c6] hover:bg-cyan-50 cursor-pointer'
                   }`}
                 >
@@ -237,8 +291,8 @@ export default function TaskResponseInputs({
           </div>
         </div>
       ) : Array.isArray(taskMeta.typedBlanksAnswers) ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-3 text-xs sm:text-sm">
-          <span className="font-semibold text-[#0c4a7e]">Missing words:</span>
+        <div className={`${wellBoxClass} flex flex-wrap items-center gap-3 text-xs sm:text-sm`}>
+          <span className={headingAccentClass}>Missing words:</span>
           {taskMeta.typedBlanksAnswers.map((answerWord, slotIdx) => {
             const value = showAnswer ? answerWord : blankSelections[slotIdx] || '';
             return (
@@ -255,6 +309,8 @@ export default function TaskResponseInputs({
                 className={`w-32 rounded-lg border px-3 py-1.5 text-xs font-semibold focus:outline-none ${
                   showAnswer
                     ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                    : darkMode
+                    ? 'border-zinc-500 bg-[#1f1f1f] text-zinc-100 focus:border-[#00b4c6]'
                     : 'border-slate-300 bg-white text-[#0c4a7e] focus:border-[#00b4c6]'
                 }`}
               />
@@ -262,7 +318,7 @@ export default function TaskResponseInputs({
           })}
         </div>
       ) : taskMeta.highlightIncorrectWords ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-xs sm:text-sm leading-relaxed text-slate-700">
+        <div className={`${wellBoxClass} flex flex-wrap items-center gap-x-1.5 gap-y-2 text-xs sm:text-sm leading-relaxed ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>
           {taskMeta.highlightIncorrectWords.text.split(/\s+/).map((token, idx) => {
             const cleanWord = token.replace(/^[^a-zA-Z0-9']+|[^a-zA-Z0-9']+$/g, '');
             const isAnswerWord = taskMeta.highlightIncorrectWords.incorrect.includes(cleanWord);
@@ -281,6 +337,8 @@ export default function TaskResponseInputs({
                     ? 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-300'
                     : isSelected
                     ? 'bg-amber-200/80 text-amber-950 font-semibold border border-amber-300'
+                    : darkMode
+                    ? 'hover:bg-zinc-700 hover:text-white'
                     : 'hover:bg-cyan-50 hover:text-[#0c4a7e]'
                 }`}
               >
@@ -301,7 +359,11 @@ export default function TaskResponseInputs({
                 ? 'Type your summary here...'
                 : `Enter your ${taskMeta.title} response here...`)
             }
-            className="w-full rounded-xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#00b4c6]"
+            className={`w-full rounded-xl border p-4 text-xs sm:text-sm focus:outline-none focus:border-[#00b4c6] ${
+              darkMode
+                ? 'border-zinc-600 bg-[#1f1f1f] text-zinc-100 placeholder:text-zinc-500'
+                : 'border-slate-200 bg-white text-slate-800'
+            }`}
           />
 
           {(taskMeta.skill === 'writing' || taskMeta.hasEditorToolbar) && (
@@ -352,7 +414,7 @@ export default function TaskResponseInputs({
                 ))}
               </div>
 
-              <span className="text-xs font-semibold text-slate-500">
+              <span className={`text-xs font-semibold ${darkMode ? 'text-zinc-300' : 'text-slate-500'}`}>
                 Word Count: {responseText.trim() ? responseText.trim().split(/\s+/).length : 0}
               </span>
             </div>

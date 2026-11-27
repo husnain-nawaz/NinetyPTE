@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
+  ArrowUp,
   BarChart2,
   Bookmark,
   ChevronDown,
@@ -12,6 +13,7 @@ import {
   Gift,
   Play,
   Plus,
+  RotateCcw,
   Search,
   Sliders,
 } from 'lucide-react';
@@ -22,8 +24,16 @@ import {
   CreateCustomMockModal,
   ModuleTabsBar,
   ScoreEmptyState,
-  StartMockTestModal,
 } from './MockTestSharedUI';
+import {
+  ConfirmStartNewMockModal,
+  MockTestExamShell,
+  clearInProgressMock,
+  createMockSession,
+  getSessionProgressPercent,
+  readInProgressMock,
+  saveInProgressMock,
+} from './exam-runner';
 import {
   appendCustomMock,
   appendMockAttempt,
@@ -49,7 +59,43 @@ const DIFFICULTY_PILL_CLASSES = {
 const getAttemptsCount = (item, attemptsCountMap) =>
   (item?.attempts || 0) + (attemptsCountMap[item?.id] || 0);
 
-function MockTestListRow({ item, attemptsCount, bookmarked, onStart, onToggleBookmark }) {
+function MockProgressRing({ percent }) {
+  const radius = 14;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset =
+    circumference - (Math.max(0, Math.min(100, percent)) / 100) * circumference;
+
+  return (
+    <div className="relative w-9 h-9 shrink-0 flex items-center justify-center">
+      <svg className="w-9 h-9 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="3.5" />
+        <circle
+          cx="18"
+          cy="18"
+          r={radius}
+          fill="none"
+          stroke="#3dc8c1"
+          strokeWidth="3.5"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <span className="absolute text-[9px] font-bold text-[#0b4a7b]">{percent}%</span>
+    </div>
+  );
+}
+
+function MockTestListRow({
+  item,
+  attemptsCount,
+  inProgressPercent,
+  bookmarked,
+  onStart,
+  onToggleBookmark,
+}) {
+  const isResumable = inProgressPercent !== null || attemptsCount > 0;
+
   return (
     <div className="rounded-xl border border-slate-200/80 bg-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 hover:border-[#9be5de] transition">
       <div className="flex items-center gap-3 min-w-0">
@@ -90,13 +136,15 @@ function MockTestListRow({ item, attemptsCount, bookmarked, onStart, onToggleBoo
           )
         )}
 
+        {inProgressPercent !== null && <MockProgressRing percent={inProgressPercent} />}
+
         <button
           type="button"
           onClick={() => onStart(item)}
           className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
         >
-          <Play className="w-3 h-3" />
-          <span>{attemptsCount > 0 ? 'Resume' : 'Start'}</span>
+          {isResumable ? <RotateCcw className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+          <span>{isResumable ? 'Resume' : 'Start'}</span>
         </button>
 
         <button
@@ -124,6 +172,7 @@ export default function PortalMockTestsPage({
   initialTopTab = 'mock-test',
   initialMode = 'full',
 }) {
+  const location = useLocation();
   const navigate = useNavigate();
   const { portalMode, setPortalMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
@@ -160,7 +209,16 @@ export default function PortalMockTestsPage({
   }));
 
   const [customModalOpen, setCustomModalOpen] = useState(false);
-  const [activeTestModal, setActiveTestModal] = useState(null);
+  const [inProgressStore, setInProgressStore] = useState(() => ({
+    academic: readInProgressMock('academic'),
+    core: readInProgressMock('core'),
+  }));
+  const [activeExamSession, setActiveExamSession] = useState(() =>
+    location.state?.examAction === 'resume' ? readInProgressMock(activeTrack) : null
+  );
+  const [pendingNewTestItem, setPendingNewTestItem] = useState(null);
+
+  const inProgressSession = inProgressStore[activeTrack] || null;
 
   const pageScopeKey = `${activeTrack}:${mode}:${activeSkill}`;
   const currentPage = pageByScope[pageScopeKey] || 1;
@@ -267,11 +325,54 @@ export default function PortalMockTestsPage({
   };
 
   const handleCompleteAttempt = (attempt) => {
+    clearInProgressMock(activeTrack);
+    setInProgressStore((prev) => ({ ...prev, [activeTrack]: null }));
     const next = appendMockAttempt(activeTrack, attempt);
     setAttemptsStore((prev) => ({ ...prev, [activeTrack]: next }));
   };
 
+  const launchFreshMockSession = (testItem) => {
+    const freshSession = createMockSession(testItem, isCoreMode);
+    saveInProgressMock(activeTrack, freshSession);
+    setInProgressStore((prev) => ({ ...prev, [activeTrack]: freshSession }));
+    setPendingNewTestItem(null);
+    setActiveExamSession(freshSession);
+  };
+
+  const handleRequestStartTest = (testItem) => {
+    if (inProgressSession && inProgressSession.testId === testItem.id) {
+      setActiveExamSession(inProgressSession);
+      return;
+    }
+
+    if (inProgressSession && inProgressSession.testId !== testItem.id) {
+      setPendingNewTestItem(testItem);
+      return;
+    }
+
+    launchFreshMockSession(testItem);
+  };
+
+  const handlePersistExamSession = useCallback(
+    (updatedSession) => {
+      saveInProgressMock(activeTrack, updatedSession);
+    },
+    [activeTrack]
+  );
+
+  const handleSaveAndExitExam = (savedSession) => {
+    if (savedSession) {
+      saveInProgressMock(activeTrack, savedSession);
+      setInProgressStore((prev) => ({ ...prev, [activeTrack]: savedSession }));
+    }
+    setActiveExamSession(null);
+  };
+
   const freeTestAttempts = getAttemptsCount(dataset.freeFullTest, attemptsCountMap);
+  const freeInProgressPercent =
+    inProgressSession?.testId === dataset.freeFullTest.id
+      ? getSessionProgressPercent(inProgressSession)
+      : null;
 
   return (
     <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
@@ -486,13 +587,22 @@ export default function PortalMockTestsPage({
                     <span className="rounded-md bg-[#e5f8f6] px-2.5 py-0.5 text-[11px] font-semibold text-[#1ea7a1]">
                       Free
                     </span>
+                    {freeInProgressPercent !== null && (
+                      <MockProgressRing percent={freeInProgressPercent} />
+                    )}
                     <button
                       type="button"
-                      onClick={() => setActiveTestModal(dataset.freeFullTest)}
+                      onClick={() => handleRequestStartTest(dataset.freeFullTest)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
                     >
-                      <Play className="w-3 h-3" />
-                      <span>{freeTestAttempts > 0 ? 'Resume' : 'Start'}</span>
+                      {freeInProgressPercent !== null || freeTestAttempts > 0 ? (
+                        <RotateCcw className="w-3 h-3" />
+                      ) : (
+                        <Play className="w-3 h-3" />
+                      )}
+                      <span>
+                        {freeInProgressPercent !== null || freeTestAttempts > 0 ? 'Resume' : 'Start'}
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -565,8 +675,13 @@ export default function PortalMockTestsPage({
                     key={item.id}
                     item={item}
                     attemptsCount={getAttemptsCount(item, attemptsCountMap)}
+                    inProgressPercent={
+                      inProgressSession?.testId === item.id
+                        ? getSessionProgressPercent(inProgressSession)
+                        : null
+                    }
                     bookmarked={bookmarkedIds.includes(item.id)}
-                    onStart={setActiveTestModal}
+                    onStart={handleRequestStartTest}
                     onToggleBookmark={handleToggleBookmark}
                   />
                 ))}
@@ -707,15 +822,36 @@ export default function PortalMockTestsPage({
         />
       )}
 
-      {activeTestModal && (
-        <StartMockTestModal
-          key={activeTestModal.id}
-          testItem={activeTestModal}
-          trackLabel={dataset.trackLabel}
-          onClose={() => setActiveTestModal(null)}
-          onCompleteAttempt={handleCompleteAttempt}
+      {pendingNewTestItem && (
+        <ConfirmStartNewMockModal
+          unfinishedTitle={inProgressSession?.title}
+          pendingTitle={pendingNewTestItem.title}
+          onConfirmYes={() => launchFreshMockSession(pendingNewTestItem)}
+          onCancelNo={() => setPendingNewTestItem(null)}
         />
       )}
+
+      {activeExamSession && (
+        <MockTestExamShell
+          key={`${activeTrack}-${activeExamSession.testId}-${activeExamSession.startedAt}`}
+          initialSession={activeExamSession}
+          isCore={isCoreMode}
+          trackLabel={dataset.trackLabel}
+          scoreHistoryRoute={dataset.routes.history}
+          onPersistSession={handlePersistExamSession}
+          onFinishAttempt={handleCompleteAttempt}
+          onSaveAndExit={handleSaveAndExitExam}
+        />
+      )}
+
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Scroll to top"
+        className="fixed bottom-6 right-6 z-30 w-9 h-9 rounded-full border border-[#3dc8c1] bg-white text-[#1ea7a1] hover:bg-[#e5f8f6] shadow-md flex items-center justify-center transition cursor-pointer"
+      >
+        <ArrowUp className="w-4 h-4" />
+      </button>
     </div>
   );
 }

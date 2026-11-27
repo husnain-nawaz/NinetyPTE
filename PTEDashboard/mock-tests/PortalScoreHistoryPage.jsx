@@ -17,6 +17,9 @@ import {
   SkillIconGlyph,
 } from './MockTestSharedUI';
 import {
+  clearInProgressMock,
+} from './exam-runner';
+import {
   getMockTestsDataset,
   readMockAttempts,
   SCORE_HISTORY_FILTER_OPTIONS,
@@ -161,7 +164,12 @@ export default function PortalScoreHistoryPage({ syncCoreMode = false }) {
 
   const handleSelectDropdown = (optionId) => {
     setDropdownOpen(false);
-    if (optionId === 'resume' || optionId === 'restart') {
+    if (optionId === 'resume') {
+      navigate(dataset.routes.full, { state: { examAction: 'resume' } });
+      return;
+    }
+    if (optionId === 'restart') {
+      clearInProgressMock(activeTrack);
       navigate(dataset.routes.full);
       return;
     }
