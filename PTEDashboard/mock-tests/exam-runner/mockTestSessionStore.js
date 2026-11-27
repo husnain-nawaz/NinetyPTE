@@ -310,6 +310,8 @@ export function buildMockExamQueue(testItem, isCore) {
   };
 
   const queue = [];
+  const isCrossSkillSectional = testItem?.mode === 'sectional';
+  const isTimedSectional = testItem?.mode === 'timed';
   activeSkills.forEach((skill, sIdx) => {
     const countForSkill = sectionCounts[sIdx];
     if (countForSkill <= 0) return;
@@ -320,7 +322,7 @@ export function buildMockExamQueue(testItem, isCore) {
         : skill === 'Writing' && isCore
           ? 'WritingCore'
           : skill;
-    const taskKeys = isSectional
+    const taskKeys = isCrossSkillSectional
       ? getSectionalTaskKeys(skill)
       : PART_TASK_PLANS[planKey] || PART_TASK_PLANS.Speaking;
 
@@ -342,7 +344,11 @@ export function buildMockExamQueue(testItem, isCore) {
 
       queue.push({
         index: queue.length,
-        partLabel: isSectional ? `${skill} Sectional Test` : partLabelForSkill(itemSkillGroup),
+        partLabel: isCrossSkillSectional
+          ? `${skill} Sectional Test`
+          : isTimedSectional
+            ? `${skill} Timed Test`
+            : partLabelForSkill(itemSkillGroup),
         skillGroup: itemSkillGroup,
         taskKey,
         taskMeta,
@@ -1109,6 +1115,35 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
   };
 }
 
+function defaultQuestionTimeSeconds(code, isAttempted, idx) {
+  const baseByCode = {
+    SST: 465,
+    WE: 420,
+    WEM: 420,
+    SWT: 310,
+    RO: 96,
+    FIB: 77,
+    RWB: 95,
+    RB: 68,
+    HCS: 124,
+    HIW: 76,
+    MCM: 104,
+    MCS: 66,
+    SMW: 73,
+    WFD: 44,
+    SGD: 165,
+    RL: 112,
+    RTS: 74,
+    DI: 64,
+    RA: 58,
+    RS: 22,
+    ASQ: 18,
+  };
+  const base = baseByCode[code] || 48;
+  const jitter = ((idx * 13) % 19) - 9;
+  return Math.max(12, Math.round((isAttempted ? base : base * 0.88) + jitter));
+}
+
 /**
  * Produces an authentic scorecard payload with per-question AI diagnostic items
  * and section timing metrics from completed mock test answers.
@@ -1116,9 +1151,24 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
 export function buildMockAttemptScore(testItem, session, trackLabel, isCore = false) {
   const queue = buildMockExamQueue(testItem, isCore);
   const diffBase = testItem.difficulty === 'Easy' ? 74 : testItem.difficulty === 'Difficult' ? 66 : 70;
-  const questionResults = queue.map((item) =>
-    buildQuestionScoreResult(item, session?.answersByIndex?.[item.index], diffBase, session?.writingStyle)
-  );
+  const questionResults = queue.map((item) => {
+    const ans = session?.answersByIndex?.[item.index];
+    const raw = buildQuestionScoreResult(item, ans, diffBase, session?.writingStyle);
+    const timeSpentSeconds =
+      Number(ans?.timeSpentSeconds) > 0
+        ? Number(ans.timeSpentSeconds)
+        : defaultQuestionTimeSeconds(raw.code, raw.isAttempted, item.index);
+    const formattedTime = formatMMSS(timeSpentSeconds);
+    return {
+      ...raw,
+      timeSpentSeconds,
+      writingMeta: raw.writingMeta ? { ...raw.writingMeta, timeSpent: formattedTime } : undefined,
+      analysisData: raw.analysisData ? { ...raw.analysisData, timeSpent: formattedTime } : undefined,
+      wfdData: raw.wfdData
+        ? { ...raw.wfdData, minutes: formattedTime.slice(0, 2), seconds: formattedTime.slice(3, 5) }
+        : undefined,
+    };
+  });
 
   const avgSkillFromResults = (skill) => {
     const items = questionResults.filter((r) => r.skillGroup === skill);
@@ -1170,13 +1220,22 @@ export function buildMockAttemptScore(testItem, session, trackLabel, isCore = fa
 
   const breakdown = getMockTestPartBreakdown(testItem, isCore);
   const totalAllowedSeconds = breakdown.totalMinutes * 60;
-  const elapsedSeconds = Math.max(
-    60,
-    Math.min(
-      totalAllowedSeconds,
-      totalAllowedSeconds - Math.max(0, Number(session?.remainingSeconds) || 0)
-    )
+  const hasRecordedTime = Object.values(session?.answersByIndex || {}).some(
+    (a) => Number(a?.timeSpentSeconds) > 0
   );
+  const summedQuestionSeconds = questionResults.reduce(
+    (acc, r) => acc + (Number(r.timeSpentSeconds) || 0),
+    0
+  );
+  const elapsedSeconds = hasRecordedTime
+    ? Math.max(
+        1,
+        Math.min(
+          totalAllowedSeconds,
+          totalAllowedSeconds - Math.max(0, Number(session?.remainingSeconds) || 0)
+        )
+      )
+    : Math.max(60, Math.min(totalAllowedSeconds, summedQuestionSeconds));
 
   return {
     id: `attempt-${Date.now()}`,

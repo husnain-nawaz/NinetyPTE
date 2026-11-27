@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
@@ -25,6 +25,7 @@ import {
 import PTEDashboardHeader from '../shared/PTEDashboardHeader';
 import PTEDashboardTealFooter from '../shared/PTEDashboardTealFooter';
 import { usePortal } from '../shared/portalContext';
+import { MockActionToast } from './MockReportIssueModal';
 import {
   CreateCustomMockModal,
   ModuleTabsBar,
@@ -241,6 +242,21 @@ export default function PortalMockTestsPage({
     location.state?.examAction === 'resume' ? readInProgressMock(activeTrack) : null
   );
   const [pendingNewTestItem, setPendingNewTestItem] = useState(null);
+  const [toastMsg, setToastMsg] = useState('');
+  const toastTimerRef = useRef(null);
+
+  const triggerToast = useCallback((msg) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToastMsg(msg);
+    toastTimerRef.current = setTimeout(() => setToastMsg(''), 3200);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    },
+    []
+  );
 
   const inProgressSession = inProgressStore[activeTrack] || null;
 
@@ -723,6 +739,8 @@ export default function PortalMockTestsPage({
                   setCurrentPage(1);
                 }}
                 showTimedInfo={mode === 'timed'}
+                spreadTabs
+                darkMode={darkMode}
               />
             )}
 
@@ -747,7 +765,10 @@ export default function PortalMockTestsPage({
                 ))}
               </div>
             ) : (
-              <ScoreEmptyState message="No mock tests matched your selected filters. Try resetting filters above." />
+              <ScoreEmptyState
+                message="No mock tests matched your selected filters. Try resetting filters above."
+                darkMode={darkMode}
+              />
             )}
 
             {/* Pagination Footer */}
@@ -848,11 +869,13 @@ export default function PortalMockTestsPage({
                   tabs={SECTION_TABS}
                   activeTab={activeScoreSkill}
                   onSelect={setActiveScoreSkill}
+                  spreadTabs
+                  darkMode={darkMode}
                 />
               )}
 
               {scoreFilteredAttempts.length === 0 ? (
-                <ScoreEmptyState />
+                <ScoreEmptyState darkMode={darkMode} />
               ) : (
                 <div className="space-y-3">
                   {scoreFilteredAttempts.map((entry) => (
@@ -929,6 +952,7 @@ export default function PortalMockTestsPage({
                           onClick={() => {
                             const remaining = deleteMockAttempt(activeTrack, entry.id);
                             setAttemptsStore((prev) => ({ ...prev, [activeTrack]: remaining }));
+                            triggerToast('Record removed successfully!');
                           }}
                           className="inline-flex items-center gap-1.5 rounded-lg border border-rose-400/50 hover:bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-500 transition cursor-pointer"
                         >
@@ -946,6 +970,7 @@ export default function PortalMockTestsPage({
       </main>
 
       <PTEDashboardTealFooter />
+      <MockActionToast message={toastMsg} />
 
       {customModalOpen && (
         <CreateCustomMockModal

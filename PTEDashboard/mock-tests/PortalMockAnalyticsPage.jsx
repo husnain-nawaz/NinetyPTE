@@ -59,10 +59,10 @@ const SKILL_SECTIONS = [
     Icon: BookOpen,
     tasks: [
       { code: 'RWB', label: 'Fill in the Blanks (Dropdown)' },
-      { code: 'MCM', label: 'Multiple Choice, Multiple Answers' },
+      { code: 'MCM', label: 'Multiple Choice Multiple Answer' },
       { code: 'RO', label: 'Re-order Paragraphs' },
       { code: 'RB', label: 'Fill in the Blanks (Drag & Drop)' },
-      { code: 'MCS', label: 'Multiple Choice, Single Answer' },
+      { code: 'MCS', label: 'Multiple Choice Single Answer' },
     ],
   },
   {
@@ -75,15 +75,21 @@ const SKILL_SECTIONS = [
     tasks: [
       { code: 'SST', label: 'Summarize Spoken Text' },
       { code: 'FIB', label: 'Fill in the Blanks' },
-      { code: 'MCS', label: 'Multiple Choice, Single Answer' },
-      { code: 'SMW', label: 'Select Missing Word' },
-      { code: 'MCM', label: 'Multiple Choice, Multiple Answers' },
+      { code: 'MCS', label: 'Multiple Choice Single Answer' },
+      { code: 'SMW', label: 'Select Missing Words' },
+      { code: 'MCM', label: 'Multiple Choice Multiple Answer' },
       { code: 'HCS', label: 'Highlight Correct Summary' },
       { code: 'HIW', label: 'Highlight Incorrect Words' },
       { code: 'WFD', label: 'Write from Dictation' },
     ],
   },
 ];
+
+const formatChartTaskCode = (code) => {
+  if (code === 'MCS') return 'MCSA';
+  if (code === 'MCM') return 'MCMA';
+  return code;
+};
 
 function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
   const cx = 110;
@@ -252,17 +258,17 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   }
 
   const results = attempt.questionResults || [];
-  const isSectional = attempt.mode === 'sectional' || attempt.mode === 'timed';
+  const isTimed = attempt.mode === 'timed';
+  const isSectional = attempt.mode === 'sectional';
+  const isSingleSectionAnalytics = isTimed || isSectional;
   const targetSkill = attempt.skill || 'Speaking';
   const targetSec = SKILL_SECTIONS.find((s) => s.key === targetSkill) || SKILL_SECTIONS[0];
-  const totalSec = attempt.totalAllowedSeconds || (isSectional ? 2400 : 7800);
-  const takenSec = attempt.elapsedSeconds || Math.round(totalSec * 0.5);
 
   const visibleSkillSections = SKILL_SECTIONS.filter((sec) =>
     results.some((r) => r.skillGroup === sec.key)
   );
 
-  // Deduplicated unique contributor tasks in order of appearance for Sectional card grid
+  // Deduplicated unique contributor tasks in order of appearance for Sectional / Timed card grid
   const contributorTaskSummaries = [];
   const seenKeys = new Set();
   results.forEach((r) => {
@@ -296,16 +302,23 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
     const byCode = {};
     secItems.forEach((it) => {
       if (!byCode[it.code]) byCode[it.code] = 0;
-      byCode[it.code] += it.isAttempted ? 48 : 26;
+      byCode[it.code] += Number(it.timeSpentSeconds) || (it.isAttempted ? 48 : 32);
     });
     return Object.entries(byCode).map(([code, secs]) => ({
-      code,
+      code: formatChartTaskCode(code),
       secs,
       color: sec.color,
     }));
   });
 
-  const maxBarSec = Math.max(120, ...timeBars.map((b) => b.secs));
+  const totalSec = attempt.totalAllowedSeconds || (isSingleSectionAnalytics ? 1800 : 7800);
+  const summedBarSec = timeBars.reduce((acc, b) => acc + b.secs, 0);
+  const takenSec = attempt.elapsedSeconds || Math.max(60, summedBarSec);
+  const hasListeningSst = results.some((r) => r.skillGroup === 'Listening' && r.code === 'SST');
+
+  const rawMaxSec = Math.max(120, ...timeBars.map((b) => b.secs));
+  const maxBarSec = Math.ceil(rawMaxSec / 60) * 60;
+  const yTicks = [maxBarSec, Math.round(maxBarSec * 0.66), Math.round(maxBarSec * 0.33), 0];
   const attemptedTotal = results.filter((r) => r.isAttempted).length;
   const targetVal = typeof attempt[targetSec.field] === 'number' ? attempt[targetSec.field] : attempt.overall;
 
@@ -369,7 +382,11 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
               }`}
             >
-              {isSectional ? 'Sectional Mock Test Analytics' : 'Mock Test Analytics'}
+              {isTimed
+                ? 'Timed Mock Test Analytics'
+                : isSectional
+                  ? 'Sectional Mock Test Analytics'
+                  : 'Mock Test Analytics'}
             </h1>
           </div>
 
@@ -385,7 +402,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
         </div>
 
         {/* Overview Card */}
-        {isSectional ? (
+        {isSingleSectionAnalytics ? (
           <section
             className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-4 ${
               darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
@@ -393,16 +410,8 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
           >
             {TopActionBar}
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-              <div className="md:col-span-3">
-                <SectionalDonutRing
-                  score={targetVal}
-                  color={targetSec.color}
-                  darkMode={darkMode}
-                />
-              </div>
-
-              <div className="md:col-span-9 space-y-3">
+            {isTimed ? (
+              <div className="space-y-3">
                 <h2
                   className={`text-sm font-extrabold border-b pb-2 ${
                     darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
@@ -410,21 +419,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 >
                   {targetSec.key}
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div
-                    className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
-                      darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
-                    }`}
-                  >
-                    <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
-                      <targetSec.Icon className="w-4 h-4" style={{ color: targetSec.color }} />
-                      <span>Score</span>
-                    </span>
-                    <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
-                      {targetVal}
-                    </span>
-                  </div>
-
+                <div className="max-w-sm">
                   <div
                     className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
                       darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
@@ -440,7 +435,56 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div className="md:col-span-3">
+                  <SectionalDonutRing
+                    score={targetVal}
+                    color={targetSec.color}
+                    darkMode={darkMode}
+                  />
+                </div>
+
+                <div className="md:col-span-9 space-y-3">
+                  <h2
+                    className={`text-sm font-extrabold border-b pb-2 ${
+                      darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
+                    }`}
+                  >
+                    {targetSec.key}
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div
+                      className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
+                        darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
+                        <targetSec.Icon className="w-4 h-4" style={{ color: targetSec.color }} />
+                        <span>Score</span>
+                      </span>
+                      <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                        {targetVal}
+                      </span>
+                    </div>
+
+                    <div
+                      className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
+                        darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
+                        <HelpCircle className="w-4 h-4" style={{ color: targetSec.color }} />
+                        <span>Attempted Questions</span>
+                      </span>
+                      <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                        {attemptedTotal}/{results.length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         ) : (
           <section
@@ -525,8 +569,8 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
           </section>
         )}
 
-        {/* Per-Task Breakdown Cards: Single Section Box on Sectional, 4 Skill Grids on Full */}
-        {isSectional ? (
+        {/* Per-Task Breakdown Cards: Single Section Box on Sectional / Timed, 4 Skill Grids on Full */}
+        {isSingleSectionAnalytics ? (
           <section
             className={`rounded-2xl border overflow-hidden shadow-2xs ${
               darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
@@ -664,44 +708,75 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-100'
               }`}
             >
-              <div
-                className={`flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold ${
-                  darkMode ? 'text-zinc-300' : 'text-slate-600'
-                }`}
-              >
-                {visibleSkillSections.map((s) => (
-                  <span key={s.key} className="inline-flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                    <span>{s.key}</span>
-                  </span>
-                ))}
-              </div>
+              {!isTimed && (
+                <div
+                  className={`flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold ${
+                    darkMode ? 'text-zinc-300' : 'text-slate-600'
+                  }`}
+                >
+                  {visibleSkillSections.map((s) => (
+                    <span key={s.key} className="inline-flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
+                      <span>{s.key}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
 
-              <div className="h-44 flex items-end gap-2 sm:gap-3 pt-4 border-b border-slate-100/20 overflow-x-auto pb-1">
-                {timeBars.map((bar) => {
-                  const hPct = Math.max(12, Math.round((bar.secs / maxBarSec) * 100));
-                  return (
-                    <div key={bar.code} className="min-w-[34px] flex-1 flex flex-col items-center gap-1">
-                      <span className="text-[9px] text-slate-400 font-medium">
-                        {formatMMSS(bar.secs)}
-                      </span>
-                      <div className="w-3.5 h-28 flex items-end justify-center">
-                        <div
-                          className="w-full rounded-t-full transition-all"
-                          style={{ height: `${hPct}%`, backgroundColor: bar.color }}
-                        />
-                      </div>
-                      <span className="text-[9px] font-bold text-slate-400">{bar.code}</span>
-                    </div>
-                  );
-                })}
+              <div className="flex items-stretch gap-3 pt-2">
+                <div className="flex flex-col justify-between pb-6 text-[9px] font-medium text-slate-400 shrink-0 select-none">
+                  {yTicks.map((tick) => (
+                    <span key={tick}>{formatMMSS(tick)}</span>
+                  ))}
+                </div>
+
+                <div className="relative flex-1">
+                  <div className="pointer-events-none absolute inset-x-0 top-1 bottom-6 flex flex-col justify-between">
+                    {yTicks.map((tick) => (
+                      <div
+                        key={tick}
+                        className={`border-b border-dashed ${
+                          darkMode ? 'border-zinc-800' : 'border-slate-100'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="relative z-10 h-44 flex items-end gap-2 sm:gap-3 pt-4 border-b border-slate-100/20 overflow-x-auto pb-1">
+                    {timeBars.map((bar) => {
+                      const hPct = Math.max(12, Math.round((bar.secs / maxBarSec) * 100));
+                      return (
+                        <div key={bar.code} className="min-w-[34px] flex-1 flex flex-col items-center gap-1">
+                          <span className="text-[9px] text-slate-400 font-medium">
+                            {formatMMSS(bar.secs)}
+                          </span>
+                          <div className="w-3.5 h-28 flex items-end justify-center">
+                            <div
+                              className="w-full rounded-t-full transition-all"
+                              style={{ height: `${hPct}%`, backgroundColor: bar.color }}
+                            />
+                          </div>
+                          <span className="text-[9px] font-bold text-slate-400">{bar.code}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="lg:col-span-4 space-y-2.5">
               {visibleSkillSections.map((sec) => {
                 const secItems = results.filter((r) => r.skillGroup === sec.key);
-                const estSec = Math.max(45, secItems.length * 42);
+                const isListeningSec = sec.key === 'Listening';
+                const sstSec = isListeningSec
+                  ? secItems
+                      .filter((r) => r.code === 'SST')
+                      .reduce((acc, r) => acc + (Number(r.timeSpentSeconds) || 465), 0)
+                  : 0;
+                const mainSec = secItems
+                  .filter((r) => !(isListeningSec && r.code === 'SST'))
+                  .reduce((acc, r) => acc + (Number(r.timeSpentSeconds) || 48), 0);
                 const Icon = sec.Icon;
                 return (
                   <div
@@ -710,40 +785,52 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                       darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${sec.tintBg}`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${sec.tintBg}`}>
                         <Icon className="w-3.5 h-3.5" />
                       </span>
-                      <span
-                        className={`text-xs font-bold ${
-                          darkMode ? 'text-zinc-200' : 'text-slate-700'
-                        }`}
-                      >
-                        {sec.key}
-                      </span>
+                      <div className="min-w-0">
+                        <span
+                          className={`text-xs font-bold block ${
+                            darkMode ? 'text-zinc-200' : 'text-slate-700'
+                          }`}
+                        >
+                          {sec.key}
+                        </span>
+                        {sstSec > 0 && (
+                          <span className="text-[10px] font-medium text-slate-400 block">
+                            SST - {formatMMSS(sstSec)}/10:00
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right leading-tight">
+                    <div className="text-right leading-tight shrink-0">
                       <p
                         className={`text-sm font-extrabold ${
                           darkMode ? 'text-white' : 'text-[#0b4a7b]'
                         }`}
                       >
-                        {formatMMSS(estSec)}
+                        {formatMMSS(mainSec)}
                       </p>
                       <p className="text-[10px] text-slate-400">(MM:SS)</p>
                     </div>
                   </div>
                 );
               })}
-              <p
-                className={`text-[11px] font-medium pt-1 ${
+              <div
+                className={`text-[11px] font-medium pt-1 space-y-0.5 ${
                   darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
                 }`}
               >
-                {isSectional
-                  ? 'The above graph shows the question-wise distribution of your total time spent on this mock test.'
-                  : 'Listening time does not include SST'}
-              </p>
+                {isSingleSectionAnalytics && (
+                  <p>
+                    The above graph shows the question-wise distribution of your total time spent on this mock test.
+                  </p>
+                )}
+                {(hasListeningSst || !isSingleSectionAnalytics) && (
+                  <p>Listening time does not include SST</p>
+                )}
+              </div>
             </div>
           </div>
         </section>

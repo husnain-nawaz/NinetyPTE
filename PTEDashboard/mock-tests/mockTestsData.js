@@ -165,8 +165,27 @@ function buildSectionalMockTests(isCore, skill) {
   return [freeRow, ...numbered];
 }
 
+const TIMED_SECTIONAL_PATTERN = {
+  Speaking: [
+    { coreQuestions: 24, academicQuestions: 27, durationMinutes: 30 },
+    { coreQuestions: 25, academicQuestions: 28, durationMinutes: 30 },
+  ],
+  Writing: [
+    { coreQuestions: 3, academicQuestions: 3, durationMinutes: 32 },
+    { coreQuestions: 4, academicQuestions: 3, durationMinutes: 32 },
+  ],
+  Reading: [
+    { coreQuestions: 14, academicQuestions: 15, durationMinutes: 30 },
+    { coreQuestions: 15, academicQuestions: 16, durationMinutes: 30 },
+  ],
+  Listening: [
+    { coreQuestions: 14, academicQuestions: 15, durationMinutes: 30 },
+    { coreQuestions: 15, academicQuestions: 15, durationMinutes: 30 },
+  ],
+};
+
 function buildTimedSectionalMockTests(isCore, skill) {
-  const pattern = SECTIONAL_PATTERN[skill] || SECTIONAL_PATTERN.Speaking;
+  const pattern = TIMED_SECTIONAL_PATTERN[skill] || TIMED_SECTIONAL_PATTERN.Listening;
   return Array.from({ length: 20 }, (_, idx) => {
     const num = 20 - idx;
     const spec = pattern[idx % pattern.length];
@@ -178,7 +197,7 @@ function buildTimedSectionalMockTests(isCore, skill) {
       questions: isCore ? spec.coreQuestions : spec.academicQuestions,
       attempts: 0,
       isTimedBadge: true,
-      durationMinutes: skill === 'Speaking' ? 30 : 25,
+      durationMinutes: spec.durationMinutes,
       isPrediction: idx % 3 === 0,
       isPreset: true,
     };

@@ -82,17 +82,30 @@ export default function MockTestExamShell({
     onPersistSession(session);
   }, [session, completedScore, onPersistSession]);
 
-  // Live exam countdown during question stage
+  // Live exam countdown & per-question elapsed time during question stage
   useEffect(() => {
-    if (session.stage !== 'questions' || session.modalStep < 2) return undefined;
+    if (session.stage !== 'questions' || session.modalStep < 2 || Boolean(pendingPartIntro)) {
+      return undefined;
+    }
     const timer = setInterval(() => {
-      setSession((prev) => ({
-        ...prev,
-        remainingSeconds: Math.max(0, (prev.remainingSeconds || 0) - 1),
-      }));
+      setSession((prev) => {
+        const qIdx = prev.currentQuestionIndex || 0;
+        const curAns = prev.answersByIndex?.[qIdx] || {};
+        return {
+          ...prev,
+          remainingSeconds: Math.max(0, (prev.remainingSeconds || 0) - 1),
+          answersByIndex: {
+            ...(prev.answersByIndex || {}),
+            [qIdx]: {
+              ...curAns,
+              timeSpentSeconds: (curAns.timeSpentSeconds || 0) + 1,
+            },
+          },
+        };
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, [session.stage, session.modalStep]);
+  }, [session.stage, session.modalStep, pendingPartIntro]);
 
   // Personal Introduction & Part Intro short header countdowns
   useEffect(() => {
@@ -595,7 +608,10 @@ export default function MockTestExamShell({
                   ...prev,
                   answersByIndex: {
                     ...(prev.answersByIndex || {}),
-                    [activeQuestionItem.index]: ansPayload,
+                    [activeQuestionItem.index]: {
+                      ...(prev.answersByIndex?.[activeQuestionItem.index] || {}),
+                      ...ansPayload,
+                    },
                   },
                 }))
               }

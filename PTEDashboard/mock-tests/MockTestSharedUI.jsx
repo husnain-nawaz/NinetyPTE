@@ -31,7 +31,10 @@ export function SkillIconGlyph({ skill, className = 'w-4 h-4' }) {
  * Shared empty-state illustration shown in Mock Tests -> Scores and Score History
  * whenever a category has zero completed mock attempts.
  */
-export function ScoreEmptyState({ message = 'There are currently no Score available in this section.' }) {
+export function ScoreEmptyState({
+  message = 'There are currently no Score available in this section.',
+  darkMode = false,
+}) {
   return (
     <div className="py-14 px-4 flex flex-col items-center justify-center text-center">
       <svg
@@ -42,14 +45,14 @@ export function ScoreEmptyState({ message = 'There are currently no Score availa
       >
         <path
           d="M36 32 C56 26, 74 28, 88 35 L88 90 C74 84, 56 82, 36 88 Z"
-          fill="#f1f5f9"
-          stroke="#cbd5e1"
+          fill={darkMode ? '#1e2430' : '#f1f5f9'}
+          stroke={darkMode ? '#334155' : '#cbd5e1'}
           strokeWidth="2"
         />
         <path
           d="M140 32 C120 26, 102 28, 88 35 L88 90 C102 84, 120 82, 140 88 Z"
-          fill="#f8fafc"
-          stroke="#cbd5e1"
+          fill={darkMode ? '#181c23' : '#f8fafc'}
+          stroke={darkMode ? '#334155' : '#cbd5e1'}
           strokeWidth="2"
         />
         <text
@@ -70,7 +73,9 @@ export function ScoreEmptyState({ message = 'There are currently no Score availa
           strokeLinecap="round"
         />
       </svg>
-      <p className="text-sm font-bold text-slate-700">Record Not Found</p>
+      <p className={`text-sm font-bold ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>
+        Record Not Found
+      </p>
       <p className="mt-1 text-xs text-slate-400 max-w-xs leading-relaxed">{message}</p>
     </div>
   );
@@ -86,12 +91,22 @@ export function ModuleTabsBar({
   onSelect,
   showTimedInfo = false,
   rightSlot = null,
+  spreadTabs = false,
+  darkMode = false,
 }) {
   const [infoOpen, setInfoOpen] = useState(false);
 
   return (
-    <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-0.5">
-      <div className="flex flex-1 flex-wrap items-center gap-2 sm:gap-6">
+    <div
+      className={`relative flex flex-wrap items-center justify-between gap-3 border-b pb-0.5 ${
+        darkMode ? 'border-zinc-800' : 'border-slate-100'
+      }`}
+    >
+      <div
+        className={`flex flex-1 flex-wrap items-center ${
+          spreadTabs ? 'gap-2 sm:gap-4' : 'gap-2 sm:gap-6'
+        }`}
+      >
         {tabs.map((skill) => {
           const meta = SKILL_THEME_TOKENS[skill] || SKILL_THEME_TOKENS.Speaking;
           const isActive = activeTab === skill;
@@ -102,14 +117,22 @@ export function ModuleTabsBar({
               type="button"
               onClick={() => onSelect(skill)}
               className={`inline-flex items-center gap-2 px-2 pb-2.5 pt-1 text-xs sm:text-sm font-semibold transition cursor-pointer border-b-2 ${
+                spreadTabs ? 'flex-1 min-w-[120px]' : ''
+              } ${
                 isActive
                   ? meta.activeTabClass
-                  : 'border-transparent text-slate-500 hover:text-slate-700'
+                  : darkMode
+                    ? 'border-transparent text-zinc-400 hover:text-zinc-200'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
               }`}
             >
               <span
                 className={`w-6 h-6 rounded-md inline-flex items-center justify-center ${
-                  isActive ? meta.iconBgClass : 'bg-slate-100 text-slate-400'
+                  isActive
+                    ? meta.iconBgClass
+                    : darkMode
+                      ? 'bg-zinc-800 text-zinc-400'
+                      : 'bg-slate-100 text-slate-400'
                 }`}
               >
                 <SkillIconGlyph skill={skill} className="w-3.5 h-3.5" />
