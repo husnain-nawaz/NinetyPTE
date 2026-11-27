@@ -262,6 +262,53 @@ export function buildMockExamQueue(testItem, isCore) {
     return 'Part 3: Listening';
   };
 
+  const resolveTaskSkillGroup = (taskSkill) => {
+    if (taskSkill === 'writing') return 'Writing';
+    if (taskSkill === 'reading') return 'Reading';
+    if (taskSkill === 'listening') return 'Listening';
+    return 'Speaking';
+  };
+
+  const getSectionalTaskKeys = (skill) => {
+    if (skill === 'Writing') {
+      return [
+        'writing/summarize-written-text',
+        isCore ? 'writing/write-email' : 'writing/write-essay',
+        'listening/summarize-spoken-text',
+        'listening/write-from-dictation',
+      ];
+    }
+    if (skill === 'Reading') {
+      return [
+        'writing/summarize-written-text',
+        'reading/reading-writing-fill-in-the-blanks',
+        'reading/multiple-choice-multiple',
+        'reading/reorder-paragraphs',
+        'reading/fill-in-the-blanks',
+        'reading/multiple-choice-single',
+        'listening/highlight-correct-summary',
+        'listening/highlight-incorrect-words',
+      ];
+    }
+    if (skill === 'Listening') {
+      return [
+        'speaking/repeat-sentence',
+        ...(!isCore ? ['speaking/retell-lecture'] : []),
+        'speaking/answer-short-question',
+        ...(!isCore ? ['speaking/summarize-group-discussion'] : []),
+        'listening/summarize-spoken-text',
+        'listening/fill-in-the-blanks',
+        'listening/multiple-choice-single',
+        'listening/select-missing-word',
+        'listening/multiple-choice-multiple',
+        'listening/highlight-correct-summary',
+        'listening/highlight-incorrect-words',
+        'listening/write-from-dictation',
+      ];
+    }
+    return isCore ? PART_TASK_PLANS.SpeakingCore : PART_TASK_PLANS.Speaking;
+  };
+
   const queue = [];
   activeSkills.forEach((skill, sIdx) => {
     const countForSkill = sectionCounts[sIdx];
@@ -273,7 +320,9 @@ export function buildMockExamQueue(testItem, isCore) {
         : skill === 'Writing' && isCore
           ? 'WritingCore'
           : skill;
-    const taskKeys = PART_TASK_PLANS[planKey] || PART_TASK_PLANS.Speaking;
+    const taskKeys = isSectional
+      ? getSectionalTaskKeys(skill)
+      : PART_TASK_PLANS[planKey] || PART_TASK_PLANS.Speaking;
 
     for (let i = 0; i < countForSkill; i += 1) {
       const planIdx =
@@ -289,11 +338,12 @@ export function buildMockExamQueue(testItem, isCore) {
         title: `${taskMeta.title} #${i + 1}`,
         contentSnippet: taskMeta.promptText,
       };
+      const itemSkillGroup = resolveTaskSkillGroup(taskSkill);
 
       queue.push({
         index: queue.length,
-        partLabel: partLabelForSkill(skill),
-        skillGroup: skill,
+        partLabel: isSectional ? `${skill} Sectional Test` : partLabelForSkill(itemSkillGroup),
+        skillGroup: itemSkillGroup,
         taskKey,
         taskMeta,
         question: picked,
@@ -1081,10 +1131,38 @@ export function buildMockAttemptScore(testItem, session, trackLabel, isCore = fa
     return Math.max(10, Math.round(sum / items.length));
   };
 
-  const speaking = avgSkillFromResults('Speaking');
-  const writing = avgSkillFromResults('Writing');
-  const reading = avgSkillFromResults('Reading');
-  const listening = avgSkillFromResults('Listening');
+  const isSectional = testItem.mode === 'sectional' || testItem.mode === 'timed';
+  const targetSkill = testItem.skill || 'Speaking';
+  const computeSectionalTarget = () => {
+    const initialKey = targetSkill[0];
+    const sum = questionResults.reduce((acc, r) => {
+      const match = r.skillPills?.find((p) => p.key === initialKey) || r.skillPills?.[0];
+      if (!match || !match.max) return acc;
+      return acc + Math.round((match.score / match.max) * 90);
+    }, 0);
+    return questionResults.length ? Math.max(10, Math.round(sum / questionResults.length)) : 12;
+  };
+
+  const speaking = isSectional
+    ? targetSkill === 'Speaking'
+      ? computeSectionalTarget()
+      : null
+    : avgSkillFromResults('Speaking');
+  const writing = isSectional
+    ? targetSkill === 'Writing'
+      ? computeSectionalTarget()
+      : null
+    : avgSkillFromResults('Writing');
+  const reading = isSectional
+    ? targetSkill === 'Reading'
+      ? computeSectionalTarget()
+      : null
+    : avgSkillFromResults('Reading');
+  const listening = isSectional
+    ? targetSkill === 'Listening'
+      ? computeSectionalTarget()
+      : null
+    : avgSkillFromResults('Listening');
   const activeVals = [speaking, writing, reading, listening].filter((v) => v !== null);
   const overall = activeVals.length
     ? Math.max(10, Math.round(activeVals.reduce((a, b) => a + b, 0) / activeVals.length))

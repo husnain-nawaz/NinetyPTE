@@ -213,6 +213,7 @@ export default function PortalMockTestsPage({
   const mode = initialMode;
   const [activeSkill, setActiveSkill] = useState('Speaking');
   const [scoreMode, setScoreMode] = useState('full');
+  const [activeScoreSkill, setActiveScoreSkill] = useState('Speaking');
 
   const [predictionOnly, setPredictionOnly] = useState(false);
   const [presetOnly, setPresetOnly] = useState(true);
@@ -300,8 +301,13 @@ export default function PortalMockTestsPage({
   const visibleRows = filteredRows.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const scoreFilteredAttempts = useMemo(
-    () => attemptsByTrack.filter((item) => item.mode === scoreMode),
-    [attemptsByTrack, scoreMode]
+    () =>
+      attemptsByTrack.filter((item) => {
+        if (item.mode !== scoreMode) return false;
+        if (scoreMode !== 'full') return item.skill === activeScoreSkill;
+        return true;
+      }),
+    [attemptsByTrack, scoreMode, activeScoreSkill]
   );
 
   const handleSelectTopTab = (nextTopTab) => {
@@ -833,10 +839,18 @@ export default function PortalMockTestsPage({
             </div>
 
             <div
-              className={`rounded-xl border min-h-[340px] p-4 ${
+              className={`rounded-xl border min-h-[340px] p-4 space-y-4 ${
                 darkMode ? 'border-zinc-800' : 'border-slate-200/80'
               }`}
             >
+              {scoreMode !== 'full' && (
+                <ModuleTabsBar
+                  tabs={SECTION_TABS}
+                  activeTab={activeScoreSkill}
+                  onSelect={setActiveScoreSkill}
+                />
+              )}
+
               {scoreFilteredAttempts.length === 0 ? (
                 <ScoreEmptyState />
               ) : (
@@ -897,17 +911,19 @@ export default function PortalMockTestsPage({
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>View Score</span>
                         </Link>
-                        <Link
-                          to={`${dataset.routes.aiFeedback}/${entry.id}`}
-                          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
-                            darkMode
-                              ? 'border-sky-700/60 text-sky-300 hover:bg-sky-950/40'
-                              : 'border-sky-200 text-sky-600 hover:bg-sky-50'
-                          }`}
-                        >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>AI Feedback</span>
-                        </Link>
+                        {scoreMode === 'full' && (
+                          <Link
+                            to={`${dataset.routes.aiFeedback}/${entry.id}`}
+                            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                              darkMode
+                                ? 'border-sky-700/60 text-sky-300 hover:bg-sky-950/40'
+                                : 'border-sky-200 text-sky-600 hover:bg-sky-50'
+                            }`}
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>AI Feedback</span>
+                          </Link>
+                        )}
                         <button
                           type="button"
                           onClick={() => {

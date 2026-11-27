@@ -6,6 +6,7 @@ import {
   BookOpen,
   Gauge,
   Headphones,
+  HelpCircle,
   Mic,
   Pencil,
   Share2,
@@ -147,9 +148,44 @@ function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
   );
 }
 
+function SectionalDonutRing({ score, color, darkMode }) {
+  const pct = Math.max(0, Math.min(100, Math.round(((score || 0) / 90) * 100)));
+  const r = 46;
+  const c = 2 * Math.PI * r;
+  const offset = c - (pct / 100) * c;
+
+  return (
+    <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
+      <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120" aria-hidden="true">
+        <circle
+          cx="60"
+          cy="60"
+          r={r}
+          fill="none"
+          stroke={darkMode ? '#272c35' : '#e8eef5'}
+          strokeWidth="12"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="12"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <span className="absolute text-2xl font-extrabold" style={{ color }}>
+        {score}
+      </span>
+    </div>
+  );
+}
+
 /**
- * Full-page Mock Test Analytics view (/v1/mock-test/mock-test-result-list/full-test-analytics/:attemptId)
- * displaying radar chart, attempted/score summaries, per-task time breakdown, and skill task cards.
+ * Full-page Mock Test & Sectional Mock Test Analytics view supporting Light & Dark mode
+ * (/v1/mock-test/mock-test-result-list/full-test-analytics/:attemptId).
  */
 export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   const { attemptId } = useParams();
@@ -178,7 +214,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
         title: rawAttempt.title || 'Mock Test',
         mode: rawAttempt.mode || 'full',
         skill: rawAttempt.skill || 'All',
-        questions: 68,
+        questions: rawAttempt.mode === 'full' ? 68 : 16,
       },
       { answersByIndex: {} },
       rawAttempt.trackLabel || dataset.trackLabel,
@@ -191,16 +227,22 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
+      <div
+        className={`min-h-screen flex flex-col font-sans ${
+          darkMode ? 'bg-[#0a0c0e] text-zinc-200' : 'bg-[#f8fbfd] text-slate-800'
+        }`}
+      >
         <PTEDashboardHeader />
         <main className="flex-1 w-full max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-5">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0b4a7b]">Mock Test Analytics</h1>
+            <h1 className={`text-lg sm:text-xl font-extrabold ${darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'}`}>
+              Mock Test Analytics
+            </h1>
             <Link to={dataset.routes.scores} className="text-xs font-semibold text-[#0b4a7b] hover:underline">
               &larr; Back to Scores
             </Link>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className={`rounded-2xl border p-6 ${darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200 bg-white'}`}>
             <ScoreEmptyState message="Complete a mock test to view full Analytics." />
           </div>
         </main>
@@ -210,12 +252,44 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   }
 
   const results = attempt.questionResults || [];
-  const totalSec = attempt.totalAllowedSeconds || 7800;
+  const isSectional = attempt.mode === 'sectional' || attempt.mode === 'timed';
+  const targetSkill = attempt.skill || 'Speaking';
+  const targetSec = SKILL_SECTIONS.find((s) => s.key === targetSkill) || SKILL_SECTIONS[0];
+  const totalSec = attempt.totalAllowedSeconds || (isSectional ? 2400 : 7800);
   const takenSec = attempt.elapsedSeconds || Math.round(totalSec * 0.5);
 
   const visibleSkillSections = SKILL_SECTIONS.filter((sec) =>
     results.some((r) => r.skillGroup === sec.key)
   );
+
+  // Deduplicated unique contributor tasks in order of appearance for Sectional card grid
+  const contributorTaskSummaries = [];
+  const seenKeys = new Set();
+  results.forEach((r) => {
+    const key = `${r.skillGroup}:${r.code}`;
+    if (seenKeys.has(key)) return;
+    seenKeys.add(key);
+    const secDef = SKILL_SECTIONS.find((s) => s.key === r.skillGroup) || SKILL_SECTIONS[0];
+    const taskDef = secDef.tasks.find((t) => t.code === r.code);
+    const matching = results.filter((x) => x.skillGroup === r.skillGroup && x.code === r.code);
+    const avgScore = matching.length
+      ? Math.max(
+          10,
+          Math.round(
+            matching.reduce((acc, m) => {
+              const p = m.skillPills?.[0];
+              return acc + (p && p.max ? Math.round((p.score / p.max) * 90) : 0);
+            }, 0) / matching.length
+          )
+        )
+      : 10;
+    contributorTaskSummaries.push({
+      key,
+      label: taskDef?.label || r.code,
+      avgScore,
+      color: secDef.color,
+    });
+  });
 
   const timeBars = visibleSkillSections.flatMap((sec) => {
     const secItems = results.filter((r) => r.skillGroup === sec.key);
@@ -232,6 +306,8 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   });
 
   const maxBarSec = Math.max(120, ...timeBars.map((b) => b.secs));
+  const attemptedTotal = results.filter((r) => r.isAttempted).length;
+  const targetVal = typeof attempt[targetSec.field] === 'number' ? attempt[targetSec.field] : attempt.overall;
 
   const handleShare = () => {
     try {
@@ -242,6 +318,33 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
     setToastMsg('Copied URL Successfully');
     setTimeout(() => setToastMsg(''), 3000);
   };
+
+  const TopActionBar = (
+    <div className="flex items-center justify-end gap-2">
+      <button
+        type="button"
+        onClick={handleShare}
+        aria-label="Share analytics URL"
+        className={`w-8 h-8 rounded-full border flex items-center justify-center cursor-pointer transition ${
+          darkMode
+            ? 'border-zinc-700 text-zinc-300 hover:border-[#3dc8c1]'
+            : 'border-slate-200 text-slate-600 hover:border-[#0b4a7b]'
+        }`}
+      >
+        <Share2 className="w-3.5 h-3.5" />
+      </button>
+      <Link
+        to={`${dataset.routes.viewScore}/${attempt.id}`}
+        className={`rounded-full border px-4 py-1 text-xs font-bold transition ${
+          darkMode
+            ? 'border-zinc-700 text-zinc-200 hover:border-[#3dc8c1]'
+            : 'border-slate-200 text-[#0b4a7b] hover:border-[#0b4a7b]'
+        }`}
+      >
+        Score
+      </Link>
+    </div>
+  );
 
   return (
     <div
@@ -266,7 +369,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
               }`}
             >
-              Mock Test Analytics
+              {isSectional ? 'Sectional Mock Test Analytics' : 'Mock Test Analytics'}
             </h1>
           </div>
 
@@ -281,102 +384,265 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
           </Link>
         </div>
 
-        {/* Radar & Attempted Overview */}
-        <section
-          className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-5 ${
-            darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
-          }`}
-        >
-          <div className="flex items-center justify-end gap-2">
-            <button
-              type="button"
-              onClick={handleShare}
-              aria-label="Share analytics URL"
-              className="w-8 h-8 rounded-full border border-slate-200 text-slate-600 hover:border-[#0b4a7b] flex items-center justify-center cursor-pointer transition"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-            </button>
-            <Link
-              to={`${dataset.routes.viewScore}/${attempt.id}`}
-              className="rounded-full border border-slate-200 hover:border-[#0b4a7b] px-4 py-1 text-xs font-bold text-[#0b4a7b] transition"
-            >
-              Score
-            </Link>
-          </div>
+        {/* Overview Card */}
+        {isSectional ? (
+          <section
+            className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-4 ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
+            {TopActionBar}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            <div className="lg:col-span-4">
-              <SkillRadarPolygon
-                speaking={attempt.speaking ?? 0}
-                writing={attempt.writing ?? 0}
-                reading={attempt.reading ?? 0}
-                listening={attempt.listening ?? 0}
-                overall={attempt.overall}
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              <div className="md:col-span-3">
+                <SectionalDonutRing
+                  score={targetVal}
+                  color={targetSec.color}
+                  darkMode={darkMode}
+                />
+              </div>
 
-            <div className="lg:col-span-2 space-y-3 text-center">
-              {[
-                { label: 'SPEAKING', val: attempt.speaking ?? '-', color: '#eb8c44' },
-                { label: 'WRITING', val: attempt.writing ?? '-', color: '#4ea5f5' },
-                { label: 'READING', val: attempt.reading ?? '-', color: '#22c55e' },
-                { label: 'LISTENING', val: attempt.listening ?? '-', color: '#0b4a7b' },
-                { label: 'OVERALL', val: attempt.overall, color: '#7c3aed' },
-              ].map((row) => (
-                <div key={row.label} className="leading-tight">
-                  <p className="text-[10px] font-bold tracking-wide" style={{ color: row.color }}>
-                    &bull; {row.label}
-                  </p>
-                  <p className="text-sm font-extrabold" style={{ color: row.color }}>
-                    {row.val}
-                  </p>
+              <div className="md:col-span-9 space-y-3">
+                <h2
+                  className={`text-sm font-extrabold border-b pb-2 ${
+                    darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
+                  }`}
+                >
+                  {targetSec.key}
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div
+                    className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
+                      darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
+                      <targetSec.Icon className="w-4 h-4" style={{ color: targetSec.color }} />
+                      <span>Score</span>
+                    </span>
+                    <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                      {targetVal}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`rounded-xl border px-4 py-3.5 flex items-center justify-between ${
+                      darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
+                      <HelpCircle className="w-4 h-4" style={{ color: targetSec.color }} />
+                      <span>Attempted Questions</span>
+                    </span>
+                    <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                      {attemptedTotal}/{results.length}
+                    </span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
+          </section>
+        ) : (
+          <section
+            className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-5 ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
+            {TopActionBar}
 
-            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {SKILL_SECTIONS.map((sec) => {
-                const subset = results.filter((r) => r.skillGroup === sec.key);
-                const attemptedCount = subset.filter((r) => r.isAttempted).length;
-                const Icon = sec.Icon;
-                const val = typeof attempt[sec.field] === 'number' ? attempt[sec.field] : '-';
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              <div className="lg:col-span-4">
+                <SkillRadarPolygon
+                  speaking={attempt.speaking ?? 0}
+                  writing={attempt.writing ?? 0}
+                  reading={attempt.reading ?? 0}
+                  listening={attempt.listening ?? 0}
+                  overall={attempt.overall}
+                />
+              </div>
+
+              <div className="lg:col-span-2 space-y-3 text-center">
+                {[
+                  { label: 'SPEAKING', val: attempt.speaking ?? '-', color: '#eb8c44' },
+                  { label: 'WRITING', val: attempt.writing ?? '-', color: '#4ea5f5' },
+                  { label: 'READING', val: attempt.reading ?? '-', color: '#22c55e' },
+                  { label: 'LISTENING', val: attempt.listening ?? '-', color: '#0b4a7b' },
+                  { label: 'OVERALL', val: attempt.overall, color: '#7c3aed' },
+                ].map((row) => (
+                  <div key={row.label} className="leading-tight">
+                    <p className="text-[10px] font-bold tracking-wide" style={{ color: row.color }}>
+                      &bull; {row.label}
+                    </p>
+                    <p className="text-sm font-extrabold" style={{ color: row.color }}>
+                      {row.val}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {SKILL_SECTIONS.map((sec) => {
+                  const subset = results.filter((r) => r.skillGroup === sec.key);
+                  const attemptedCount = subset.filter((r) => r.isAttempted).length;
+                  const Icon = sec.Icon;
+                  const val = typeof attempt[sec.field] === 'number' ? attempt[sec.field] : '-';
+                  return (
+                    <div
+                      key={sec.key}
+                      className={`rounded-xl border p-4 space-y-2.5 ${
+                        darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
+                      }`}
+                    >
+                      <div className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: sec.color }}>
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{sec.key}</span>
+                      </div>
+                      <div
+                        className={`flex items-center justify-between text-xs ${
+                          darkMode ? 'text-zinc-300' : 'text-slate-600'
+                        }`}
+                      >
+                        <span>Attempted Questions</span>
+                        <span className="font-bold" style={{ color: sec.color }}>
+                          {attemptedCount}/{subset.length}
+                        </span>
+                      </div>
+                      <div
+                        className={`flex items-center justify-between text-xs ${
+                          darkMode ? 'text-zinc-300' : 'text-slate-600'
+                        }`}
+                      >
+                        <span>Score</span>
+                        <span className="font-bold" style={{ color: sec.color }}>
+                          {val}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Per-Task Breakdown Cards: Single Section Box on Sectional, 4 Skill Grids on Full */}
+        {isSectional ? (
+          <section
+            className={`rounded-2xl border overflow-hidden shadow-2xs ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
+            <div className={`${targetSec.headerBg} text-white px-5 py-2.5 flex items-center gap-2 text-sm font-bold`}>
+              <targetSec.Icon className="w-4 h-4" />
+              <span>{targetSec.key}</span>
+            </div>
+            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {contributorTaskSummaries.map((item) => {
+                const pct = Math.min(100, Math.round((item.avgScore / 90) * 100));
                 return (
                   <div
-                    key={sec.key}
-                    className={`rounded-xl border p-4 space-y-2.5 ${
+                    key={item.key}
+                    className={`rounded-xl border p-3.5 space-y-2.5 ${
                       darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
                     }`}
                   >
-                    <div className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: sec.color }}>
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{sec.key}</span>
-                    </div>
-                    <div
-                      className={`flex items-center justify-between text-xs ${
-                        darkMode ? 'text-zinc-300' : 'text-slate-600'
+                    <p
+                      className={`text-xs font-bold truncate ${
+                        darkMode ? 'text-white' : 'text-[#0b4a7b]'
                       }`}
                     >
-                      <span>Attempted Questions</span>
-                      <span className="font-bold" style={{ color: sec.color }}>
-                        {attemptedCount}/{subset.length}
+                      {item.label}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-bold text-slate-400">
+                        {item.avgScore}/90
                       </span>
-                    </div>
-                    <div
-                      className={`flex items-center justify-between text-xs ${
-                        darkMode ? 'text-zinc-300' : 'text-slate-600'
-                      }`}
-                    >
-                      <span>Score</span>
-                      <span className="font-bold" style={{ color: sec.color }}>
-                        {val}
-                      </span>
+                      <div
+                        className={`flex-1 h-1.5 rounded-full overflow-hidden ${
+                          darkMode ? 'bg-zinc-800' : 'bg-slate-100'
+                        }`}
+                      >
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, backgroundColor: item.color }}
+                        />
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
+          </section>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {visibleSkillSections.map((sec) => {
+              const Icon = sec.Icon;
+              const secItems = results.filter((r) => r.skillGroup === sec.key);
+              const activeTasks = sec.tasks.filter((t) => secItems.some((r) => r.code === t.code));
+              return (
+                <section
+                  key={sec.key}
+                  className={`rounded-2xl border overflow-hidden shadow-2xs ${
+                    darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+                  }`}
+                >
+                  <div className={`${sec.headerBg} text-white px-5 py-2.5 flex items-center gap-2 text-sm font-bold`}>
+                    <Icon className="w-4 h-4" />
+                    <span>{sec.key}</span>
+                  </div>
+                  <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {activeTasks.map((task) => {
+                      const taskRows = secItems.filter((r) => r.code === task.code);
+                      const avgTaskScore = taskRows.length
+                        ? Math.max(
+                            10,
+                            Math.round(
+                              taskRows.reduce((acc, r) => {
+                                const p = r.skillPills?.[0];
+                                return acc + (p && p.max ? Math.round((p.score / p.max) * 90) : 0);
+                              }, 0) / taskRows.length
+                            )
+                          )
+                        : 10;
+                      const pct = Math.min(100, Math.round((avgTaskScore / 90) * 100));
+                      return (
+                        <div
+                          key={task.code}
+                          className={`rounded-xl border p-3.5 space-y-2.5 ${
+                            darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
+                          }`}
+                        >
+                          <p
+                            className={`text-xs font-bold truncate ${
+                              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                            }`}
+                          >
+                            {task.label}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[11px] font-bold text-slate-400">
+                              {avgTaskScore}/90
+                            </span>
+                            <div
+                              className={`flex-1 h-1.5 rounded-full overflow-hidden ${
+                                darkMode ? 'bg-zinc-800' : 'bg-slate-100'
+                              }`}
+                            >
+                              <div
+                                className="h-full rounded-full"
+                                style={{ width: `${pct}%`, backgroundColor: sec.color }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
           </div>
-        </section>
+        )}
 
         {/* Time Taken Bar Chart + Section Timing */}
         <section
@@ -403,7 +669,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                   darkMode ? 'text-zinc-300' : 'text-slate-600'
                 }`}
               >
-                {SKILL_SECTIONS.map((s) => (
+                {visibleSkillSections.map((s) => (
                   <span key={s.key} className="inline-flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
                     <span>{s.key}</span>
@@ -411,12 +677,12 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 ))}
               </div>
 
-              <div className="h-44 flex items-end gap-2 sm:gap-3 pt-4 border-b border-slate-100 overflow-x-auto pb-1">
+              <div className="h-44 flex items-end gap-2 sm:gap-3 pt-4 border-b border-slate-100/20 overflow-x-auto pb-1">
                 {timeBars.map((bar) => {
                   const hPct = Math.max(12, Math.round((bar.secs / maxBarSec) * 100));
                   return (
                     <div key={bar.code} className="min-w-[34px] flex-1 flex flex-col items-center gap-1">
-                      <span className="text-[9px] text-slate-500 font-medium">
+                      <span className="text-[9px] text-slate-400 font-medium">
                         {formatMMSS(bar.secs)}
                       </span>
                       <div className="w-3.5 h-28 flex items-end justify-center">
@@ -425,7 +691,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                           style={{ height: `${hPct}%`, backgroundColor: bar.color }}
                         />
                       </div>
-                      <span className="text-[9px] font-bold text-slate-500">{bar.code}</span>
+                      <span className="text-[9px] font-bold text-slate-400">{bar.code}</span>
                     </div>
                   );
                 })}
@@ -433,7 +699,7 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
             </div>
 
             <div className="lg:col-span-4 space-y-2.5">
-              {SKILL_SECTIONS.map((sec) => {
+              {visibleSkillSections.map((sec) => {
                 const secItems = results.filter((r) => r.skillGroup === sec.key);
                 const estSec = Math.max(45, secItems.length * 42);
                 const Icon = sec.Icon;
@@ -474,81 +740,13 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                   darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
                 }`}
               >
-                Listening time does not include SST
+                {isSectional
+                  ? 'The above graph shows the question-wise distribution of your total time spent on this mock test.'
+                  : 'Listening time does not include SST'}
               </p>
             </div>
           </div>
         </section>
-
-        {/* Per-Task Breakdown Cards by Skill */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {visibleSkillSections.map((sec) => {
-            const Icon = sec.Icon;
-            const secItems = results.filter((r) => r.skillGroup === sec.key);
-            const activeTasks = sec.tasks.filter((t) => secItems.some((r) => r.code === t.code));
-            return (
-              <section
-                key={sec.key}
-                className={`rounded-2xl border overflow-hidden shadow-2xs ${
-                  darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
-                }`}
-              >
-                <div className={`${sec.headerBg} text-white px-5 py-2.5 flex items-center gap-2 text-sm font-bold`}>
-                  <Icon className="w-4 h-4" />
-                  <span>{sec.key}</span>
-                </div>
-                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {activeTasks.map((task) => {
-                    const taskRows = secItems.filter((r) => r.code === task.code);
-                    const avgTaskScore = taskRows.length
-                      ? Math.max(
-                          10,
-                          Math.round(
-                            taskRows.reduce((acc, r) => {
-                              const p = r.skillPills?.[0];
-                              return acc + (p && p.max ? Math.round((p.score / p.max) * 90) : 0);
-                            }, 0) / taskRows.length
-                          )
-                        )
-                      : 10;
-                    const pct = Math.min(100, Math.round((avgTaskScore / 90) * 100));
-                    return (
-                      <div
-                        key={task.code}
-                        className={`rounded-xl border p-3.5 space-y-2.5 ${
-                          darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
-                        }`}
-                      >
-                        <p
-                          className={`text-xs font-bold truncate ${
-                            darkMode ? 'text-white' : 'text-[#0b4a7b]'
-                          }`}
-                        >
-                          {task.label}
-                        </p>
-                        <div className="flex items-center gap-3">
-                          <span className="text-[11px] font-bold text-slate-400">
-                            {avgTaskScore}/90
-                          </span>
-                          <div
-                            className={`flex-1 h-1.5 rounded-full overflow-hidden ${
-                              darkMode ? 'bg-zinc-800' : 'bg-slate-100'
-                            }`}
-                          >
-                            <div
-                              className="h-full rounded-full"
-                              style={{ width: `${pct}%`, backgroundColor: sec.color }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
-        </div>
       </main>
 
       <PTEDashboardTealFooter />

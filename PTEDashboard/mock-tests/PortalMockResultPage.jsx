@@ -208,11 +208,12 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
     ? activeSkillTab
     : availableTabs[0]?.key || 'Speaking';
 
-  const activeQuestions = useMemo(
-    () =>
-      (attempt?.questionResults || []).filter((item) => item.skillGroup === resolvedSkillTab),
-    [attempt, resolvedSkillTab]
-  );
+  const isSectionalAttempt = attempt?.mode === 'sectional' || attempt?.mode === 'timed';
+  const activeQuestions = useMemo(() => {
+    const all = attempt?.questionResults || [];
+    if (isSectionalAttempt) return all;
+    return all.filter((item) => item.skillGroup === resolvedSkillTab);
+  }, [attempt, isSectionalAttempt, resolvedSkillTab]);
 
   const triggerToast = (msg) => {
     setToastMsg(msg);
