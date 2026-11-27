@@ -282,6 +282,148 @@ export function getSessionProgressPercent(session) {
 }
 
 /**
+ * Returns the rowspan Content | Time Allowed breakdown table before entering a Part.
+ */
+export function getPartIntroSpec(partIndex, testItem, isCore) {
+  const breakdown = getMockTestPartBreakdown(testItem, isCore);
+
+  if (testItem?.mode === 'sectional' || testItem?.mode === 'timed') {
+    const skill = testItem.skill || 'Speaking';
+    const singleMap = {
+      Speaking: {
+        partTitle: 'Speaking',
+        groups: [
+          {
+            tasks: isCore
+              ? ['Read Aloud', 'Repeat Sentence', 'Describe Image', 'Respond to a Situation', 'Answer Short Question']
+              : ['Read Aloud', 'Repeat Sentence', 'Describe Image', 'Re-Tell Lecture', 'Answer Short Question'],
+            minutes: testItem.durationMinutes || 35,
+          },
+        ],
+      },
+      Writing: {
+        partTitle: 'Writing',
+        groups: [
+          {
+            tasks: isCore ? ['Summarize Written Text', 'Write Email'] : ['Summarize Written Text', 'Write Essay'],
+            minutes: testItem.durationMinutes || 40,
+          },
+        ],
+      },
+      Reading: {
+        partTitle: 'Reading',
+        groups: [
+          {
+            tasks: [
+              'Reading & Writing: Fill in the Blanks',
+              'Multiple Choice, Multiple Answer',
+              'Re-order Paragraphs',
+              'Fill in the Blanks',
+              'Multiple Choice, Single Answer',
+            ],
+            minutes: testItem.durationMinutes || 25,
+          },
+        ],
+      },
+      Listening: {
+        partTitle: 'Listening',
+        groups: [
+          {
+            tasks: [
+              'Summarize Spoken Text',
+              'Multiple Choice, Multiple Answer',
+              'Fill in the Blanks',
+              'Highlight Correct Summary',
+              'Multiple Choice, Single Answer',
+              'Select Missing Word',
+              'Highlight Incorrect Words',
+              'Write from Dictation',
+            ],
+            minutes: testItem.durationMinutes || 32,
+          },
+        ],
+      },
+    };
+    const chosen = singleMap[skill] || singleMap.Speaking;
+    return {
+      partLabel: 'Part 1',
+      partTitle: chosen.partTitle,
+      groups: chosen.groups,
+    };
+  }
+
+  if (partIndex === 2) {
+    return {
+      partLabel: 'Part 2',
+      partTitle: 'Reading',
+      groups: [
+        {
+          tasks: [
+            'Reading & Writing: Fill in the Blanks',
+            'Multiple Choice, Multiple Answer',
+            'Re-order Paragraphs',
+            'Fill in the Blanks',
+            'Multiple Choice, Single Answer',
+          ],
+          minutes: breakdown.rows[1]?.minutes || 25,
+        },
+      ],
+    };
+  }
+
+  if (partIndex === 3) {
+    return {
+      partLabel: 'Part 3',
+      partTitle: 'Listening',
+      groups: [
+        {
+          tasks: [
+            'Summarize Spoken Text',
+            'Multiple Choice, Multiple Answer',
+            'Fill in the Blanks',
+            'Highlight Correct Summary',
+            'Multiple Choice, Single Answer',
+            'Select Missing Word',
+            'Highlight Incorrect Words',
+            'Write from Dictation',
+          ],
+          minutes: breakdown.rows[2]?.minutes || 32,
+        },
+      ],
+    };
+  }
+
+  const p1Total = breakdown.rows[0]?.minutes || 76;
+  const speakingMins = Math.max(15, Math.round(p1Total * 0.47));
+  const writingMins = Math.max(15, p1Total - speakingMins);
+
+  return {
+    partLabel: 'Part 1',
+    partTitle: 'Speaking and Writing',
+    groups: [
+      {
+        tasks: isCore
+          ? ['Read Aloud', 'Repeat Sentence', 'Describe Image', 'Respond to a Situation', 'Answer Short Question']
+          : [
+              'Read Aloud',
+              'Repeat Sentence',
+              'Describe Image',
+              'Re-Tell Lecture',
+              'Answer Short Question',
+              'Summarize Group Discussion',
+              'Respond to a Situation',
+            ],
+        minutes: speakingMins,
+      },
+      {
+        tasks: isCore ? ['Summarize Written Text', 'Write Email'] : ['Summarize Written Text', 'Write Essay'],
+        minutes: writingMins,
+      },
+    ],
+  };
+}
+
+/**
  * Generates an initial in-progress session object when a user starts a mock test.
  */
 export function createMockSession(testItem, isCore) {
@@ -296,10 +438,11 @@ export function createMockSession(testItem, isCore) {
     totalQuestions: Math.max(1, Number(testItem.questions) || 20),
     modalStep: 0, // 0 = USB Headset alert, 1 = Single Window alert, 2 = Dismissed
     stage: 'onboarding', // 'onboarding' | 'questions' | 'completed'
-    onboardingStep: 0, // 0..5
+    onboardingStep: 0, // 0..8 (0 Overview .. 5 Writing .. 6 Personal Intro .. 7 About to Start .. 8 Part 1)
     currentQuestionIndex: 0,
-    writingStyle: 'American (US)',
+    writingStyle: '',
     darkMode: false,
+    examNoise: { enabled: false, scope: 'question', volume: 65 },
     remainingSeconds: totalMinutes * 60,
     answersByIndex: {},
     startedAt: new Date().toISOString(),

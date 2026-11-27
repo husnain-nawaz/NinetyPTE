@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Clock, Maximize2, Minimize2, Moon, Sun } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AudioLines, BookOpen, Clock, Maximize2, Minimize2, Moon, Sun } from 'lucide-react';
+import ExamCentreNoiseModal from './ExamCentreNoiseModal';
+import { ExamNextConfirmDialog, ExamNoticeDialog } from './ExamDialogs';
 import {
   HeadphoneCheckScreen,
   ImportantExamModal,
   MicrophoneCheckScreen,
+  PartIntroScreen,
   PartsOverviewScreen,
+  PersonalIntroductionScreen,
+  ReadyToStartTestScreen,
   SpeakingTipsScreen,
   TestIntroductionScreen,
   WritingInstructionsScreen,
@@ -15,12 +20,15 @@ import {
   buildMockExamQueue,
   formatCountdownHMS,
   getMockTestPartBreakdown,
+  getPartIntroSpec,
 } from './mockTestSessionStore';
 
+const DEFAULT_EXAM_NOISE = { enabled: false, scope: 'question', volume: 65 };
+
 /**
- * Full-screen Pearson-style single mock test runner shared across all Full, Sectional,
- * Timed Sectional, and Custom mock tests, supporting light/dark theme, variable question
- * counts, and seamless Save & Resume state.
+ * Full-screen Pearson-style single mock test runner supporting onboarding alerts,
+ * Personal Introduction, Part tables, Speaking countdown & waveform capture, Exam Centre
+ * Noise modal, Light/Dark theme toggle, validation/confirmation dialogs, and Save & Exit.
  */
 export default function MockTestExamShell({
   initialSession,
@@ -34,19 +42,31 @@ export default function MockTestExamShell({
   const [session, setSession] = useState(initialSession);
   const [completedScore, setCompletedScore] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
+  const [noticeMessage, setNoticeMessage] = useState('');
+  const [confirmNextOpen, setConfirmNextOpen] = useState(false);
+  const [noiseModalOpen, setNoiseModalOpen] = useState(false);
+  const [personalIntroSeconds, setPersonalIntroSeconds] = useState(25);
+  const [partIntroSeconds, setPartIntroSeconds] = useState(116);
+  const [speakingPhase, setSpeakingPhase] = useState('prep');
+  const ambientAudioRef = useRef({ ctx: null, source: null, gain: null });
 
   const testItem = session.testItem;
   const darkMode = Boolean(session.darkMode);
+  const examNoise = session.examNoise || DEFAULT_EXAM_NOISE;
 
   const breakdown = useMemo(() => getMockTestPartBreakdown(testItem, isCore), [testItem, isCore]);
   const questionQueue = useMemo(() => buildMockExamQueue(testItem, isCore), [testItem, isCore]);
+  const part1Spec = useMemo(() => getPartIntroSpec(1, testItem, isCore), [testItem, isCore]);
+
+  const activeQuestionItem =
+    questionQueue[Math.min(session.currentQuestionIndex || 0, Math.max(0, questionQueue.length - 1))];
 
   useEffect(() => {
     if (session.stage === 'completed' || completedScore) return;
     onPersistSession(session);
   }, [session, completedScore, onPersistSession]);
 
-  // Countdown tick only while actively answering exam questions after onboarding modals are dismissed
+  // Live exam countdown during question stage
   useEffect(() => {
     if (session.stage !== 'questions' || session.modalStep < 2) return undefined;
     const timer = setInterval(() => {
@@ -58,11 +78,84 @@ export default function MockTestExamShell({
     return () => clearInterval(timer);
   }, [session.stage, session.modalStep]);
 
+  // Personal Introduction & Part 1 Intro short header countdowns
+  useEffect(() => {
+    if (session.stage !== 'onboarding' || session.modalStep < 2) return undefined;
+    if (session.onboardingStep !== 6 && session.onboardingStep !== 8) return undefined;
+    const timer = setInterval(() => {
+      if (session.onboardingStep === 6) {
+        setPersonalIntroSeconds((s) => Math.max(0, s - 1));
+      } else {
+        setPartIntroSeconds((s) => Math.max(0, s - 1));
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [session.stage, session.modalStep, session.onboardingStep]);
+
   useEffect(() => {
     const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
     document.addEventListener('fullscreenchange', onFsChange);
     return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, []);
+
+  // Determine whether background Exam Centre Noise should play for current screen
+  const isNoiseActiveHere = useMemo(() => {
+    if (!examNoise.enabled || session.stage !== 'questions' || !activeQuestionItem) return false;
+    if (examNoise.scope === 'module') return activeQuestionItem.skillGroup === 'Speaking';
+    if (examNoise.scope === 'type') {
+      return !examNoise.targetTaskSlug || examNoise.targetTaskSlug === activeQuestionItem.taskMeta.slug;
+    }
+    return examNoise.targetQuestionIndex === session.currentQuestionIndex;
+  }, [examNoise, session.stage, session.currentQuestionIndex, activeQuestionItem]);
+
+  useEffect(() => {
+    const stopAmbient = () => {
+      try {
+        ambientAudioRef.current.source?.stop();
+        ambientAudioRef.current.ctx?.close();
+      } catch {
+        // Ignore cleanup errors
+      }
+      ambientAudioRef.current = { ctx: null, source: null, gain: null };
+    };
+
+    if (!isNoiseActiveHere) {
+      stopAmbient();
+      return undefined;
+    }
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0;
+        for (let i = 0; i < bufferSize; i += 1) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (lastOut + 0.03 * white) / 1.03;
+          lastOut = data[i];
+          data[i] *= 1.6;
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const gain = ctx.createGain();
+        gain.gain.value = ((examNoise.volume ?? 65) / 100) * 0.06;
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        source.start();
+
+        ambientAudioRef.current = { ctx, source, gain };
+      }
+    } catch {
+      // Ignore blocked audio context
+    }
+
+    return stopAmbient;
+  }, [isNoiseActiveHere, examNoise.volume]);
 
   const handleToggleFullscreen = async () => {
     try {
@@ -87,12 +180,16 @@ export default function MockTestExamShell({
     }));
   };
 
-  const activeQuestionItem =
-    questionQueue[Math.min(session.currentQuestionIndex || 0, Math.max(0, questionQueue.length - 1))];
+  const handleSpeakingPhaseChange = useCallback((nextPhase) => {
+    setSpeakingPhase(nextPhase);
+  }, []);
 
-  const handleNextStep = () => {
+  const performAdvanceStep = () => {
+    setConfirmNextOpen(false);
+    setSpeakingPhase('prep');
+
     if (session.stage === 'onboarding') {
-      if (session.onboardingStep < 5) {
+      if (session.onboardingStep < 8) {
         setSession((prev) => ({ ...prev, onboardingStep: prev.onboardingStep + 1 }));
         return;
       }
@@ -109,6 +206,13 @@ export default function MockTestExamShell({
         setSession((prev) => ({
           ...prev,
           currentQuestionIndex: prev.currentQuestionIndex + 1,
+          answersByIndex: {
+            ...(prev.answersByIndex || {}),
+            [prev.currentQuestionIndex]: {
+              ...(prev.answersByIndex?.[prev.currentQuestionIndex] || {}),
+              visited: true,
+            },
+          },
         }));
         return;
       }
@@ -120,11 +224,73 @@ export default function MockTestExamShell({
     }
   };
 
+  const handleClickNextButton = () => {
+    if (session.stage === 'onboarding') {
+      if (session.onboardingStep === 5 && !session.writingStyle) {
+        setNoticeMessage('Please select a writing style before continuing.');
+        return;
+      }
+      if (session.onboardingStep === 6) {
+        if (speakingPhase === 'prep') {
+          setNoticeMessage('Please finish answering this question before moving to the next.');
+          return;
+        }
+        setConfirmNextOpen(true);
+        return;
+      }
+      performAdvanceStep();
+      return;
+    }
+
+    if (session.stage === 'questions' && activeQuestionItem) {
+      const currentAns = session.answersByIndex?.[session.currentQuestionIndex];
+      if (
+        activeQuestionItem.skillGroup === 'Speaking' &&
+        speakingPhase === 'prep' &&
+        !currentAns?.recorded
+      ) {
+        setNoticeMessage('Please finish answering this question before moving to the next.');
+        return;
+      }
+      setConfirmNextOpen(true);
+    }
+  };
+
+  const handleUpdateNoise = (nextNoise) => {
+    setSession((prev) => ({
+      ...prev,
+      examNoise: {
+        ...nextNoise,
+        targetQuestionIndex: prev.currentQuestionIndex,
+        targetTaskSlug: activeQuestionItem?.taskMeta?.slug || null,
+      },
+    }));
+  };
+
   const chromeBarClass = darkMode
     ? 'bg-[#2b2b2b] text-zinc-100 border-zinc-700'
     : 'bg-[#bdbdbd] text-slate-900 border-white/70';
 
   const bodySurfaceClass = darkMode ? 'bg-[#333333] text-zinc-100' : 'bg-white text-slate-800';
+
+  const showTopCounterHUD =
+    session.stage === 'questions' ||
+    (session.stage === 'onboarding' &&
+      (session.onboardingStep === 6 || session.onboardingStep === 8));
+
+  const topTimerDisplay =
+    session.stage === 'questions'
+      ? formatCountdownHMS(session.remainingSeconds)
+      : session.onboardingStep === 6
+        ? formatCountdownHMS(personalIntroSeconds)
+        : formatCountdownHMS(partIntroSeconds);
+
+  const topCounterLabel =
+    session.stage === 'questions'
+      ? `${session.currentQuestionIndex + 1} of ${questionQueue.length}`
+      : session.onboardingStep === 6
+        ? '1 of 1'
+        : null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col font-sans select-none">
@@ -133,28 +299,60 @@ export default function MockTestExamShell({
         <ImportantExamModal modalStep={session.modalStep} onAcknowledge={handleAcknowledgeModal} />
       )}
 
-      {/* Top Title Bar */}
+      {/* Validation Notice / Question Confirmation Popups */}
+      {noticeMessage && (
+        <ExamNoticeDialog
+          message={noticeMessage}
+          onClose={() => setNoticeMessage('')}
+          darkMode={darkMode}
+        />
+      )}
+
+      {confirmNextOpen && (
+        <ExamNextConfirmDialog
+          onClose={() => setConfirmNextOpen(false)}
+          onConfirmNext={performAdvanceStep}
+          darkMode={darkMode}
+        />
+      )}
+
+      {noiseModalOpen && (
+        <ExamCentreNoiseModal
+          noiseState={examNoise}
+          onUpdateNoise={handleUpdateNoise}
+          onClose={() => setNoiseModalOpen(false)}
+          darkMode={darkMode}
+        />
+      )}
+
+      {/* Top Grey Title Bar (Test Name on Left + Time Remaining / Item Counter on Right) */}
       <header className={`h-11 px-4 sm:px-6 flex items-center justify-between border-b shrink-0 ${chromeBarClass}`}>
         <span className="text-sm sm:text-base font-medium truncate">
           NinetyPTE - {testItem.title}
         </span>
 
-        {!completedScore && (
-          <button
-            type="button"
-            onClick={() => onSaveAndExit(session)}
-            className={`rounded-md border px-3 py-1 text-[11px] font-semibold transition cursor-pointer ${
-              darkMode
-                ? 'border-zinc-500 bg-zinc-700 text-zinc-100 hover:bg-zinc-600'
-                : 'border-slate-400/70 bg-white/80 text-slate-800 hover:bg-white'
-            }`}
-          >
-            Save &amp; Exit
-          </button>
+        {showTopCounterHUD && !completedScore && (
+          <div className="text-right text-[11px] leading-tight shrink-0">
+            <p className="inline-flex items-center justify-end gap-1.5 font-medium">
+              <Clock className="w-3 h-3 opacity-80" />
+              <span>
+                Time Remaining:{' '}
+                <span className="text-[#0c6c8a] dark:text-[#4dd0e1] font-semibold">
+                  {topTimerDisplay}
+                </span>
+              </span>
+            </p>
+            {topCounterLabel && (
+              <p className="flex items-center justify-end gap-1.5 font-medium mt-0.5">
+                <BookOpen className="w-3 h-3 opacity-75" />
+                <span>{topCounterLabel}</span>
+              </p>
+            )}
+          </div>
         )}
       </header>
 
-      {/* Teal Exam Sub-Header Bar with Timer / Question Counter / Fullscreen / Dark Mode */}
+      {/* Deep Teal Exam Sub-Header Bar (Noise + Fullscreen + Dark/Light Mode) */}
       <div className="h-9 bg-[#00738e] text-white px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0">
         <span className="text-[11px] font-medium opacity-95 truncate">
           {session.stage === 'questions' && activeQuestionItem
@@ -164,49 +362,51 @@ export default function MockTestExamShell({
               : ''}
         </span>
 
-        <div className="flex items-center gap-4">
-          {session.stage === 'questions' && activeQuestionItem && (
-            <div className="flex items-center gap-4 text-[11px] font-semibold">
-              <span className="inline-flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Time Remaining: {formatCountdownHMS(session.remainingSeconds)}</span>
+        <div className="flex items-center gap-3.5">
+          {!completedScore && (
+            <button
+              type="button"
+              onClick={() => setNoiseModalOpen(true)}
+              aria-label="Configure Exam Centre Noise"
+              title="Exam Centre Noise"
+              className="relative w-7 h-7 rounded-full border border-white/60 bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition"
+            >
+              <AudioLines className="w-3.5 h-3.5" />
+              <span
+                className={`absolute -top-1.5 -left-2.5 rounded-full px-1 text-[8px] font-extrabold leading-tight ${
+                  examNoise.enabled ? 'bg-[#3dc8c1] text-white' : 'bg-[#e0f7fa] text-[#00738e]'
+                }`}
+              >
+                {examNoise.enabled ? 'On' : 'Off'}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>
-                  {session.currentQuestionIndex + 1} of {questionQueue.length}
-                </span>
-              </span>
-            </div>
+            </button>
           )}
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleToggleFullscreen}
-              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-              className="text-white hover:opacity-80 transition cursor-pointer"
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
+          <button
+            type="button"
+            onClick={handleToggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            className="text-white hover:opacity-80 transition cursor-pointer"
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
 
-            <button
-              type="button"
-              onClick={handleToggleDarkMode}
-              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              className={`hover:opacity-85 transition cursor-pointer ${
-                darkMode ? 'text-[#facc15]' : 'text-white'
-              }`}
-            >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleToggleDarkMode}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className={`hover:opacity-85 transition cursor-pointer ${
+              darkMode ? 'text-[#facc15]' : 'text-white'
+            }`}
+          >
+            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Exam Content Viewport */}
       <main className={`flex-1 overflow-y-auto px-5 sm:px-10 py-6 sm:py-8 ${bodySurfaceClass}`}>
         {completedScore ? (
           <MockExamCompletedScreen
@@ -237,6 +437,16 @@ export default function MockTestExamShell({
                 darkMode={darkMode}
               />
             )}
+            {session.onboardingStep === 6 && (
+              <PersonalIntroductionScreen
+                darkMode={darkMode}
+                onPhaseChange={handleSpeakingPhaseChange}
+              />
+            )}
+            {session.onboardingStep === 7 && <ReadyToStartTestScreen darkMode={darkMode} />}
+            {session.onboardingStep === 8 && (
+              <PartIntroScreen partSpec={part1Spec} darkMode={darkMode} />
+            )}
           </>
         ) : (
           activeQuestionItem && (
@@ -253,27 +463,40 @@ export default function MockTestExamShell({
                   },
                 }))
               }
+              onSpeakingPhaseChange={handleSpeakingPhaseChange}
               darkMode={darkMode}
             />
           )
         )}
       </main>
 
-      {/* Bottom Footer Bar with Vertical White Divider and Next Button */}
+      {/* Bottom Grey Footer Bar (Save & Exit on Left + Vertical Dividers + Next on Right) */}
       {!completedScore && (
         <footer className={`h-12 flex items-stretch justify-between border-t shrink-0 ${chromeBarClass}`}>
-          <div className="flex-1 px-4 sm:px-6 flex items-center justify-between text-[11px]">
-            <span className="opacity-80">
-              {session.stage === 'questions'
-                ? `Writing Evaluation Style: ${session.writingStyle}`
-                : 'Read the instructions carefully before proceeding.'}
-            </span>
+          <div className="border-r-2 border-white/85 px-4 sm:px-5 flex items-center">
+            <button
+              type="button"
+              onClick={() => onSaveAndExit(session)}
+              className={`rounded-full border px-4 py-1 text-xs font-medium shadow-2xs transition cursor-pointer ${
+                darkMode
+                  ? 'border-zinc-500 bg-zinc-700 text-zinc-100 hover:bg-zinc-600'
+                  : 'border-slate-300 bg-[#e9e9e9] text-slate-600 hover:bg-white'
+              }`}
+            >
+              Save &amp; Exit
+            </button>
+          </div>
+
+          <div className="flex-1 px-4 flex items-center text-[11px] opacity-80 truncate">
+            {session.stage === 'questions' && session.writingStyle
+              ? `Writing Style: ${session.writingStyle}`
+              : ''}
           </div>
 
           <div className="border-l-2 border-white/85 px-4 sm:px-6 flex items-center">
             <button
               type="button"
-              onClick={handleNextStep}
+              onClick={handleClickNextButton}
               disabled={session.modalStep < 2}
               className="min-w-[84px] rounded-full border border-[#0b4a7b] bg-linear-to-b from-[#49a0c4] to-[#125a82] hover:from-[#3d92b6] hover:to-[#0d4c6e] px-5 py-1 text-xs font-bold text-white shadow-sm disabled:opacity-50 cursor-pointer transition"
             >

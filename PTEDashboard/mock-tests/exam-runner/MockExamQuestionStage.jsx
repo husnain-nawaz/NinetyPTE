@@ -1,24 +1,22 @@
 import { useState } from 'react';
-import { BarChart3, CheckCircle2, Mic, Play, Square, Volume2 } from 'lucide-react';
+import { BarChart3, CheckCircle2, Play, Square, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskResponseInputs from '../../practice-arena/TaskResponseInputs';
+import SpeakingRecorderWidget from './SpeakingRecorderWidget';
 
 /**
- * Renders the live active exam question stage (Speaking recorder box or shared Writing/Reading/Listening input)
- * as well as the post-submission Scorecard summary screen.
+ * Renders the live active exam question stage (Speaking countdown + waveform recorder
+ * or shared Writing/Reading/Listening response widgets) and the post-submission Scorecard.
  */
 export function MockExamQuestionStage({
   activeItem,
   savedAnswer,
   onSaveAnswer,
+  onSpeakingPhaseChange,
   darkMode,
 }) {
   const { taskMeta, question, skillGroup } = activeItem;
   const isSpeaking = skillGroup === 'Speaking';
-
-  const [speakingState, setSpeakingState] = useState(
-    savedAnswer?.recorded ? 'recorded' : 'ready'
-  );
   const [promptPlaying, setPromptPlaying] = useState(false);
 
   const responseText = savedAnswer?.responseText || '';
@@ -34,38 +32,21 @@ export function MockExamQuestionStage({
     });
   };
 
-  const handleToggleSpeaking = () => {
-    if (speakingState === 'recording') {
-      setSpeakingState('recorded');
-      updateAnswer({ recorded: true, answered: true });
-      return;
-    }
-    setSpeakingState('recording');
-    updateAnswer({ started: true });
-  };
-
   if (isSpeaking) {
+    const prepSec = taskMeta.slug === 'repeat-sentence' || taskMeta.slug === 'answer-short-question' ? 5 : 12;
+    const recSec = taskMeta.slug === 'read-aloud' ? 35 : taskMeta.slug === 'describe-image' ? 40 : 25;
+
     return (
-      <div className="max-w-4xl space-y-6">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-[#00738e] px-2.5 py-0.5 text-[11px] font-bold text-white">
-              {taskMeta.code}
-            </span>
-            <h2 className={`text-sm sm:text-base font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              {taskMeta.title}
-            </h2>
-          </div>
-          <p className={`text-xs sm:text-[13px] italic ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
-            {taskMeta.instruction}
-          </p>
-        </div>
+      <div className="max-w-5xl space-y-8">
+        <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          {taskMeta.instruction}
+        </p>
 
         {taskMeta.hasAudioPrompt && (
-          <div className="w-full max-w-[300px] rounded-xs bg-[#3792b5] text-white px-5 py-4 space-y-3 shadow-sm">
+          <div className="mx-auto w-full max-w-[300px] rounded-xs bg-[#3792b5] text-white px-5 py-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between text-[11px] font-semibold">
               <span>Status</span>
-              <span>{promptPlaying ? 'Playing Audio' : 'Ready to Play'}</span>
+              <span>{promptPlaying ? 'Playing Audio' : 'Ready'}</span>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -84,9 +65,18 @@ export function MockExamQuestionStage({
           </div>
         )}
 
+        <SpeakingRecorderWidget
+          prepSeconds={prepSec}
+          recordSeconds={recSec}
+          darkMode={darkMode}
+          initialCompleted={Boolean(savedAnswer?.recorded)}
+          onPhaseChange={onSpeakingPhaseChange}
+          onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
+        />
+
         {taskMeta.slug === 'describe-image' && (
           <div
-            className={`rounded-lg border p-5 max-w-lg space-y-3 ${
+            className={`mx-auto rounded-lg border p-5 max-w-lg space-y-3 ${
               darkMode ? 'border-zinc-600 bg-[#2a2a2a]' : 'border-slate-200 bg-slate-50'
             }`}
           >
@@ -109,79 +99,14 @@ export function MockExamQuestionStage({
         )}
 
         {!taskMeta.hasAudioPrompt && (
-          <div
-            className={`rounded-lg border p-5 text-sm sm:text-[15px] leading-relaxed ${
-              darkMode
-                ? 'border-zinc-600 bg-[#2a2a2a] text-zinc-100'
-                : 'border-slate-200 bg-white text-slate-800 shadow-2xs'
+          <p
+            className={`text-xs sm:text-[13px] leading-relaxed ${
+              darkMode ? 'text-zinc-100' : 'text-slate-700'
             }`}
           >
             {question.contentSnippet || taskMeta.promptText}
-          </div>
+          </p>
         )}
-
-        <div
-          className={`max-w-md rounded-xs border p-4 space-y-3 ${
-            darkMode ? 'border-zinc-600 bg-[#2a2a2a]' : 'border-slate-300 bg-[#f6f6f6]'
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-bold">
-            <span className={darkMode ? 'text-zinc-200' : 'text-slate-800'}>Recorded Answer</span>
-            <span
-              className={
-                speakingState === 'recording'
-                  ? 'text-rose-500'
-                  : speakingState === 'recorded'
-                    ? 'text-emerald-500'
-                    : darkMode
-                      ? 'text-zinc-400'
-                      : 'text-slate-500'
-              }
-            >
-              {speakingState === 'recording'
-                ? 'Recording...'
-                : speakingState === 'recorded'
-                  ? 'Completed'
-                  : 'Current Status: Ready'}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleToggleSpeaking}
-              className={`inline-flex items-center gap-2 rounded-xs px-4 py-2 text-xs font-bold text-white cursor-pointer transition ${
-                speakingState === 'recording'
-                  ? 'bg-rose-600 hover:bg-rose-700'
-                  : 'bg-[#3792b5] hover:bg-[#2a7999]'
-              }`}
-            >
-              {speakingState === 'recording' ? (
-                <>
-                  <Square className="w-3.5 h-3.5 fill-white" />
-                  <span>Stop Recording</span>
-                </>
-              ) : (
-                <>
-                  <Mic className="w-3.5 h-3.5" />
-                  <span>{speakingState === 'recorded' ? 'Re-record Answer' : 'Start Recording'}</span>
-                </>
-              )}
-            </button>
-
-            <div className={`h-2 flex-1 rounded-full overflow-hidden ${darkMode ? 'bg-zinc-600' : 'bg-slate-300'}`}>
-              <div
-                className={`h-full transition-all duration-300 ${
-                  speakingState === 'recording'
-                    ? 'w-2/3 bg-rose-500 animate-pulse'
-                    : speakingState === 'recorded'
-                      ? 'w-full bg-emerald-500'
-                      : 'w-0'
-                }`}
-              />
-            </div>
-          </div>
-        </div>
       </div>
     );
   }

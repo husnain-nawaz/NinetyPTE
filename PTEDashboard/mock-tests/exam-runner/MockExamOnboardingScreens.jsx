@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { BookOpen, Clock, Headphones, Info, Play, Square, Volume2 } from 'lucide-react';
-import { HeadphonePersonSVG, MicrophoneCheckAvatarsSVG } from './MockTestSVGArt';
+import {
+  HeadphonePersonSVG,
+  MicrophoneCheckAvatarsSVG,
+  StartTestPersonSVG,
+} from './MockTestSVGArt';
+import SpeakingRecorderWidget from './SpeakingRecorderWidget';
 import { formatExamDurationLabel } from './mockTestSessionStore';
 
 const ALERT_VARIANTS = {
@@ -621,6 +626,115 @@ export function WritingInstructionsScreen({ writingStyle, onSelectWritingStyle, 
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Onboarding Step 6: Personal Introduction prompt with 25-second recorder widget.
+ */
+export function PersonalIntroductionScreen({ darkMode, onPhaseChange }) {
+  const mutedText = darkMode ? 'text-zinc-200' : 'text-slate-600';
+
+  return (
+    <div className="space-y-6 max-w-4xl">
+      <div className="space-y-4">
+        <p className={`text-xs sm:text-[13px] font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>
+          Read the prompt below. In 25 seconds, you must reply in your own words, as naturally and
+          clearly as possible. You have 25 seconds to record your response.
+        </p>
+
+        <p className={`text-xs sm:text-[13px] ${mutedText}`}>
+          Please introduce yourself. For example, you could talk about one of the following:
+        </p>
+
+        <ul className={`list-disc pl-8 space-y-1 text-xs sm:text-[13px] ${mutedText}`}>
+          <li>Your interests</li>
+          <li>Your plans for future study</li>
+          <li>Why you want to study abroad</li>
+          <li>Why you need to learn English</li>
+          <li>Why you chose this test</li>
+        </ul>
+      </div>
+
+      <div className="pt-8">
+        <SpeakingRecorderWidget
+          prepSeconds={5}
+          recordSeconds={25}
+          darkMode={darkMode}
+          onPhaseChange={onPhaseChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Onboarding Step 7: Transition screen right before Part 1 breakdown.
+ */
+export function ReadyToStartTestScreen({ darkMode }) {
+  return (
+    <div className="space-y-8 max-w-2xl">
+      <p className={`text-xs sm:text-[13px] font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+        You are now about to start your test. Click &quot;Next&quot; to proceed.
+      </p>
+
+      <div className="pl-2">
+        <StartTestPersonSVG />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Onboarding Step 8 (and inter-part transition): Detailed Content / Time Allowed rowspan table.
+ */
+export function PartIntroScreen({ partSpec, darkMode }) {
+  const borderColor = darkMode ? 'border-zinc-500' : 'border-black';
+
+  return (
+    <div className="space-y-5 max-w-2xl">
+      <div className="space-y-3 text-xs sm:text-[13px]">
+        <p className={darkMode ? 'text-zinc-100' : 'text-slate-900'}>
+          You are about to begin {partSpec.partLabel} of the exam:{' '}
+          <strong>{partSpec.partTitle}</strong>
+        </p>
+        <p className={darkMode ? 'text-zinc-200' : 'text-slate-800'}>
+          Remember to put your headphones on before beginning this section
+        </p>
+      </div>
+
+      <table className={`w-full max-w-[440px] border-collapse border-2 text-xs ${borderColor}`}>
+        <thead>
+          <tr className={darkMode ? 'bg-zinc-700 text-zinc-100' : 'bg-[#e5e5e5] text-slate-900'}>
+            <th className={`border px-3 py-1.5 text-center font-semibold italic ${borderColor}`}>
+              Content
+            </th>
+            <th className={`border px-3 py-1.5 text-center font-semibold italic ${borderColor}`}>
+              Time Allowed
+            </th>
+          </tr>
+        </thead>
+        <tbody className={darkMode ? 'text-zinc-100' : 'text-slate-900'}>
+          {partSpec.groups.map((group) =>
+            group.tasks.map((taskName, tIdx) => (
+              <tr key={taskName}>
+                <td className={`border px-4 py-1 text-center italic ${borderColor}`}>
+                  {taskName}
+                </td>
+                {tIdx === 0 && (
+                  <td
+                    rowSpan={group.tasks.length}
+                    className={`border px-4 py-1 text-center italic align-middle ${borderColor}`}
+                  >
+                    {group.minutes} minutes
+                  </td>
+                )}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

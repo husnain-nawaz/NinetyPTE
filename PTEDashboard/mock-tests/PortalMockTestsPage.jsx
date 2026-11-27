@@ -66,22 +66,22 @@ function MockProgressRing({ percent }) {
     circumference - (Math.max(0, Math.min(100, percent)) / 100) * circumference;
 
   return (
-    <div className="relative w-9 h-9 shrink-0 flex items-center justify-center">
+    <div className="relative w-9 h-9 rounded-full bg-[#eef3f8]/70 shrink-0 flex items-center justify-center">
       <svg className="w-9 h-9 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
-        <circle cx="18" cy="18" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="3.5" />
+        <circle cx="18" cy="18" r={radius} fill="none" stroke="#dce4ef" strokeWidth="3.5" />
         <circle
           cx="18"
           cy="18"
           r={radius}
           fill="none"
-          stroke="#3dc8c1"
+          stroke="#0b4a7b"
           strokeWidth="3.5"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
         />
       </svg>
-      <span className="absolute text-[9px] font-bold text-[#0b4a7b]">{percent}%</span>
+      <span className="absolute text-[9px] font-extrabold text-[#0b4a7b]">{percent}%</span>
     </div>
   );
 }
