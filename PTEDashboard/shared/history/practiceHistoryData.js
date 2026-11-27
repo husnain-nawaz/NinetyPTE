@@ -553,6 +553,31 @@ export const HISTORY_TASK_CATALOG = {
   },
 };
 
+const TODAY_PRACTICE_STORAGE_PREFIX = 'ninetypte_today_practice_v1_';
+
+export function readTodayPracticeCounts(track) {
+  try {
+    const parsed = JSON.parse(
+      localStorage.getItem(`${TODAY_PRACTICE_STORAGE_PREFIX}${track}`) || 'null'
+    );
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch {
+    // Fallback cleanly below
+  }
+  return { RA: 1 };
+}
+
+export function recordTodayPracticeAttempt(track, code = 'RA') {
+  const current = readTodayPracticeCounts(track);
+  const next = { ...current, [code]: (current[code] || 0) + 1 };
+  try {
+    localStorage.setItem(`${TODAY_PRACTICE_STORAGE_PREFIX}${track}`, JSON.stringify(next));
+  } catch {
+    // Ignore storage failures
+  }
+  return next;
+}
+
 export function getPracticeHistoryOverview(track) {
   const isCore = track === 'core';
   const taskCodes = ['RA', 'RS', 'DI', 'RTS', 'RO', 'RB', 'FIB', 'HIW', 'WFD'];
@@ -566,6 +591,23 @@ export function getPracticeHistoryOverview(track) {
     };
   });
 
+  const todayCounts = readTodayPracticeCounts(track);
+  const todayCards = Object.entries(todayCounts)
+    .filter(([, count]) => count > 0)
+    .map(([code, count]) => {
+      const task = HISTORY_TASK_CATALOG[code] || HISTORY_TASK_CATALOG.RA;
+      return {
+        code: task.code,
+        title: task.shortTitle || task.title,
+        practicedLabel: `Practiced ${count} Qs`,
+        skill: task.skill,
+        count,
+      };
+    });
+  const todayTotal = todayCards.reduce((sum, item) => sum + item.count, 0);
+  const todayBySkill = (skill) =>
+    todayCards.filter((c) => c.skill === skill).reduce((sum, item) => sum + item.count, 0);
+
   return {
     lifetimeQuestions: isCore ? 2024 : 2458,
     backToDashboardPath: isCore ? '/v1/core/dashboard' : '/dashboard',
@@ -574,6 +616,43 @@ export function getPracticeHistoryOverview(track) {
       : '/v1/section-practice-history',
     historyBasePath: isCore ? '/v1/core/practice-history' : '/v1/practice-history',
     dateDays: [
+      {
+        id: 'nov-27-2026',
+        dateLabel: 'Nov 27, 2026',
+        totalPracticedLabel: `Total Practiced: ${todayTotal} Qs`,
+        daysAgo: 0,
+        cards: todayCards,
+        skillBreakdown: [
+          {
+            skill: 'Speaking',
+            practiced: `${todayBySkill('speaking')}/${isCore ? 8218 : 9017}`,
+            timeSpent: todayBySkill('speaking') > 0 ? '00:10' : '00:00',
+            avgScore: 0,
+            pct: Math.min(100, todayBySkill('speaking') * 12),
+          },
+          {
+            skill: 'Writing',
+            practiced: `${todayBySkill('writing')}/${isCore ? 611 : 911}`,
+            timeSpent: '00:00',
+            avgScore: 0,
+            pct: Math.min(100, todayBySkill('writing') * 12),
+          },
+          {
+            skill: 'Reading',
+            practiced: `${todayBySkill('reading')}/${isCore ? 3333 : 3502}`,
+            timeSpent: '00:00',
+            avgScore: 0,
+            pct: Math.min(100, todayBySkill('reading') * 12),
+          },
+          {
+            skill: 'Listening',
+            practiced: `${todayBySkill('listening')}/${isCore ? 5414 : 5997}`,
+            timeSpent: '00:00',
+            avgScore: 0,
+            pct: Math.min(100, todayBySkill('listening') * 12),
+          },
+        ],
+      },
       {
         id: 'oct-19-2026',
         dateLabel: 'Oct 19, 2026',

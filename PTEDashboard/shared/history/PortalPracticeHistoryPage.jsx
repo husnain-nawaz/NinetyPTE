@@ -50,9 +50,11 @@ export default function PortalPracticeHistoryPage({ syncCoreMode = false }) {
     PRACTICE_HISTORY_PERIODS.find((opt) => opt.id === periodId) || PRACTICE_HISTORY_PERIODS[0];
 
   const filteredDays = useMemo(() => {
-    if (selectedPeriod.days === 0) return [];
+    if (selectedPeriod.id === 'today') {
+      return overview.dateDays.filter((day) => day.daysAgo === 0);
+    }
     return overview.dateDays.filter((day) => day.daysAgo <= selectedPeriod.days);
-  }, [overview.dateDays, selectedPeriod.days]);
+  }, [overview.dateDays, selectedPeriod.id, selectedPeriod.days]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">

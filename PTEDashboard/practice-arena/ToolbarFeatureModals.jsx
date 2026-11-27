@@ -8,6 +8,7 @@ import {
   Mic,
   Pause,
   Play,
+  Trash2,
   Volume2,
   X,
 } from 'lucide-react';
@@ -761,9 +762,16 @@ export function QuestionNoteModal({ initialNote = '', onClose, onSaveNote }) {
 }
 
 /**
- * "This question has appeared in my exam" crowd-verified prediction confirmation modal.
+ * "This question has appeared in my exam" modal: displays previously logged appearances
+ * with "Appeared again" & Delete controls when present, or the submission form otherwise.
  */
-export function AppearedInExamModal({ onClose, onSubmitAppeared }) {
+export function AppearedInExamModal({
+  appearedEntries = [],
+  onClose,
+  onSubmitAppeared,
+  onDeleteAppeared,
+}) {
+  const [addingAgain, setAddingAgain] = useState(appearedEntries.length === 0);
   const [examDate, setExamDate] = useState('27/11/26');
   const [venue, setVenue] = useState('');
   const [memory, setMemory] = useState('');
@@ -771,9 +779,17 @@ export function AppearedInExamModal({ onClose, onSubmitAppeared }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!examDate.trim()) return;
-    onSubmitAppeared({ examDate, venue, memory });
+    onSubmitAppeared({
+      id: `app-${Date.now()}`,
+      examDate: examDate.trim(),
+      venue: venue.trim() || 'Pearson Professional Center',
+      memory: memory.trim(),
+      loggedAt: '27-11-2026',
+    });
     onClose();
   };
+
+  const showingHistory = appearedEntries.length > 0 && !addingAgain;
 
   return (
     <div
@@ -781,89 +797,135 @@ export function AppearedInExamModal({ onClose, onSubmitAppeared }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden"
+        className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-[#45d0c7] px-5 py-3 text-white flex items-center justify-between">
           <span className="w-6" />
-          <h3 className="text-sm sm:text-base font-extrabold">
-            This question has appeared in my exam
+          <h3 className="text-sm sm:text-base font-extrabold text-center">
+            {showingHistory
+              ? `This question has appeared in my exam ${appearedEntries.length} times`
+              : 'This question has appeared in my exam'}
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="w-6 h-6 rounded-full bg-white text-[#45d0c7] flex items-center justify-center cursor-pointer"
+            className="w-6 h-6 rounded-full bg-white text-[#45d0c7] flex items-center justify-center cursor-pointer shrink-0"
           >
             <X className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            By confirming this, you can help other test-takers in getting an accurate prediction for
-            their exam.
-          </p>
+        {showingHistory ? (
+          <div className="p-5 sm:p-6 space-y-4">
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => setAddingAgain(true)}
+                className="rounded-full border border-[#8ce2dc] bg-white hover:bg-[#effbfa] px-5 py-1.5 text-xs font-semibold text-[#28b5ac] transition cursor-pointer"
+              >
+                Appeared again
+              </button>
+            </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-800 block">
-              Exam Date <span className="text-rose-500 font-semibold">(Required)</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                required
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#45d0c7]"
-              />
-              <Calendar className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="space-y-2.5 max-h-72 overflow-y-auto">
+              {appearedEntries.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="rounded-xl border border-[#8ce2dc] bg-white px-4 py-3 flex items-center justify-between gap-4 text-xs"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1 items-center">
+                    <div>
+                      <p className="font-bold text-slate-800">{entry.examDate}</p>
+                      {entry.memory && <p className="text-slate-600 mt-0.5">{entry.memory}</p>}
+                    </div>
+                    <p className="font-bold text-slate-800">{entry.venue}</p>
+                    <p className="text-slate-500 sm:text-center">{entry.loggedAt}</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => onDeleteAppeared?.(entry.id)}
+                    aria-label="Remove exam appearance entry"
+                    className="p-1.5 text-slate-400 hover:text-rose-500 transition cursor-pointer shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              By confirming this, you can help other test-takers in getting an accurate prediction
+              for their exam.
+            </p>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-800 block">Exam Venue (optional)</label>
-            <select
-              value={venue}
-              onChange={(e) => setVenue(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs sm:text-sm text-slate-500 bg-white focus:outline-none focus:border-[#45d0c7]"
-            >
-              <option value="">Please Select Your Exam Venue</option>
-              <option value="Pearson Professional Center - Melbourne">Pearson Professional Center - Melbourne</option>
-              <option value="Pearson Professional Center - Sydney">Pearson Professional Center - Sydney</option>
-              <option value="Pearson Professional Center - Toronto">Pearson Professional Center - Toronto</option>
-              <option value="Pearson Professional Center - Lahore">Pearson Professional Center - Lahore</option>
-              <option value="Pearson Professional Center - London">Pearson Professional Center - London</option>
-            </select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 block">
+                Exam Date <span className="text-rose-500 font-semibold">(Required)</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  value={examDate}
+                  onChange={(e) => setExamDate(e.target.value)}
+                  className="w-full rounded-lg border border-slate-700 px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#45d0c7]"
+                />
+                <Calendar className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-800 block">Exam Memory (optional)</label>
-            <textarea
-              rows={3}
-              value={memory}
-              onChange={(e) => setMemory(e.target.value)}
-              placeholder="Please Share Your Exam Memory"
-              className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-[#45d0c7]"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 block">Exam Venue (optional)</label>
+              <select
+                value={venue}
+                onChange={(e) => setVenue(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs sm:text-sm text-slate-500 bg-white focus:outline-none focus:border-[#45d0c7]"
+              >
+                <option value="">Please Select Your Exam Venue</option>
+                <option value="Korea, South/Seoul">Korea, South/Seoul</option>
+                <option value="Pearson Professional Center - Melbourne">Pearson Professional Center - Melbourne</option>
+                <option value="Pearson Professional Center - Sydney">Pearson Professional Center - Sydney</option>
+                <option value="Pearson Professional Center - Toronto">Pearson Professional Center - Toronto</option>
+                <option value="Pearson Professional Center - Lahore">Pearson Professional Center - Lahore</option>
+                <option value="Pearson Professional Center - London">Pearson Professional Center - London</option>
+              </select>
+            </div>
 
-          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full border border-slate-300 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-full border border-[#7ce0d9] text-[#2cc3b9] hover:bg-[#effbfa] py-2 text-xs font-bold cursor-pointer"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 block">Exam Memory (optional)</label>
+              <textarea
+                rows={3}
+                value={memory}
+                onChange={(e) => setMemory(e.target.value)}
+                placeholder="Please Share Your Exam Memory"
+                className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-[#45d0c7]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto pt-1">
+              <button
+                type="button"
+                onClick={() =>
+                  appearedEntries.length > 0 ? setAddingAgain(false) : onClose()
+                }
+                className="rounded-full border border-slate-300 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="rounded-full border border-[#7ce0d9] text-[#2cc3b9] hover:bg-[#effbfa] py-2 text-xs font-bold cursor-pointer"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

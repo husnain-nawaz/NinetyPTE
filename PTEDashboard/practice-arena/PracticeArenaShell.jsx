@@ -15,6 +15,7 @@ import {
   MicrophoneSetupModal,
   QuestionNoteModal,
 } from './ToolbarFeatureModals';
+import { recordTodayPracticeAttempt } from '../shared/history/practiceHistoryData';
 import { emitPortalNotification } from '../shared/notificationsData';
 import TranslateModal from './TranslateModal';
 import { buildTaskQuestionList, resolvePracticeTask } from './practiceTaskCatalog';
@@ -48,6 +49,7 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
   const [noteModalOpen, setNoteModalOpen] = useState(false);
   const [notesById, setNotesById] = useState({});
   const [appearedModalOpen, setAppearedModalOpen] = useState(false);
+  const [appearedLogsById, setAppearedLogsById] = useState({});
   const [bannerToast, setBannerToast] = useState('');
   const [recorderState, setRecorderState] = useState('idle'); // 'idle' | 'recording' | 'recorded'
   const [prepSecondsLeft, setPrepSecondsLeft] = useState(DEFAULT_PREP_SECONDS);
@@ -221,6 +223,8 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
         ...prev,
         [activeQuestion.id]: [newAttempt, ...(prev[activeQuestion.id] || [])],
       }));
+
+      recordTodayPracticeAttempt(isCoreMode ? 'core' : 'academic', taskMeta.code);
 
       setIsSubmitting(false);
     }, 600);
@@ -418,8 +422,13 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
 
       {appearedModalOpen && (
         <AppearedInExamModal
+          appearedEntries={appearedLogsById[activeQuestion.id] || []}
           onClose={() => setAppearedModalOpen(false)}
-          onSubmitAppeared={() => {
+          onSubmitAppeared={(entry) => {
+            setAppearedLogsById((prev) => ({
+              ...prev,
+              [activeQuestion.id]: [entry, ...(prev[activeQuestion.id] || [])],
+            }));
             setQuestionsById((prev) => ({
               ...prev,
               [activeQuestion.id]: {
@@ -435,6 +444,21 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
             });
             setBannerToast('Posted successfully!');
             setTimeout(() => setBannerToast(''), 2500);
+          }}
+          onDeleteAppeared={(entryId) => {
+            setAppearedLogsById((prev) => ({
+              ...prev,
+              [activeQuestion.id]: (prev[activeQuestion.id] || []).filter(
+                (item) => item.id !== entryId
+              ),
+            }));
+            setQuestionsById((prev) => ({
+              ...prev,
+              [activeQuestion.id]: {
+                ...prev[activeQuestion.id],
+                appearedCount: Math.max(0, (activeQuestion.appearedCount || 1) - 1),
+              },
+            }));
           }}
         />
       )}

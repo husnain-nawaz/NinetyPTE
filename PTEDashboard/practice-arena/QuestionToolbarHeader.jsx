@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import {
   BarChart2,
   Bookmark,
-  BookOpen,
   Info,
   Mic,
   PlaySquare,
   StickyNote,
+  TrendingUp,
   Type,
   Users,
   Volume2,
@@ -39,8 +39,8 @@ export default function QuestionToolbarHeader({
   const [infoOpen, setInfoOpen] = useState(false);
   const [bookmarkMenuOpen, setBookmarkMenuOpen] = useState(false);
 
-  const strategyPath = isCoreMode ? '/v1/core/templates' : '/v1/templates';
-  const weightagePath = isCoreMode ? '/v1/core/exam-pattern' : '/v1/question-weightage';
+  const analyticsPath = isCoreMode ? '/v1/core/analytics' : '/v1/analytics';
+  const historyPath = isCoreMode ? '/v1/core/practice-history' : '/v1/practice-history';
   const videosPath = isCoreMode ? '/v1/core/youtube-videos' : '/v1/youtube-videos/1';
 
   const activeColorMeta = BOOKMARK_COLORS.find((c) => c.id === activeQuestion.bookmarkColor);
@@ -63,20 +63,20 @@ export default function QuestionToolbarHeader({
 
         <div className="flex items-center gap-2 relative">
           <Link
-            to={strategyPath}
-            title="Templates & Strategy"
-            aria-label="Open templates and strategy guide"
-            className="w-8 h-8 rounded-full bg-[#e8913a] hover:bg-[#d87c24] text-white flex items-center justify-center transition shadow-2xs"
-          >
-            <BookOpen className="w-4 h-4" />
-          </Link>
-          <Link
-            to={weightagePath}
-            title="Score Weightage"
-            aria-label="Open question score weightage"
+            to={analyticsPath}
+            title="Performance Analytics"
+            aria-label="Open performance analytics"
             className="w-8 h-8 rounded-full bg-[#e8913a] hover:bg-[#d87c24] text-white flex items-center justify-center transition shadow-2xs"
           >
             <BarChart2 className="w-4 h-4" />
+          </Link>
+          <Link
+            to={historyPath}
+            title="Practice History"
+            aria-label="Open practice history"
+            className="w-8 h-8 rounded-full bg-[#e8913a] hover:bg-[#d87c24] text-white flex items-center justify-center transition shadow-2xs"
+          >
+            <TrendingUp className="w-4 h-4" />
           </Link>
           <Link
             to={videosPath}
