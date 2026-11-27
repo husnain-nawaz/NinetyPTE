@@ -47,7 +47,7 @@ export default function MockTestExamShell({
   const [noiseModalOpen, setNoiseModalOpen] = useState(false);
   const [personalIntroSeconds, setPersonalIntroSeconds] = useState(25);
   const [partIntroSeconds, setPartIntroSeconds] = useState(116);
-  const [speakingPhase, setSpeakingPhase] = useState('prep');
+  const [speakingStatus, setSpeakingStatus] = useState({ phase: 'prep', recordingElapsed: 0 });
   const ambientAudioRef = useRef({ ctx: null, source: null, gain: null });
 
   const testItem = session.testItem;
@@ -180,13 +180,13 @@ export default function MockTestExamShell({
     }));
   };
 
-  const handleSpeakingPhaseChange = useCallback((nextPhase) => {
-    setSpeakingPhase(nextPhase);
+  const handleSpeakingPhaseChange = useCallback((statusObj) => {
+    setSpeakingStatus(statusObj);
   }, []);
 
   const performAdvanceStep = () => {
     setConfirmNextOpen(false);
-    setSpeakingPhase('prep');
+    setSpeakingStatus({ phase: 'prep', recordingElapsed: 0 });
 
     if (session.stage === 'onboarding') {
       if (session.onboardingStep < 8) {
@@ -231,7 +231,11 @@ export default function MockTestExamShell({
         return;
       }
       if (session.onboardingStep === 6) {
-        if (speakingPhase === 'prep') {
+        if (
+          speakingStatus.phase === 'prep' ||
+          speakingStatus.phase === 'loading' ||
+          (speakingStatus.phase === 'recording' && speakingStatus.recordingElapsed < 2)
+        ) {
           setNoticeMessage('Please finish answering this question before moving to the next.');
           return;
         }
@@ -244,11 +248,12 @@ export default function MockTestExamShell({
 
     if (session.stage === 'questions' && activeQuestionItem) {
       const currentAns = session.answersByIndex?.[session.currentQuestionIndex];
-      if (
-        activeQuestionItem.skillGroup === 'Speaking' &&
-        speakingPhase === 'prep' &&
-        !currentAns?.recorded
-      ) {
+      const isTooEarlyOnSpeaking =
+        speakingStatus.phase === 'prep' ||
+        speakingStatus.phase === 'loading' ||
+        (speakingStatus.phase === 'recording' && speakingStatus.recordingElapsed < 2);
+
+      if (activeQuestionItem.skillGroup === 'Speaking' && isTooEarlyOnSpeaking && !currentAns?.recorded) {
         setNoticeMessage('Please finish answering this question before moving to the next.');
         return;
       }

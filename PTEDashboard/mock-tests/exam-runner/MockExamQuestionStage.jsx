@@ -111,6 +111,12 @@ export function MockExamQuestionStage({
     if (taskMeta.hasAudioPrompt) {
       const recDuration =
         taskMeta.slug === 'repeat-sentence' ? 15 : taskMeta.slug === 'answer-short-question' ? 10 : 40;
+      const postPrepSec =
+        taskMeta.slug === 'retell-lecture' || taskMeta.slug === 'respond-to-a-situation' ? 10 : 0;
+      const lectureImg =
+        taskMeta.slug === 'retell-lecture' && activeItem.index % 2 === 1
+          ? DESCRIBE_IMAGE_URLS[activeItem.index % DESCRIBE_IMAGE_URLS.length]
+          : null;
 
       return (
         <div className="max-w-5xl space-y-8">
@@ -120,7 +126,9 @@ export function MockExamQuestionStage({
 
           <AudioPromptSpeakingStage
             promptSpeechText={question.contentSnippet || taskMeta.promptText}
+            postClipPrepSeconds={postPrepSec}
             recordSeconds={recDuration}
+            sideImage={lectureImg}
             darkMode={darkMode}
             initialCompleted={Boolean(savedAnswer?.recorded)}
             onPhaseChange={onSpeakingPhaseChange}
