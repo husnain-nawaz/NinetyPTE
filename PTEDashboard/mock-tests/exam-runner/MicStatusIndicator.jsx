@@ -1,3 +1,5 @@
+import { formatMMSS } from './mockTestSessionStore';
+
 const WAVE_HEIGHTS = [16, 24, 12, 22, 26, 14, 20, 24, 12, 18, 8, 10, 12, 16, 10, 14, 8, 12, 18];
 
 /**
@@ -70,7 +72,7 @@ export default function MicStatusIndicator({
           <div className="flex items-center gap-6">
             <span className="tracking-[3px] text-xs font-bold text-[#0f7496]">.......</span>
             <span className={`text-xs font-mono font-medium ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>
-              00:{String(recordSecondsLeft).padStart(2, '0')}
+              {formatMMSS(recordSecondsLeft)}
             </span>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function MicStatusIndicator({
                 })}
               </div>
               <span className={`text-xs font-mono font-medium ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>
-                00:{String(recordSecondsLeft).padStart(2, '0')}
+                {formatMMSS(recordSecondsLeft)}
               </span>
             </div>
           </div>

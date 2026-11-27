@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Volume2 } from 'lucide-react';
 import MicStatusIndicator from './MicStatusIndicator';
+import { formatMMSS } from './mockTestSessionStore';
 
 /**
  * Unified audio-prompt Speaking stage (Repeat Sentence, Re-Tell Lecture, Answer Short Question,
- * Respond to a Situation): delay -> audio playback -> optional post-clip prep -> 1s green Loading
- * -> red Recording -> Complete. Optionally renders an accompanying lecture image on the left.
+ * Summarize Group Discussion, Respond to a Situation): delay -> audio playback -> optional post-clip prep
+ * -> 1s green Loading -> red Recording -> Complete. Optionally renders an accompanying lecture/discussion image.
  */
 export default function AudioPromptSpeakingStage({
   promptSpeechText,
+  playDuration = 4,
   postClipPrepSeconds = 0,
   recordSeconds = 15,
   sideImage = null,
@@ -27,7 +29,6 @@ export default function AudioPromptSpeakingStage({
   const [recordingElapsed, setRecordingElapsed] = useState(initialCompleted ? recordSeconds : 0);
   const [waveTick, setWaveTick] = useState(0);
 
-  const playDuration = postClipPrepSeconds > 0 ? 5 : 4;
   const recorderRef = useRef(null);
   const streamRef = useRef(null);
 
@@ -205,7 +206,7 @@ export default function AudioPromptSpeakingStage({
       {!initialCompleted && (
         <div className="w-[290px] rounded-xs bg-[#3792b5] text-white px-5 py-4 space-y-5 shadow-md">
           <div className="text-right text-xs font-mono h-4">
-            {clipPhase === 'playing' ? `00:${String(playElapsed).padStart(2, '0')}` : ''}
+            {clipPhase === 'playing' ? formatMMSS(playElapsed) : ''}
           </div>
 
           <div className="flex items-start gap-3">
@@ -274,7 +275,11 @@ export default function AudioPromptSpeakingStage({
             <img
               src={sideImage.src}
               alt={sideImage.alt}
-              className="w-full max-w-[420px] max-h-[300px] object-cover"
+              className={
+                sideImage.isIcon
+                  ? 'w-56 h-56 p-3 object-contain'
+                  : 'w-full max-w-[420px] max-h-[300px] object-cover'
+              }
             />
           </div>
         </div>

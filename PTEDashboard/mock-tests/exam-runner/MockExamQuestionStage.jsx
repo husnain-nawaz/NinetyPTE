@@ -109,31 +109,55 @@ export function MockExamQuestionStage({
     }
 
     if (taskMeta.hasAudioPrompt) {
+      const isDiscussion = taskMeta.slug === 'summarize-group-discussion';
+      const isSituation = taskMeta.slug === 'respond-to-a-situation';
       const recDuration =
-        taskMeta.slug === 'repeat-sentence' ? 15 : taskMeta.slug === 'answer-short-question' ? 10 : 40;
+        isDiscussion
+          ? 120
+          : taskMeta.slug === 'repeat-sentence'
+            ? 15
+            : taskMeta.slug === 'answer-short-question'
+              ? 10
+              : 40;
+      const playDuration = isDiscussion ? 7 : taskMeta.slug === 'retell-lecture' ? 6 : 4;
       const postPrepSec =
-        taskMeta.slug === 'retell-lecture' || taskMeta.slug === 'respond-to-a-situation' ? 10 : 0;
-      const lectureImg =
-        taskMeta.slug === 'retell-lecture' && activeItem.index % 2 === 1
+        isDiscussion || isSituation || taskMeta.slug === 'retell-lecture' ? 10 : 0;
+
+      const sideImg = isDiscussion
+        ? {
+            src: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Talk-icon_Wikipedians.svg',
+            alt: 'Three people having a group discussion',
+            isIcon: true,
+          }
+        : taskMeta.slug === 'retell-lecture' && activeItem.index % 2 === 1
           ? DESCRIBE_IMAGE_URLS[activeItem.index % DESCRIBE_IMAGE_URLS.length]
           : null;
 
       return (
-        <div className="max-w-5xl space-y-8">
+        <div className="max-w-5xl space-y-6">
           <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             {taskMeta.instruction}
           </p>
 
-          <AudioPromptSpeakingStage
-            promptSpeechText={question.contentSnippet || taskMeta.promptText}
-            postClipPrepSeconds={postPrepSec}
-            recordSeconds={recDuration}
-            sideImage={lectureImg}
-            darkMode={darkMode}
-            initialCompleted={Boolean(savedAnswer?.recorded)}
-            onPhaseChange={onSpeakingPhaseChange}
-            onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
-          />
+          {isSituation && (
+            <p className={`text-xs sm:text-[13px] leading-relaxed ${darkMode ? 'text-zinc-200' : 'text-slate-600'}`}>
+              {question.contentSnippet || taskMeta.promptText}
+            </p>
+          )}
+
+          <div className="pt-2">
+            <AudioPromptSpeakingStage
+              promptSpeechText={question.contentSnippet || taskMeta.promptText}
+              playDuration={playDuration}
+              postClipPrepSeconds={postPrepSec}
+              recordSeconds={recDuration}
+              sideImage={sideImg}
+              darkMode={darkMode}
+              initialCompleted={Boolean(savedAnswer?.recorded)}
+              onPhaseChange={onSpeakingPhaseChange}
+              onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
+            />
+          </div>
         </div>
       );
     }

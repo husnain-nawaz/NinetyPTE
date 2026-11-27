@@ -12,6 +12,8 @@ const PART_TASK_PLANS = {
     'speaking/describe-image',
     'speaking/retell-lecture',
     'speaking/answer-short-question',
+    'speaking/summarize-group-discussion',
+    'speaking/respond-to-a-situation',
   ],
   SpeakingCore: [
     'speaking/read-aloud',
@@ -54,6 +56,16 @@ export function formatExamDurationLabel(totalMinutes) {
   const hourStr = `${hours} hour${hours === 1 ? '' : 's'}`;
   if (rem === 0) return hourStr;
   return `${hourStr} & ${rem} minute${rem === 1 ? '' : 's'}`;
+}
+
+/**
+ * Formats seconds into MM:SS for audio players and recording countdowns.
+ */
+export function formatMMSS(totalSeconds) {
+  const safe = Math.max(0, Math.floor(totalSeconds || 0));
+  const mins = Math.floor(safe / 60);
+  const secs = safe % 60;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
 /**
