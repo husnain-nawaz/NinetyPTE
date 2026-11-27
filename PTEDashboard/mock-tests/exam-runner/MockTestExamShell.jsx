@@ -47,6 +47,7 @@ export default function MockTestExamShell({
   const [noiseModalOpen, setNoiseModalOpen] = useState(false);
   const [personalIntroSeconds, setPersonalIntroSeconds] = useState(25);
   const [partIntroSeconds, setPartIntroSeconds] = useState(116);
+  const [pendingPartIntro, setPendingPartIntro] = useState(null);
   const [speakingStatus, setSpeakingStatus] = useState({ phase: 'prep', recordingElapsed: 0 });
   const ambientAudioRef = useRef({ ctx: null, source: null, gain: null });
 
@@ -57,9 +58,18 @@ export default function MockTestExamShell({
   const breakdown = useMemo(() => getMockTestPartBreakdown(testItem, isCore), [testItem, isCore]);
   const questionQueue = useMemo(() => buildMockExamQueue(testItem, isCore), [testItem, isCore]);
   const part1Spec = useMemo(() => getPartIntroSpec(1, testItem, isCore), [testItem, isCore]);
+  const part2Spec = useMemo(() => getPartIntroSpec(2, testItem, isCore), [testItem, isCore]);
+  const part3Spec = useMemo(() => getPartIntroSpec(3, testItem, isCore), [testItem, isCore]);
 
   const activeQuestionItem =
     questionQueue[Math.min(session.currentQuestionIndex || 0, Math.max(0, questionQueue.length - 1))];
+
+  const sectionCounterLabel = useMemo(() => {
+    if (!activeQuestionItem) return '1 of 1';
+    const sameGroup = questionQueue.filter((q) => q.skillGroup === activeQuestionItem.skillGroup);
+    const idxInGroup = sameGroup.findIndex((q) => q.index === activeQuestionItem.index);
+    return `${idxInGroup >= 0 ? idxInGroup + 1 : 1} of ${sameGroup.length || 1}`;
+  }, [activeQuestionItem, questionQueue]);
 
   useEffect(() => {
     if (session.stage === 'completed' || completedScore) return;
@@ -78,19 +88,23 @@ export default function MockTestExamShell({
     return () => clearInterval(timer);
   }, [session.stage, session.modalStep]);
 
-  // Personal Introduction & Part 1 Intro short header countdowns
+  // Personal Introduction & Part Intro short header countdowns
   useEffect(() => {
-    if (session.stage !== 'onboarding' || session.modalStep < 2) return undefined;
-    if (session.onboardingStep !== 6 && session.onboardingStep !== 8) return undefined;
+    if (session.modalStep < 2) return undefined;
+    const isPersonalIntro = session.stage === 'onboarding' && session.onboardingStep === 6;
+    const isPartIntro =
+      (session.stage === 'onboarding' && session.onboardingStep === 8) || Boolean(pendingPartIntro);
+    if (!isPersonalIntro && !isPartIntro) return undefined;
+
     const timer = setInterval(() => {
-      if (session.onboardingStep === 6) {
+      if (isPersonalIntro) {
         setPersonalIntroSeconds((s) => Math.max(0, s - 1));
       } else {
         setPartIntroSeconds((s) => Math.max(0, s - 1));
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [session.stage, session.modalStep, session.onboardingStep]);
+  }, [session.stage, session.modalStep, session.onboardingStep, pendingPartIntro]);
 
   useEffect(() => {
     const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
@@ -188,6 +202,11 @@ export default function MockTestExamShell({
     setConfirmNextOpen(false);
     setSpeakingStatus({ phase: 'prep', recordingElapsed: 0 });
 
+    if (pendingPartIntro) {
+      setPendingPartIntro(null);
+      return;
+    }
+
     if (session.stage === 'onboarding') {
       if (session.onboardingStep < 8) {
         setSession((prev) => ({ ...prev, onboardingStep: prev.onboardingStep + 1 }));
@@ -203,9 +222,18 @@ export default function MockTestExamShell({
 
     if (session.stage === 'questions') {
       if (session.currentQuestionIndex < questionQueue.length - 1) {
+        const currentItem = questionQueue[session.currentQuestionIndex];
+        const nextIdx = session.currentQuestionIndex + 1;
+        const nextItem = questionQueue[nextIdx];
+
+        if (currentItem && nextItem && currentItem.partLabel !== nextItem.partLabel) {
+          setPartIntroSeconds(119);
+          setPendingPartIntro(nextItem.skillGroup === 'Reading' ? 2 : 3);
+        }
+
         setSession((prev) => ({
           ...prev,
-          currentQuestionIndex: prev.currentQuestionIndex + 1,
+          currentQuestionIndex: nextIdx,
           answersByIndex: {
             ...(prev.answersByIndex || {}),
             [prev.currentQuestionIndex]: {
@@ -225,6 +253,11 @@ export default function MockTestExamShell({
   };
 
   const handleClickNextButton = () => {
+    if (pendingPartIntro) {
+      performAdvanceStep();
+      return;
+    }
+
     if (session.stage === 'onboarding') {
       if (session.onboardingStep === 5 && !session.writingStyle) {
         setNoticeMessage('Please select a writing style before continuing.');
@@ -257,6 +290,20 @@ export default function MockTestExamShell({
         setNoticeMessage('Please finish answering this question before moving to the next.');
         return;
       }
+
+      if (activeQuestionItem.skillGroup === 'Writing' && !currentAns?.responseText?.trim()) {
+        setNoticeMessage('Please finish answering this question before moving to the next.');
+        return;
+      }
+
+      if (
+        activeQuestionItem.taskMeta?.hasDropdownBlanks &&
+        Object.keys(currentAns?.blankSelections || {}).length === 0
+      ) {
+        setNoticeMessage('Please finish answering this question before moving to the next.');
+        return;
+      }
+
       setConfirmNextOpen(true);
     }
   };
@@ -280,22 +327,27 @@ export default function MockTestExamShell({
 
   const showTopCounterHUD =
     session.stage === 'questions' ||
+    Boolean(pendingPartIntro) ||
     (session.stage === 'onboarding' &&
       (session.onboardingStep === 6 || session.onboardingStep === 8));
 
   const topTimerDisplay =
-    session.stage === 'questions'
-      ? formatCountdownHMS(session.remainingSeconds)
-      : session.onboardingStep === 6
-        ? formatCountdownHMS(personalIntroSeconds)
-        : formatCountdownHMS(partIntroSeconds);
+    pendingPartIntro
+      ? formatCountdownHMS(partIntroSeconds)
+      : session.stage === 'questions'
+        ? formatCountdownHMS(session.remainingSeconds)
+        : session.onboardingStep === 6
+          ? formatCountdownHMS(personalIntroSeconds)
+          : formatCountdownHMS(partIntroSeconds);
 
   const topCounterLabel =
-    session.stage === 'questions'
-      ? `${session.currentQuestionIndex + 1} of ${questionQueue.length}`
-      : session.onboardingStep === 6
-        ? '1 of 1'
-        : null;
+    pendingPartIntro
+      ? null
+      : session.stage === 'questions'
+        ? sectionCounterLabel
+        : session.onboardingStep === 6
+          ? '1 of 1'
+          : null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col font-sans select-none">
@@ -368,24 +420,27 @@ export default function MockTestExamShell({
         </span>
 
         <div className="flex items-center gap-3.5">
-          {!completedScore && (
-            <button
-              type="button"
-              onClick={() => setNoiseModalOpen(true)}
-              aria-label="Configure Exam Centre Noise"
-              title="Exam Centre Noise"
-              className="relative w-7 h-7 rounded-full border border-white/60 bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition"
-            >
-              <AudioLines className="w-3.5 h-3.5" />
-              <span
-                className={`absolute -top-1.5 -left-2.5 rounded-full px-1 text-[8px] font-extrabold leading-tight ${
-                  examNoise.enabled ? 'bg-[#3dc8c1] text-white' : 'bg-[#e0f7fa] text-[#00738e]'
-                }`}
+          {!completedScore &&
+            !pendingPartIntro &&
+            session.stage === 'questions' &&
+            activeQuestionItem?.skillGroup === 'Speaking' && (
+              <button
+                type="button"
+                onClick={() => setNoiseModalOpen(true)}
+                aria-label="Configure Exam Centre Noise"
+                title="Exam Centre Noise"
+                className="relative w-7 h-7 rounded-full border border-white/60 bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition"
               >
-                {examNoise.enabled ? 'On' : 'Off'}
-              </span>
-            </button>
-          )}
+                <AudioLines className="w-3.5 h-3.5" />
+                <span
+                  className={`absolute -top-1.5 -left-2.5 rounded-full px-1 text-[8px] font-extrabold leading-tight ${
+                    examNoise.enabled ? 'bg-[#3dc8c1] text-white' : 'bg-[#e0f7fa] text-[#00738e]'
+                  }`}
+                >
+                  {examNoise.enabled ? 'On' : 'Off'}
+                </span>
+              </button>
+            )}
 
           <button
             type="button"
@@ -418,6 +473,11 @@ export default function MockTestExamShell({
             scorePayload={completedScore}
             scoreHistoryRoute={scoreHistoryRoute}
             onExit={() => onSaveAndExit(null)}
+            darkMode={darkMode}
+          />
+        ) : pendingPartIntro ? (
+          <PartIntroScreen
+            partSpec={pendingPartIntro === 2 ? part2Spec : part3Spec}
             darkMode={darkMode}
           />
         ) : session.stage === 'onboarding' ? (

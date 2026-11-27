@@ -2,6 +2,8 @@ import { CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskResponseInputs from '../../practice-arena/TaskResponseInputs';
 import AudioPromptSpeakingStage from './AudioPromptSpeakingStage';
+import PearsonDropdownBlanksStage from './PearsonDropdownBlanksStage';
+import PearsonWritingStage from './PearsonWritingStage';
 import SpeakingRecorderWidget from './SpeakingRecorderWidget';
 
 const DESCRIBE_IMAGE_URLS = [
@@ -185,6 +187,33 @@ export function MockExamQuestionStage({
           {question.contentSnippet || taskMeta.promptText}
         </p>
       </div>
+    );
+  }
+
+  if (skillGroup === 'Writing') {
+    return (
+      <PearsonWritingStage
+        instruction={taskMeta.instruction}
+        promptPassage={question.contentSnippet || taskMeta.promptText}
+        value={responseText}
+        onChange={(nextText) => updateAnswer({ responseText: nextText, answered: Boolean(nextText.trim()) })}
+        darkMode={darkMode}
+      />
+    );
+  }
+
+  if (taskMeta.hasDropdownBlanks) {
+    return (
+      <PearsonDropdownBlanksStage
+        instruction={taskMeta.instruction}
+        questionIndex={activeItem.index}
+        blankSelections={blankSelections}
+        onSelectBlank={(blankId, word) => {
+          const updated = { ...blankSelections, [blankId]: word };
+          updateAnswer({ blankSelections: updated, answered: true });
+        }}
+        darkMode={darkMode}
+      />
     );
   }
 
