@@ -2,7 +2,10 @@ import { CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskResponseInputs from '../../practice-arena/TaskResponseInputs';
 import AudioPromptSpeakingStage from './AudioPromptSpeakingStage';
+import PearsonDragDropBlanksStage from './PearsonDragDropBlanksStage';
 import PearsonDropdownBlanksStage from './PearsonDropdownBlanksStage';
+import PearsonMcqStage from './PearsonMcqStage';
+import PearsonReorderStage from './PearsonReorderStage';
 import PearsonWritingStage from './PearsonWritingStage';
 import SpeakingRecorderWidget from './SpeakingRecorderWidget';
 
@@ -212,6 +215,52 @@ export function MockExamQuestionStage({
           const updated = { ...blankSelections, [blankId]: word };
           updateAnswer({ blankSelections: updated, answered: true });
         }}
+        darkMode={darkMode}
+      />
+    );
+  }
+
+  if (skillGroup === 'Reading' && Array.isArray(taskMeta.mcqOptions)) {
+    return (
+      <PearsonMcqStage
+        instruction={taskMeta.instruction}
+        questionIndex={activeItem.index}
+        singleChoice={Boolean(taskMeta.singleChoice)}
+        selectedChoices={selectedChoices}
+        onChangeSelectedChoices={(nextChoices) =>
+          updateAnswer({ selectedChoices: nextChoices, answered: nextChoices.length > 0 })
+        }
+        darkMode={darkMode}
+      />
+    );
+  }
+
+  if (skillGroup === 'Reading' && Array.isArray(taskMeta.reorderParagraphs)) {
+    return (
+      <PearsonReorderStage
+        instruction={taskMeta.instruction}
+        questionIndex={activeItem.index}
+        targetIds={savedAnswer?.reorderTargetIds || []}
+        onChangeTargetIds={(nextIds) =>
+          updateAnswer({ reorderTargetIds: nextIds, answered: nextIds.length > 0 })
+        }
+        darkMode={darkMode}
+      />
+    );
+  }
+
+  if (skillGroup === 'Reading' && taskMeta.dragDropWordBank) {
+    return (
+      <PearsonDragDropBlanksStage
+        instruction={taskMeta.instruction}
+        questionIndex={activeItem.index}
+        blankSelections={blankSelections}
+        onChangeBlankSelections={(nextBlanks) =>
+          updateAnswer({
+            blankSelections: nextBlanks,
+            answered: Object.keys(nextBlanks).length > 0,
+          })
+        }
         darkMode={darkMode}
       />
     );

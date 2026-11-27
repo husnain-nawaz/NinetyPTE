@@ -297,8 +297,27 @@ export default function MockTestExamShell({
       }
 
       if (
-        activeQuestionItem.taskMeta?.hasDropdownBlanks &&
+        (activeQuestionItem.taskMeta?.hasDropdownBlanks ||
+          activeQuestionItem.taskMeta?.dragDropWordBank) &&
         Object.keys(currentAns?.blankSelections || {}).length === 0
+      ) {
+        setNoticeMessage('Please finish answering this question before moving to the next.');
+        return;
+      }
+
+      if (
+        activeQuestionItem.skillGroup === 'Reading' &&
+        Array.isArray(activeQuestionItem.taskMeta?.mcqOptions) &&
+        (currentAns?.selectedChoices || []).length === 0
+      ) {
+        setNoticeMessage('Please finish answering this question before moving to the next.');
+        return;
+      }
+
+      if (
+        activeQuestionItem.skillGroup === 'Reading' &&
+        Array.isArray(activeQuestionItem.taskMeta?.reorderParagraphs) &&
+        (currentAns?.reorderTargetIds || []).length === 0
       ) {
         setNoticeMessage('Please finish answering this question before moving to the next.');
         return;
