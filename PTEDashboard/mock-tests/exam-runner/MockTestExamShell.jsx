@@ -302,6 +302,11 @@ export default function MockTestExamShell({
       }
 
       if (activeQuestionItem.skillGroup === 'Listening') {
+        if (!currentAns?.clipPlayed) {
+          setNoticeMessage('You cannot navigate to the next question unless the audio/video ends');
+          return;
+        }
+
         const slug = activeQuestionItem.taskMeta?.slug;
         const hasListeningAnswer =
           slug === 'summarize-spoken-text' || slug === 'write-from-dictation'

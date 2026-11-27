@@ -93,9 +93,7 @@ export default function PearsonMcqStage({
                   key={opt.id}
                   className={`flex items-start gap-2.5 px-2 py-1 text-xs sm:text-[13px] cursor-pointer transition w-fit max-w-full ${
                     checked
-                      ? darkMode
-                        ? 'bg-[#a16207] text-white'
-                        : 'bg-[#fef08a] text-slate-900'
+                      ? 'bg-[#fef08a] text-slate-900'
                       : darkMode
                         ? 'text-zinc-200 hover:text-white'
                         : 'text-slate-700 hover:text-slate-900'
