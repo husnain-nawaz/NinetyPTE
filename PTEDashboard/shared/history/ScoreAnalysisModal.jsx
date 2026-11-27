@@ -206,6 +206,7 @@ function getHeaderSkillStyle(skillLabel) {
  */
 export default function ScoreAnalysisModal({ taskMeta, row, onClose }) {
   const [dictationTab, setDictationTab] = useState('your');
+  const [selectedWordToken, setSelectedWordToken] = useState(null);
   const modalTitle = taskMeta.buttonLabel === 'Score' ? 'Score Analysis' : 'AI Score';
 
   return (
@@ -309,22 +310,49 @@ export default function ScoreAnalysisModal({ taskMeta, row, onClose }) {
                 <div className="p-4 text-xs sm:text-[13px] leading-relaxed text-slate-600 space-y-3">
                   {row.speechTokens && (
                     <>
-                      <p className="space-x-1">
+                      <p className="flex flex-wrap gap-x-1 gap-y-1">
                         {row.speechTokens.map((tok, i) => (
-                          <span
+                          <button
                             key={i}
-                            className={
+                            type="button"
+                            onClick={() => setSelectedWordToken(tok)}
+                            className={`rounded px-0.5 hover:bg-slate-100 transition cursor-pointer ${
                               tok.status === 'good'
                                 ? 'text-emerald-600'
                                 : tok.status === 'avg'
                                 ? 'text-amber-500'
                                 : 'text-rose-500'
-                            }
+                            }`}
                           >
                             {tok.text}
-                          </span>
+                          </button>
                         ))}
                       </p>
+
+                      <p className="text-right text-[11px] font-medium text-[#15a39b]">
+                        Click any word to explore your pronunciation accuracy in detail.
+                      </p>
+
+                      {selectedWordToken && (
+                        <div className="rounded-lg border border-[#bceee9] bg-[#f4fdfc] px-3 py-2 text-[11px] text-slate-600 flex items-center justify-between gap-2">
+                          <span>
+                            Word clarity for{' '}
+                            <strong className="text-[#0b4a7b]">{selectedWordToken.text}</strong>:{' '}
+                            {selectedWordToken.status === 'good'
+                              ? '90/90 (Clear Pronunciation)'
+                              : selectedWordToken.status === 'avg'
+                              ? '68/90 (Moderate Vowel Stress)'
+                              : '32/90 (Needs Stress & Ending Clarity)'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedWordToken(null)}
+                            className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                          >
+                            Dismiss
+                          </button>
+                        </div>
+                      )}
                       <div className="border-t border-slate-100 pt-2.5 flex flex-wrap items-center justify-between gap-3 text-[11px] font-semibold">
                         <span className="text-emerald-600">Good: {row.wordStats?.good ?? 0} words</span>
                         <span className="text-amber-500">Average: {row.wordStats?.avg ?? 0} word</span>

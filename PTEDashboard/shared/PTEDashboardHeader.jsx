@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
@@ -59,6 +59,15 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
   const [variantOpen, setVariantOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+
+  useEffect(() => {
+    const handleNewNotification = (event) => {
+      if (!event?.detail) return;
+      setNotifications((prev) => [event.detail, ...prev]);
+    };
+    window.addEventListener('ninetypte-notification', handleNewNotification);
+    return () => window.removeEventListener('ninetypte-notification', handleNewNotification);
+  }, []);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [idCopied, setIdCopied] = useState(false);

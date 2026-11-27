@@ -131,6 +131,12 @@ export default function SpeakingRecorderPanel({
             </div>
           )}
 
+          {(activeQuestion.prediction || activeQuestion.newPrediction) && (
+            <span className="rounded bg-[#e3f4f6] px-2.5 py-0.5 text-[11px] font-semibold text-[#1ea7a1]">
+              Prediction
+            </span>
+          )}
+
           <span className="rounded bg-[#dff5e3] px-2.5 py-0.5 text-[11px] font-semibold text-[#289c46]">
             Practiced ({activeQuestion.practicedCount || 0})
           </span>

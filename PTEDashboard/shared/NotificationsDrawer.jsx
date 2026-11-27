@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trash2, X } from 'lucide-react';
+import { MessageSquare, ThumbsUp, Trash2, X } from 'lucide-react';
 
 /**
  * Right-side slide-over Notifications drawer with All/Unread tabs,
@@ -120,33 +120,55 @@ export default function NotificationsDrawer({
                   </div>
 
                   <div className="min-w-0 space-y-0.5">
-                    <p className="text-xs sm:text-[13px] font-medium text-slate-700 leading-snug">
-                      {item.title}
-                    </p>
                     <p
-                      className={`text-xs leading-snug ${
+                      className={`text-xs sm:text-[13px] leading-snug ${
                         item.unread
-                          ? 'font-bold text-slate-900'
-                          : 'font-normal text-slate-500'
+                          ? 'font-semibold text-slate-900'
+                          : 'font-medium text-slate-700'
                       }`}
                     >
-                      {item.message}
+                      {item.title}
                     </p>
+                    {item.refTag && (
+                      <p className="text-[11px] font-bold text-[#eb8c44]">{item.refTag}</p>
+                    )}
+                    {item.message && (
+                      <p
+                        className={`text-xs leading-snug ${
+                          item.unread
+                            ? 'font-bold text-slate-900'
+                            : 'font-normal text-slate-500'
+                        }`}
+                      >
+                        {item.message}
+                      </p>
+                    )}
                     <p className="text-[11px] text-slate-400 pt-0.5">{item.date}</p>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  aria-label={`Delete notification: ${item.title}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteOne(item.id);
-                  }}
-                  className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-600 shrink-0 transition cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  {item.kind === 'reply' && (
+                    <MessageSquare className="w-4 h-4 text-slate-400" />
+                  )}
+                  {item.kind === 'alert-chat' && (
+                    <MessageSquare className="w-4 h-4 text-[#eb8c44]" />
+                  )}
+                  {item.kind === 'like' && (
+                    <ThumbsUp className="w-4 h-4 text-[#47d1c6]" />
+                  )}
+                  <button
+                    type="button"
+                    aria-label={`Delete notification: ${item.title}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteOne(item.id);
+                    }}
+                    className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))
           ) : (

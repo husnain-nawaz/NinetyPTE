@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import CyanBarsLoader from '../shared/CyanBarsLoader';
 import ScoreAnalysisModal from '../shared/history/ScoreAnalysisModal';
+import { emitPortalNotification } from '../shared/notificationsData';
 import { COMMUNITY_SCORE_SEEDS, INITIAL_FORUM_POSTS } from './practiceTaskCatalog';
 
 const TABS = [
@@ -255,7 +256,15 @@ export default function BottomCommunityTabs({
         },
         ...prev,
       ]);
+      if (commentCategory === 'Error') {
+        emitPortalNotification({
+          title: 'You: reported an ERROR',
+          refTag: `${taskMeta.code} #${activeQuestion.id}`,
+          kind: 'alert-chat',
+        });
+      }
     } else if (commentDialog.mode === 'forum-reply') {
+      const targetPost = forumPosts.find((p) => p.id === commentDialog.targetId);
       const replyEntry = {
         id: `fpr-${Date.now()}`,
         author: 'Student',
@@ -271,7 +280,15 @@ export default function BottomCommunityTabs({
             : post
         )
       );
+      if (targetPost) {
+        emitPortalNotification({
+          title: `You: replied on ${targetPost.author}'s post for ${targetPost.badge.toUpperCase()}`,
+          refTag: `${taskMeta.code} #${activeQuestion.id}`,
+          kind: 'alert-chat',
+        });
+      }
     } else if (commentDialog.mode === 'community-reply') {
+      const targetRow = communityRows.find((r) => r.id === commentDialog.targetId);
       const replyEntry = {
         id: `csr-${Date.now()}`,
         author: 'Student',
@@ -287,6 +304,13 @@ export default function BottomCommunityTabs({
             : row
         )
       );
+      if (targetRow) {
+        emitPortalNotification({
+          title: `You: replied on ${targetRow.author}'s post`,
+          refTag: `${taskMeta.code} #${activeQuestion.id}`,
+          kind: 'reply',
+        });
+      }
     }
 
     setCommentDraft('');

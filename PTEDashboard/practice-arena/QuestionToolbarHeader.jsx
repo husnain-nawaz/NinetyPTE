@@ -7,28 +7,43 @@ import {
   Info,
   Mic,
   PlaySquare,
+  StickyNote,
   Type,
   Users,
+  Volume2,
 } from 'lucide-react';
+
+const BOOKMARK_COLORS = [
+  { id: 'red', label: 'Red', swatch: '#ef4444' },
+  { id: 'purple', label: 'Purple', swatch: '#a855f7' },
+  { id: 'blue', label: 'Blue', swatch: '#2563eb' },
+  { id: 'green', label: 'Green', swatch: '#65d000' },
+];
 
 /**
  * Shared top task header, action toolbar, instruction banner, and teal active question bar
- * reused across every question workspace from Read Aloud through Write from Dictation.
+ * with Mic Setup, Exam Noise, Dictionary, Note, Color Bookmark dropdown, and Appeared triggers.
  */
 export default function QuestionToolbarHeader({
   taskMeta,
   activeQuestion,
   isCoreMode,
   noiseEnabled,
+  onOpenMicModal,
   onOpenNoiseModal,
   onOpenDictionary,
-  onToggleBookmark,
+  onOpenNoteModal,
+  onSelectBookmarkColor,
+  onOpenAppearedModal,
 }) {
   const [infoOpen, setInfoOpen] = useState(false);
+  const [bookmarkMenuOpen, setBookmarkMenuOpen] = useState(false);
 
   const strategyPath = isCoreMode ? '/v1/core/templates' : '/v1/templates';
   const weightagePath = isCoreMode ? '/v1/core/exam-pattern' : '/v1/question-weightage';
   const videosPath = isCoreMode ? '/v1/core/youtube-videos' : '/v1/youtube-videos/1';
+
+  const activeColorMeta = BOOKMARK_COLORS.find((c) => c.id === activeQuestion.bookmarkColor);
 
   return (
     <div className="space-y-3.5 relative">
@@ -102,13 +117,23 @@ export default function QuestionToolbarHeader({
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
           <button
             type="button"
+            onClick={onOpenMicModal}
+            title="Choose a microphone"
+            aria-label="Choose a microphone"
+            className="w-7 h-7 rounded-full border border-white/50 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+          >
+            <Mic className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
             onClick={onOpenNoiseModal}
             title="Exam Centre Noise settings"
             aria-label="Open Exam Centre Noise settings"
             className="inline-flex items-center gap-1 rounded-full bg-white/15 hover:bg-white/25 px-2.5 py-1 text-white transition cursor-pointer"
           >
-            <Mic className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-extrabold">{noiseEnabled ? 'ON' : 'OFF'}</span>
+            <Volume2 className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-extrabold">{noiseEnabled ? 'On' : 'Off'}</span>
           </button>
 
           <button
@@ -116,27 +141,68 @@ export default function QuestionToolbarHeader({
             onClick={onOpenDictionary}
             title="Open word dictionary"
             aria-label="Open word dictionary"
-            className="w-7 h-7 rounded-full border border-white/50 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+            className="w-7 h-7 rounded-lg border border-white/60 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
           >
             <Type className="w-3.5 h-3.5" />
           </button>
 
           <button
             type="button"
-            onClick={() => onToggleBookmark(activeQuestion.id)}
-            aria-label={activeQuestion.bookmarked ? 'Remove bookmark' : 'Bookmark question'}
-            className="w-7 h-7 rounded-full border border-white/50 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+            onClick={onOpenNoteModal}
+            title="Personal study note"
+            aria-label="Open personal note"
+            className="w-7 h-7 rounded-lg hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
           >
-            <Bookmark
-              className="w-3.5 h-3.5"
-              fill={activeQuestion.bookmarked ? 'currentColor' : 'none'}
-            />
+            <StickyNote className="w-4 h-4" />
           </button>
 
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/50 bg-white/10 px-3 py-1">
+          {/* Bookmark Ribbon with Color Picker Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setBookmarkMenuOpen((p) => !p)}
+              aria-label="Bookmark question"
+              className="w-7 h-7 rounded-lg hover:bg-white/20 flex items-center justify-center transition cursor-pointer"
+              style={{ color: activeColorMeta ? activeColorMeta.swatch : '#ffffff' }}
+            >
+              <Bookmark
+                className="w-4 h-4"
+                fill={activeQuestion.bookmarked ? 'currentColor' : 'none'}
+              />
+            </button>
+
+            {bookmarkMenuOpen && (
+              <div className="absolute right-0 top-9 z-30 w-36 rounded-xl bg-[#dff7f6] border border-[#b4ece8] p-1.5 shadow-xl text-slate-800 space-y-0.5">
+                {BOOKMARK_COLORS.map((color) => (
+                  <button
+                    key={color.id}
+                    type="button"
+                    onClick={() => {
+                      onSelectBookmarkColor(activeQuestion.id, color.id);
+                      setBookmarkMenuOpen(false);
+                    }}
+                    className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-medium flex items-center gap-2.5 transition cursor-pointer ${
+                      activeQuestion.bookmarkColor === color.id
+                        ? 'bg-white font-bold shadow-2xs'
+                        : 'hover:bg-white/70'
+                    }`}
+                  >
+                    <Bookmark className="w-3.5 h-3.5 shrink-0" style={{ color: color.swatch, fill: color.swatch }} />
+                    <span>{color.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenAppearedModal}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/60 bg-white/10 hover:bg-white/20 px-3 py-1 transition cursor-pointer"
+          >
             <Users className="w-3 h-3" />
             <span>Appeared ({activeQuestion.appearedCount || 0})</span>
-          </span>
+          </button>
         </div>
       </div>
     </div>

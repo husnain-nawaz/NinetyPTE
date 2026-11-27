@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import {
+  Calendar,
   Check,
   FileText,
+  Info,
   LayoutGrid,
   Mic,
   Pause,
@@ -32,21 +34,339 @@ const NOISE_SCOPES = [
   },
 ];
 
-const MINI_DICTIONARY_ENTRIES = {
-  returning: { pos: 'verb', ipa: '/rɪˈtɜːrnɪŋ/', meaning: 'Bringing or sending an item back to where it came from.' },
-  borrowed: { pos: 'adjective', ipa: '/ˈbɒrəʊd/', meaning: 'Temporarily taken with permission and intention to return.' },
-  missing: { pos: 'adjective', ipa: '/ˈmɪsɪŋ/', meaning: 'Absent or lost from the expected place.' },
-  experts: { pos: 'noun', ipa: '/ˈekspɜːrts/', meaning: 'People with comprehensive knowledge or skill in an area.' },
-  transparency: { pos: 'noun', ipa: '/trænˈspærənsi/', meaning: 'Openness, honesty, and straightforward communication.' },
-  etiquette: { pos: 'noun', ipa: '/ˈetɪket/', meaning: 'Customary code of polite behavior in society or professions.' },
-  disputes: { pos: 'noun', ipa: '/dɪˈspjuːts/', meaning: 'Disagreements, arguments, or formal debates.' },
-  unreported: { pos: 'adjective', ipa: '/ˌʌnrɪˈpɔːrtɪd/', meaning: 'Not officially stated, disclosed, or documented.' },
-  defects: { pos: 'noun', ipa: '/ˈdiːfekts/', meaning: 'Imperfections, flaws, or physical damage.' },
-  acknowledge: { pos: 'verb', ipa: '/əkˈnɒlɪdʒ/', meaning: 'Recognize or admit the truth or existence of something.' },
-  apology: { pos: 'noun', ipa: '/əˈpɒlədʒi/', meaning: 'A regretful admission of a mistake or offense.' },
-  prevent: { pos: 'verb', ipa: '/prɪˈvent/', meaning: 'Keep something undesirable from happening.' },
-  misunderstanding: { pos: 'noun', ipa: '/ˌmɪsʌndərˈstændɪŋ/', meaning: 'A failure to interpret someone’s words or actions accurately.' },
+const MINI_DICTIONARY_DETAILS = {
+  home: {
+    ipa: '(hoʊm)',
+    definitions: [
+      '(baseball) base consisting of a rubber slab where the batter stands; it must be touched by a base runner in order to score',
+      'an institution where people are cared for',
+      'a social unit living together',
+      'inside the country',
+      'where you live at a particular time',
+      'the place where you are stationed and from which missions start',
+    ],
+    examples: [
+      'he ruled that the runner failed to touch home',
+      'a home for the elderly',
+      'the teacher asked how many people made up his home',
+      'deliver the package to my home',
+      "he doesn't have a home to go to",
+      'they raise money to provide homes for the homeless',
+      'home is where the heart is',
+    ],
+  },
+  transparency: {
+    ipa: '(trænˈspærənsi)',
+    definitions: [
+      'the quality of being done in an open way without secrets',
+      'the quality of allowing light to pass through clearly',
+      'honesty and clear disclosure between parties',
+    ],
+    examples: [
+      'experts say transparency is key when reporting missing pages',
+      'financial transparency builds stronger public confidence',
+    ],
+  },
+  etiquette: {
+    ipa: '(ˈetɪket)',
+    definitions: [
+      'the customary code of polite behavior in society or among members of a profession',
+      'accepted conventions governing respectful communication',
+    ],
+    examples: [
+      'librarians and etiquette coaches recommend prompt acknowledgment',
+      'email etiquette matters in workplace communication',
+    ],
+  },
+  kitchen: {
+    ipa: '(ˈkɪtʃən)',
+    definitions: [
+      'a room or area equipped for preparing and cooking meals',
+      'culinary preparation traditions of a household or chef',
+    ],
+    examples: [
+      "you don't have to spend a lot of time in the kitchen on weekends",
+      'smart appliances streamline busy weekday kitchens',
+    ],
+  },
 };
+
+function getDictionaryEntry(word) {
+  const key = word.toLowerCase();
+  if (MINI_DICTIONARY_DETAILS[key]) return MINI_DICTIONARY_DETAILS[key];
+  return {
+    ipa: `(/${key}/)`,
+    definitions: [
+      `Academic & general English vocabulary term appearing in this PTE task: "${word}".`,
+      'Used in context to convey precise meaning, tone, and grammatical cohesion.',
+    ],
+    examples: [
+      `Practice pronouncing "${word}" crisply with clear syllable stress.`,
+      `Notice how "${word}" connects ideas naturally in the passage.`,
+    ],
+  };
+}
+
+function speakWord(word) {
+  try {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(word);
+      u.lang = 'en-US';
+      window.speechSynthesis.speak(u);
+    }
+  } catch {
+    // Ignore synthesis unavailability
+  }
+}
+
+const FALLBACK_MICS = [
+  { id: 'default-realtek', label: 'Default - Microphone Array (3- Realtek(R) Audio)' },
+  { id: 'comm-realtek', label: 'Communications - Microphone Array (3- Realtek(R) Audio)' },
+  { id: 'array-realtek', label: 'Microphone Array (3- Realtek(R) Audio)' },
+];
+
+const BROWSER_GUIDES = {
+  chrome: {
+    title: 'Chrome Setup',
+    breadcrumb: 'Chrome > Settings > Privacy and Security > Site Settings > Microphone',
+    steps: [
+      'Click the site controls icon near the address bar.',
+      'Open site settings and set microphone to allow.',
+      'Choose allow if chrome prompts you again.',
+      'Refresh the page and retry the check.',
+    ],
+    stuck: [
+      'Click the site controls icon near the address bar.',
+      'In chrome microphone settings, confirm the correct input device is selected.',
+      'Close other tabs or apps that may already be using the microphone.',
+    ],
+  },
+  edge: {
+    title: 'Edge Setup',
+    breadcrumb: 'Edge > Settings > Cookies and site permissions > Microphone',
+    steps: [
+      'Open this page in Edge and click the lock or site controls icon beside the address bar.',
+      'Open Permissions for this site and set Microphone to Allow.',
+      'If you do not see the site-level option, open Edge settings, go to Cookies and site permissions, then open Microphone.',
+      'Refresh the page and retry the microphone check.',
+    ],
+    stuck: [
+      'Check that this site is not listed in the blocked sites section for Microphone.',
+      'Verify Edge is using the correct microphone input device.',
+      'If Windows blocked browser microphone access, allow microphone access in Windows Privacy settings and try again.',
+    ],
+  },
+};
+
+/**
+ * Choose a microphone modal + Chrome/Edge Browser Help troubleshooting guide.
+ */
+export function MicrophoneSetupModal({ initialMicId, onClose, onSelectMic }) {
+  const [selectedId, setSelectedId] = useState(initialMicId || FALLBACK_MICS[1].id);
+  const [showBrowserHelp, setShowBrowserHelp] = useState(false);
+  const [browserTab, setBrowserTab] = useState('chrome');
+
+  const activeGuide = BROWSER_GUIDES[browserTab] || BROWSER_GUIDES.chrome;
+
+  if (showBrowserHelp) {
+    return (
+      <div
+        className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div
+          className="w-full max-w-3xl rounded-2xl bg-white p-5 sm:p-6 shadow-2xl grid grid-cols-1 md:grid-cols-12 gap-5 relative"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => setShowBrowserHelp(false)}
+            aria-label="Close browser help"
+            className="absolute right-4 top-4 w-6 h-6 rounded-full border border-[#0b4a7b] text-[#0b4a7b] flex items-center justify-center cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Left Sidebar */}
+          <div className="md:col-span-4 rounded-xl bg-[#f3f9fc] p-4 flex flex-col justify-between space-y-5">
+            <div className="space-y-3">
+              <span className="w-9 h-9 rounded-full bg-white text-[#0b4a7b] flex items-center justify-center shadow-2xs">
+                <Mic className="w-4 h-4" />
+              </span>
+              <h3 className="text-base font-extrabold text-[#0b4a7b] leading-snug">
+                Microphone
+                <br />
+                Instruction
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Choose your browser and allow microphone access for this site. The matching browser
+                tab is selected automatically when we can detect it.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              {[
+                { id: 'chrome', label: 'Chrome', dotClass: 'bg-amber-400' },
+                { id: 'edge', label: 'Edge', dotClass: 'bg-sky-500' },
+              ].map((b) => {
+                const active = browserTab === b.id;
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => setBrowserTab(b.id)}
+                    className={`w-full rounded-xl px-4 py-2.5 text-left text-xs font-bold flex items-center gap-2.5 transition cursor-pointer ${
+                      active
+                        ? 'bg-[#0b568c] text-white shadow-xs'
+                        : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+                    }`}
+                  >
+                    <span className={`w-3.5 h-3.5 rounded-full ${b.dotClass}`} />
+                    <span>{b.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Instructions */}
+          <div className="md:col-span-8 space-y-4 pt-1">
+            <div>
+              <h4 className="text-sm sm:text-base font-extrabold text-[#0b4a7b]">
+                {activeGuide.title}
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">{activeGuide.breadcrumb}</p>
+            </div>
+
+            <ol className="space-y-2.5 text-xs text-slate-600">
+              {activeGuide.steps.map((step, i) => (
+                <li key={step} className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-[#eef5fb] text-[#0b4a7b] font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <span className="leading-relaxed">{step}</span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="rounded-xl bg-[#f4f8fc] p-4 space-y-2 text-xs text-slate-600">
+              <p className="font-bold text-slate-800">Still stuck?</p>
+              <ul className="list-disc pl-4 space-y-1.5 leading-relaxed">
+                {activeGuide.stuck.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={() => setShowBrowserHelp(false)}
+                className="rounded-full border border-[#0b4a7b] px-10 py-1.5 text-xs font-bold text-[#0b4a7b] hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl space-y-4 relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close microphone selector"
+          className="absolute right-4 top-4 w-6 h-6 rounded-full border border-[#0b4a7b] text-[#0b4a7b] flex items-center justify-center cursor-pointer"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="flex items-start gap-3.5">
+          <span className="w-11 h-11 rounded-full bg-[#faeffb] text-[#c056d3] flex items-center justify-center shrink-0">
+            <Mic className="w-5 h-5" />
+          </span>
+          <div>
+            <h3 className="text-base sm:text-lg font-extrabold text-slate-800">
+              Choose a microphone
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Test the microphone you want to use before the speaking task can start recording.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-[#eff7fe] px-4 py-2.5 text-xs font-bold text-[#0b568c]">
+          Recording stays locked until a microphone is selected.
+        </div>
+
+        <div className="space-y-1">
+          <p className="text-xs font-extrabold text-slate-700">Available microphones</p>
+          <p className="text-[11px] text-slate-500">
+            Select the microphone you want to use for this speaking task.
+          </p>
+        </div>
+
+        <div className="space-y-2.5">
+          {FALLBACK_MICS.map((mic) => {
+            const active = selectedId === mic.id;
+            return (
+              <button
+                key={mic.id}
+                type="button"
+                onClick={() => setSelectedId(mic.id)}
+                className={`w-full rounded-xl border px-4 py-3 text-left text-xs font-semibold flex items-center gap-3 transition cursor-pointer ${
+                  active
+                    ? 'border-[#86ded8] bg-[#f4fdfc] text-[#28b5ac]'
+                    : 'border-slate-200 bg-white text-[#0b4a7b] hover:border-slate-300'
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                    active ? 'bg-[#4bd5cc] border-[#4bd5cc] text-white' : 'border-slate-300'
+                  }`}
+                >
+                  {active && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                </span>
+                <span>{mic.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => {
+              onSelectMic(selectedId);
+              onClose();
+            }}
+            className="rounded-full bg-[#0b568c] hover:bg-[#08426d] px-7 py-2 text-xs font-bold text-white cursor-pointer"
+          >
+            Use This Microphone
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowBrowserHelp(true)}
+            className="rounded-full border border-[#0b568c] px-8 py-2 text-xs font-bold text-[#0b568c] hover:bg-slate-50 cursor-pointer"
+          >
+            Browser Help
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Exam Centre Noise configuration modal matching the Speaking head-wave toolbar button.
@@ -135,7 +455,6 @@ export function ExamCentreNoiseModal({
           </div>
         </div>
 
-        {/* Enable Switch Row */}
         <div className="rounded-xl border border-slate-200 px-4 py-3.5 flex items-center justify-between gap-3">
           <div className="flex items-start gap-3">
             <span className="w-9 h-9 rounded-lg bg-[#e6fbfa] text-[#4ad2ca] flex items-center justify-center shrink-0">
@@ -173,7 +492,6 @@ export function ExamCentreNoiseModal({
           </div>
         )}
 
-        {/* Scope Selection */}
         <div className="space-y-2.5">
           <p className="text-xs font-bold text-slate-700">Apply this setting to:</p>
           {NOISE_SCOPES.map((opt) => {
@@ -235,32 +553,106 @@ export function ExamCentreNoiseModal({
 }
 
 /**
- * Interactive word-click Dictionary modal triggered by the "A" button in the question banner.
+ * Interactive Dictionary modal supporting passage word clicks and full Definitions / Examples
+ * card view with "Go Back" and "Add To Vocab-Bank" persistence.
  */
-export function DictionaryModal({ promptText, onClose }) {
+export function DictionaryModal({ promptText, onClose, onAddToVocabBank }) {
   const [selectedWord, setSelectedWord] = useState('');
+  const [addedToBank, setAddedToBank] = useState(false);
 
-  const cleanLookup = (token) => token.replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '').toLowerCase();
-  const entry =
-    selectedWord &&
-    (MINI_DICTIONARY_ENTRIES[selectedWord] || {
-      pos: 'vocabulary',
-      ipa: `/${selectedWord}/`,
-      meaning: `Context word from the active passage. Pronounce "${selectedWord}" clearly with natural word stress.`,
-    });
+  const cleanLookup = (token) => token.replace(/^[^a-zA-Z]+|[^a-zA-Z]+$/g, '');
 
-  const handlePronounce = (word) => {
-    try {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(word);
-        u.lang = 'en-US';
-        window.speechSynthesis.speak(u);
-      }
-    } catch {
-      // Ignore synthesis unavailability
-    }
-  };
+  if (selectedWord) {
+    const entry = getDictionaryEntry(selectedWord);
+    return (
+      <div
+        className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div
+          className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-2xl space-y-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-base sm:text-lg font-extrabold text-[#0b4a7b]">Dictionary</h3>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close dictionary modal"
+              className="w-6 h-6 rounded-full border border-[#0b4a7b] text-[#0b4a7b] flex items-center justify-center cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 text-sm">
+              <span className="rounded bg-[#ebfbfa] px-3 py-1 font-bold text-[#35bdb5] capitalize">
+                {selectedWord}
+              </span>
+              <span className="text-slate-500 text-xs">{entry.ipa}</span>
+              <button
+                type="button"
+                onClick={() => speakWord(selectedWord)}
+                aria-label={`Pronounce ${selectedWord}`}
+                className="text-slate-500 hover:text-[#0b4a7b] cursor-pointer"
+              >
+                <Volume2 className="w-4 h-4" />
+              </button>
+            </div>
+            <Info className="w-4 h-4 text-slate-400" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-slate-100 bg-white p-4 max-h-64 overflow-y-auto space-y-2.5 shadow-2xs">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-[#0b4a7b]">
+                DEFINITIONS
+              </p>
+              <ul className="list-disc pl-4 space-y-2 text-xs text-slate-600 leading-relaxed">
+                {entry.definitions.map((def, i) => (
+                  <li key={i}>{def}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-slate-100 bg-white p-4 max-h-64 overflow-y-auto space-y-2.5 shadow-2xs">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-[#0b4a7b]">
+                EXAMPLES
+              </p>
+              <ul className="list-disc pl-4 space-y-2 text-xs text-slate-600 leading-relaxed">
+                {entry.examples.map((ex, i) => (
+                  <li key={i}>{ex}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedWord('');
+                setAddedToBank(false);
+              }}
+              className="rounded-full border border-[#0b4a7b] px-5 py-1.5 text-xs font-bold text-[#0b4a7b] hover:bg-slate-50 cursor-pointer"
+            >
+              Go Back
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onAddToVocabBank?.(selectedWord);
+                setAddedToBank(true);
+              }}
+              className="rounded-full bg-[#0b568c] hover:bg-[#08426d] px-6 py-1.5 text-xs font-bold text-white cursor-pointer"
+            >
+              {addedToBank ? 'Added to Vocab-Bank' : 'Add To Vocab-Bank'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -291,7 +683,6 @@ export function DictionaryModal({ promptText, onClose }) {
             .filter(Boolean)
             .map((token, idx) => {
               const cleaned = cleanLookup(token);
-              const isSelected = cleaned && selectedWord === cleaned;
               return (
                 <button
                   key={`${idx}-${token}`}
@@ -299,45 +690,180 @@ export function DictionaryModal({ promptText, onClose }) {
                   onClick={() => {
                     if (cleaned) {
                       setSelectedWord(cleaned);
-                      handlePronounce(cleaned);
+                      speakWord(cleaned);
                     }
                   }}
-                  className={`rounded px-1 transition cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#e2f9f7] text-[#0b4a7b] font-bold underline decoration-[#4bd5cc]'
-                      : 'hover:bg-slate-100 hover:text-[#1db3a8]'
-                  }`}
+                  className="rounded px-1 hover:bg-[#e2f9f7] hover:text-[#1db3a8] transition cursor-pointer"
                 >
                   {token}
                 </button>
               );
             })}
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {entry && (
-          <div className="rounded-xl border border-[#8ce2dc] bg-[#f4fdfc] p-4 space-y-1 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-extrabold text-[#0b4a7b] capitalize">
-                  {selectedWord}
-                </span>
-                <span className="text-slate-400">{entry.ipa}</span>
-                <span className="rounded bg-[#dff6f4] px-2 py-0.5 text-[10px] font-bold text-[#1db3a8]">
-                  {entry.pos}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => handlePronounce(selectedWord)}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1db3a8] hover:underline cursor-pointer"
-              >
-                <Volume2 className="w-3.5 h-3.5" />
-                <span>Listen</span>
-              </button>
-            </div>
-            <p className="text-slate-600 leading-relaxed">{entry.meaning}</p>
+/**
+ * Per-question personal study Note modal.
+ */
+export function QuestionNoteModal({ initialNote = '', onClose, onSaveNote }) {
+  const [noteText, setNoteText] = useState(initialNote);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSaveNote(noteText);
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-[#45d0c7] px-5 py-3 text-white flex items-center justify-between">
+          <span className="w-6" />
+          <h3 className="text-base font-extrabold">Note</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close Note modal"
+            className="w-6 h-6 rounded-full bg-white text-[#45d0c7] flex items-center justify-center cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <textarea
+            rows={5}
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Enter Note..."
+            className="w-full rounded-xl border border-slate-200 p-3.5 text-xs sm:text-sm text-slate-700 focus:outline-none focus:border-[#45d0c7]"
+          />
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="rounded-full border border-[#7ce0d9] text-[#2cc3b9] hover:bg-[#effbfa] px-8 py-1.5 text-xs font-bold cursor-pointer"
+            >
+              Save
+            </button>
           </div>
-        )}
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * "This question has appeared in my exam" crowd-verified prediction confirmation modal.
+ */
+export function AppearedInExamModal({ onClose, onSubmitAppeared }) {
+  const [examDate, setExamDate] = useState('27/11/26');
+  const [venue, setVenue] = useState('');
+  const [memory, setMemory] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!examDate.trim()) return;
+    onSubmitAppeared({ examDate, venue, memory });
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bg-[#45d0c7] px-5 py-3 text-white flex items-center justify-between">
+          <span className="w-6" />
+          <h3 className="text-sm sm:text-base font-extrabold">
+            This question has appeared in my exam
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="w-6 h-6 rounded-full bg-white text-[#45d0c7] flex items-center justify-center cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            By confirming this, you can help other test-takers in getting an accurate prediction for
+            their exam.
+          </p>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-800 block">
+              Exam Date <span className="text-rose-500 font-semibold">(Required)</span>
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                required
+                value={examDate}
+                onChange={(e) => setExamDate(e.target.value)}
+                className="w-full rounded-lg border border-slate-700 px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-[#45d0c7]"
+              />
+              <Calendar className="w-4 h-4 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-800 block">Exam Venue (optional)</label>
+            <select
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs sm:text-sm text-slate-500 bg-white focus:outline-none focus:border-[#45d0c7]"
+            >
+              <option value="">Please Select Your Exam Venue</option>
+              <option value="Pearson Professional Center - Melbourne">Pearson Professional Center - Melbourne</option>
+              <option value="Pearson Professional Center - Sydney">Pearson Professional Center - Sydney</option>
+              <option value="Pearson Professional Center - Toronto">Pearson Professional Center - Toronto</option>
+              <option value="Pearson Professional Center - Lahore">Pearson Professional Center - Lahore</option>
+              <option value="Pearson Professional Center - London">Pearson Professional Center - London</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-800 block">Exam Memory (optional)</label>
+            <textarea
+              rows={3}
+              value={memory}
+              onChange={(e) => setMemory(e.target.value)}
+              placeholder="Please Share Your Exam Memory"
+              className="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-xs text-slate-700 focus:outline-none focus:border-[#45d0c7]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full border border-slate-300 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-full border border-[#7ce0d9] text-[#2cc3b9] hover:bg-[#effbfa] py-2 text-xs font-bold cursor-pointer"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -8,7 +8,14 @@ import QuestionFooterControls from './QuestionFooterControls';
 import QuestionToolbarHeader from './QuestionToolbarHeader';
 import SpeakingRecorderPanel from './SpeakingRecorderPanel';
 import TaskResponseInputs from './TaskResponseInputs';
-import { DictionaryModal, ExamCentreNoiseModal } from './ToolbarFeatureModals';
+import {
+  AppearedInExamModal,
+  DictionaryModal,
+  ExamCentreNoiseModal,
+  MicrophoneSetupModal,
+  QuestionNoteModal,
+} from './ToolbarFeatureModals';
+import { emitPortalNotification } from '../shared/notificationsData';
 import TranslateModal from './TranslateModal';
 import { buildTaskQuestionList, resolvePracticeTask } from './practiceTaskCatalog';
 
@@ -33,9 +40,15 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [micAutoStart] = useState(true);
+  const [selectedMicId, setSelectedMicId] = useState('comm-realtek');
+  const [micModalOpen, setMicModalOpen] = useState(false);
   const [noiseConfig, setNoiseConfig] = useState({ enabled: false, scope: 'question', volume: 72 });
   const [noiseModalOpen, setNoiseModalOpen] = useState(false);
   const [dictionaryOpen, setDictionaryOpen] = useState(false);
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [notesById, setNotesById] = useState({});
+  const [appearedModalOpen, setAppearedModalOpen] = useState(false);
+  const [bannerToast, setBannerToast] = useState('');
   const [recorderState, setRecorderState] = useState('idle'); // 'idle' | 'recording' | 'recorded'
   const [prepSecondsLeft, setPrepSecondsLeft] = useState(DEFAULT_PREP_SECONDS);
   const [recordElapsed, setRecordElapsed] = useState(0);
@@ -128,12 +141,18 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
     }
   };
 
-  const handleToggleBookmark = (questionId) => {
+  const handleToggleBookmark = (questionId, colorId = 'red') => {
     setQuestionsById((prev) => {
       const target = questions.find((q) => q.id === questionId);
+      const isClearing =
+        colorId ? target?.bookmarkColor === colorId && target?.bookmarked : target?.bookmarked;
       return {
         ...prev,
-        [questionId]: { ...prev[questionId], bookmarked: !target?.bookmarked },
+        [questionId]: {
+          ...prev[questionId],
+          bookmarked: !isClearing,
+          bookmarkColor: isClearing ? null : colorId || 'red',
+        },
       };
     });
   };
@@ -270,9 +289,12 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
           activeQuestion={activeQuestion}
           isCoreMode={isCoreMode}
           noiseEnabled={noiseConfig.enabled}
+          onOpenMicModal={() => setMicModalOpen(true)}
           onOpenNoiseModal={() => setNoiseModalOpen(true)}
           onOpenDictionary={() => setDictionaryOpen(true)}
-          onToggleBookmark={handleToggleBookmark}
+          onOpenNoteModal={() => setNoteModalOpen(true)}
+          onSelectBookmarkColor={handleToggleBookmark}
+          onOpenAppearedModal={() => setAppearedModalOpen(true)}
         />
 
         {taskMeta.skill === 'speaking' ? (
@@ -363,7 +385,70 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
         <DictionaryModal
           promptText={activeQuestion.contentSnippet || taskMeta.promptText}
           onClose={() => setDictionaryOpen(false)}
+          onAddToVocabBank={(word) => {
+            setBannerToast(`"${word}" saved to Vocab-Bank!`);
+            setTimeout(() => setBannerToast(''), 2500);
+          }}
         />
+      )}
+
+      {micModalOpen && (
+        <MicrophoneSetupModal
+          initialMicId={selectedMicId}
+          onClose={() => setMicModalOpen(false)}
+          onSelectMic={(id) => {
+            setSelectedMicId(id);
+            setBannerToast('Microphone selected!');
+            setTimeout(() => setBannerToast(''), 2200);
+          }}
+        />
+      )}
+
+      {noteModalOpen && (
+        <QuestionNoteModal
+          initialNote={notesById[activeQuestion.id] || ''}
+          onClose={() => setNoteModalOpen(false)}
+          onSaveNote={(txt) => {
+            setNotesById((prev) => ({ ...prev, [activeQuestion.id]: txt }));
+            setBannerToast('Note saved!');
+            setTimeout(() => setBannerToast(''), 2200);
+          }}
+        />
+      )}
+
+      {appearedModalOpen && (
+        <AppearedInExamModal
+          onClose={() => setAppearedModalOpen(false)}
+          onSubmitAppeared={() => {
+            setQuestionsById((prev) => ({
+              ...prev,
+              [activeQuestion.id]: {
+                ...prev[activeQuestion.id],
+                appearedCount: (activeQuestion.appearedCount || 0) + 1,
+                prediction: true,
+              },
+            }));
+            emitPortalNotification({
+              title: 'You: confirmed APPEARED question',
+              refTag: `${taskMeta.code} #${activeQuestion.id}`,
+              kind: 'alert-chat',
+            });
+            setBannerToast('Posted successfully!');
+            setTimeout(() => setBannerToast(''), 2500);
+          }}
+        />
+      )}
+
+      {bannerToast && (
+        <div className="fixed top-20 right-6 z-50 w-64 rounded-lg bg-white shadow-xl border border-slate-100 overflow-hidden">
+          <div className="px-4 py-3 flex items-center gap-3">
+            <span className="w-6 h-6 rounded-full bg-emerald-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+              ✓
+            </span>
+            <span className="text-xs font-semibold text-slate-600">{bannerToast}</span>
+          </div>
+          <div className="h-1 bg-emerald-500 w-2/3" />
+        </div>
       )}
 
       <QuestionBankSidebarDrawer
