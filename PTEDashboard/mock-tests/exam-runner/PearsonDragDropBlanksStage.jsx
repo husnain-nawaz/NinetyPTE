@@ -1,35 +1,5 @@
 import { useState } from 'react';
-
-const DRAG_DROP_BANK = [
-  {
-    segments: [
-      'Scientists use research articles to ',
-      { id: 'd1' },
-      ' their research findings and scientific claims. These articles are not just factual ',
-      { id: 'd2' },
-      ' of experimental work; the authors also try to convince the reader that their ',
-      { id: 'd3' },
-      ' is correct. It is now easier than ever to read the original research behind science stories in the media, as more and more articles are being made freely available through open-access ',
-      { id: 'd4' },
-      '.',
-    ],
-    wordBank: ['reports', 'postpone', 'communicate', 'failure', 'argument', 'publishing', 'decompose'],
-  },
-  {
-    segments: [
-      'The world of organic agriculture has often been critiqued as being ',
-      { id: 'd1' },
-      ' more in philosophy than in science. While this criticism might hold a grain of ',
-      { id: 'd2' },
-      ', it is important to note that the field of organic agriculture has made significant ',
-      { id: 'd3' },
-      ' in recent years in developing and testing scientific methods that support its ',
-      { id: 'd4' },
-      '.',
-    ],
-    wordBank: ['truth', 'falsehood', 'rooted', 'practices', 'guides', 'strides'],
-  },
-];
+import { DRAG_DROP_BANK } from './readingExamBank';
 
 /**
  * Pearson Drag & Drop Reading blanks stage featuring inline rectangular drop boxes

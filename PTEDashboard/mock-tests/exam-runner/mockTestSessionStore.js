@@ -2,6 +2,12 @@ import {
   buildTaskQuestionList,
   resolvePracticeTask,
 } from '../../practice-arena/practiceTaskCatalog';
+import {
+  DRAG_DROP_BANK,
+  DROPDOWN_PASSAGE_BANK,
+  READING_MCQ_PASSAGES,
+  REORDER_CARD_BANK,
+} from './readingExamBank';
 
 const IN_PROGRESS_KEY_PREFIX = 'ninetypte_mock_inprogress_v1_';
 
@@ -545,7 +551,7 @@ function buildSpeechTokensForItem(promptText, isAttempted, code) {
   return out;
 }
 
-function buildQuestionScoreResult(item, ans, diffBase) {
+function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
   const { taskMeta, question, skillGroup } = item;
   const code = taskMeta?.code || 'RA';
   const promptText = question?.contentSnippet || taskMeta?.promptText || '';
@@ -561,6 +567,225 @@ function buildQuestionScoreResult(item, ans, diffBase) {
 
   const seed = Math.abs((item.index * 17 + Number(question?.id || 11)) % 14);
   const baseVal = isAttempted ? Math.min(89, Math.max(52, diffBase + seed - 4)) : 0;
+  const englishVariant = writingStyle?.includes('UK') ? 'British' : 'American';
+
+  // Reading: compute itemized score (Out of 1..5) and structured Score Analysis payload
+  if (skillGroup === 'Reading') {
+    if (code === 'RWB') {
+      const passage = DROPDOWN_PASSAGE_BANK[item.index % DROPDOWN_PASSAGE_BANK.length];
+      const blanks = passage.segments.filter((s) => typeof s !== 'string');
+      const questionWithBlanks = passage.segments
+        .map((s) => (typeof s === 'string' ? s : '______'))
+        .join('');
+      const userList = blanks.map((b) => {
+        const val = ans?.blankSelections?.[b.id] || '';
+        return { value: val || '-', isCorrect: Boolean(val && val === b.correct) };
+      });
+      const earned = userList.filter((u) => u.isCorrect).length;
+      return {
+        id: question?.id || String(1200000 + item.index),
+        code,
+        slug: taskMeta?.slug || 'reading-writing-fill-in-the-blanks',
+        skillGroup,
+        title: question?.title || passage.title,
+        promptText: questionWithBlanks,
+        isAttempted: hasBlank,
+        skillPills: [{ key: 'R', score: earned, max: blanks.length }],
+        modalVariant: 'reading-score-analysis',
+        analysisData: {
+          kind: 'blanks',
+          questionText: questionWithBlanks,
+          correctList: blanks.map((b) => b.correct),
+          userList,
+          timeSpent: '00:32',
+        },
+      };
+    }
+
+    if (code === 'RB') {
+      const dd = DRAG_DROP_BANK[item.index % DRAG_DROP_BANK.length];
+      const blanks = dd.segments.filter((s) => typeof s !== 'string');
+      const questionWithBlanks = dd.segments
+        .map((s) => (typeof s === 'string' ? s : '______'))
+        .join('');
+      const userList = blanks.map((b) => {
+        const val = ans?.blankSelections?.[b.id] || '';
+        return { value: val || '-', isCorrect: Boolean(val && val === b.correct) };
+      });
+      const earned = userList.filter((u) => u.isCorrect).length;
+      return {
+        id: question?.id || String(1100000 + item.index),
+        code,
+        slug: taskMeta?.slug || 'fill-in-the-blanks',
+        skillGroup,
+        title: question?.title || dd.title,
+        promptText: questionWithBlanks,
+        isAttempted: hasBlank,
+        skillPills: [{ key: 'R', score: earned, max: blanks.length }],
+        modalVariant: 'reading-score-analysis',
+        analysisData: {
+          kind: 'blanks',
+          questionText: questionWithBlanks,
+          correctList: blanks.map((b) => b.correct),
+          userList,
+          timeSpent: '00:54',
+        },
+      };
+    }
+
+    if (code === 'RO') {
+      const ro = REORDER_CARD_BANK[item.index % REORDER_CARD_BANK.length];
+      const userIds = ans?.reorderTargetIds || [];
+      let earnedPairs = 0;
+      for (let k = 0; k < userIds.length - 1; k += 1) {
+        const pos = ro.correctOrder.indexOf(userIds[k]);
+        if (pos >= 0 && ro.correctOrder[pos + 1] === userIds[k + 1]) {
+          earnedPairs += 1;
+        }
+      }
+      const letterFor = (cid) => ro.cards.find((c) => c.id === cid)?.letter || 'A';
+      const correctLetters = ro.correctOrder.map(letterFor);
+      const userLetters = userIds.map((cid, idx) => ({
+        letter: letterFor(cid),
+        isMatched: ro.correctOrder[idx] === cid,
+      }));
+      return {
+        id: question?.id || String(1000000 + item.index),
+        code,
+        slug: taskMeta?.slug || 'reorder-paragraphs',
+        skillGroup,
+        title: question?.title || ro.title,
+        promptText,
+        isAttempted: userIds.length > 0,
+        skillPills: [{ key: 'R', score: earnedPairs, max: ro.correctOrder.length - 1 }],
+        modalVariant: 'reading-score-analysis',
+        analysisData: {
+          kind: 'reorder',
+          cards: ro.cards,
+          correctLetters,
+          userLetters,
+          timeSpent: '01:24',
+        },
+      };
+    }
+
+    const mcq = READING_MCQ_PASSAGES[item.index % READING_MCQ_PASSAGES.length];
+    const isSingle = code === 'MCS';
+    const stem = isSingle ? mcq.singleQuestion : mcq.question;
+    const options = isSingle ? mcq.singleOptions : mcq.multiOptions;
+    const correctIds = isSingle ? mcq.singleCorrect : mcq.multiCorrect;
+    const userIds = ans?.selectedChoices || [];
+    const earned = isSingle
+      ? userIds[0] && correctIds.includes(userIds[0])
+        ? 1
+        : 0
+      : Math.max(
+          0,
+          userIds.filter((id) => correctIds.includes(id)).length -
+            userIds.filter((id) => !correctIds.includes(id)).length
+        );
+    return {
+      id: question?.id || String(800000 + item.index),
+      code,
+      slug: taskMeta?.slug || (isSingle ? 'multiple-choice-single' : 'multiple-choice-multiple'),
+      skillGroup,
+      title: question?.title || `${taskMeta?.title || 'Reading Question'} #${item.index + 1}`,
+      promptText: mcq.passage,
+      isAttempted: userIds.length > 0,
+      skillPills: [{ key: 'R', score: earned, max: correctIds.length }],
+      modalVariant: 'reading-score-analysis',
+      analysisData: {
+        kind: 'mcq',
+        passage: mcq.passage,
+        stem,
+        options,
+        correctIds,
+        userIds,
+        timeSpent: isSingle ? '00:24' : '00:38',
+      },
+    };
+  }
+
+  // Writing: compute SWT (W + R + 4 enabling metrics) and WE / WEM (W + 7 enabling metrics)
+  if (skillGroup === 'Writing') {
+    const responseText = ans?.responseText?.trim() || '';
+    const wordCount = responseText ? responseText.split(/\s+/).length : 0;
+
+    if (code === 'SWT') {
+      const validForm = wordCount >= 5 && wordCount <= 75;
+      const wScore = validForm ? Math.min(89, Math.max(55, diffBase + seed - 2)) : 0;
+      const rScore = validForm ? Math.max(48, wScore - 4) : 0;
+      return {
+        id: question?.id || String(600000 + item.index),
+        code,
+        slug: taskMeta?.slug || 'summarize-written-text',
+        skillGroup,
+        title: question?.title || 'Summarize Written Text',
+        promptText,
+        isAttempted: wordCount > 0,
+        skillPills: [
+          { key: 'W', score: wScore, max: 90 },
+          { key: 'R', score: rScore, max: 90 },
+        ],
+        enablingRows: [
+          { label: 'Content', score: validForm ? 3 : 0, max: 4 },
+          { label: 'Form', score: validForm ? 1 : 0, max: 1 },
+          { label: 'Grammar', score: validForm ? 2 : 0, max: 2 },
+          { label: 'Vocabulary Range', score: validForm ? 2 : 0, max: 2 },
+        ],
+        modalVariant: 'writing-ai-score',
+        writingMeta: {
+          responseText,
+          wordCount,
+          timeSpent: '01:12',
+          englishVariant,
+          suggestionsText: validForm
+            ? 'Form: Strong concise single-sentence summary within the required 5 - 75 word range.'
+            : 'Form: Your response has to be within the word limit of 5 - 75 words only. If this criterion is not met, you won’t get a score in rest of the enabling skills.',
+        },
+      };
+    }
+
+    const isEmail = code === 'WEM';
+    const minW = isEmail ? 50 : 120;
+    const maxW = isEmail ? 120 : 380;
+    const validForm = wordCount >= minW && wordCount <= maxW;
+    const wScore = validForm ? Math.min(89, Math.max(55, diffBase + seed - 2)) : 0;
+
+    return {
+      id: question?.id || String(700000 + item.index),
+      code,
+      slug: taskMeta?.slug || (isEmail ? 'write-email' : 'write-essay'),
+      skillGroup,
+      title: question?.title || (isEmail ? 'Write Email' : 'Write Essay'),
+      promptText,
+      isAttempted: wordCount > 0,
+      skillPills: [{ key: 'W', score: wScore, max: 90 }],
+      enablingRows: [
+        { label: 'Content', score: validForm ? 5 : 0, max: 6 },
+        { label: 'General Linguistic Range', score: validForm ? 5 : 0, max: 6 },
+        { label: 'Grammar', score: validForm ? 2 : 0, max: 2 },
+        { label: 'Development, Structure & Coherence', score: validForm ? 5 : 0, max: 6 },
+        { label: 'Spelling', score: validForm ? 2 : 0, max: 2 },
+        { label: 'Vocabulary Range', score: validForm ? 2 : 0, max: 2 },
+        { label: 'Form', score: validForm ? 2 : 0, max: 2 },
+      ],
+      modalVariant: 'writing-ai-score',
+      writingMeta: {
+        responseText,
+        wordCount,
+        timeSpent: '00:39',
+        englishVariant,
+        suggestionsText: isEmail
+          ? validForm
+            ? 'Form: Well-structured email meeting the 50-120 words target.'
+            : 'Form: Your email response has to stay within 50 - 120 words to score in enabling skills.'
+          : validForm
+            ? 'Form: Balanced academic essay within the recommended 200-300 words target range.'
+            : 'Form: Your response has to be within the word limit of 200-300 words. Essays with fewer than 120 words or more than 380 words will not receive a score in any of the enabling skills.',
+      },
+    };
+  }
 
   let skillPills = [{ key: skillGroup[0], score: baseVal, max: 90 }];
   if (code === 'RS' || code === 'RL' || code === 'SGD') {
@@ -570,11 +795,6 @@ function buildQuestionScoreResult(item, ans, diffBase) {
     ];
   } else if (code === 'ASQ') {
     skillPills = [{ key: 'L', score: isAttempted ? 1 : 0, max: 1 }];
-  } else if (code === 'RWB') {
-    skillPills = [
-      { key: 'R', score: baseVal, max: 90 },
-      { key: 'W', score: isAttempted ? Math.max(48, baseVal - 2) : 0, max: 90 },
-    ];
   } else if (code === 'SST' || code === 'WFD') {
     skillPills = [
       { key: 'L', score: baseVal, max: 90 },
@@ -592,14 +812,14 @@ function buildQuestionScoreResult(item, ans, diffBase) {
     { label: 'Fluency', score: isAttempted ? Math.max(45, baseVal - 2) : 0, max: 90 },
     { label: 'Pronunciation', score: isAttempted ? baseVal : 0, max: 90 },
   ];
-  if (skillGroup === 'Writing' || code === 'SST' || code === 'WFD') {
+  if (code === 'SST' || code === 'WFD') {
     enablingRows = [
       { label: 'Content', score: isAttempted ? baseVal : 0, max: 90 },
       { label: 'Form', score: isAttempted ? Math.min(90, baseVal + 6) : 0, max: 90 },
       { label: 'Grammar', score: isAttempted ? Math.max(45, baseVal - 3) : 0, max: 90 },
       { label: 'Spelling', score: isAttempted ? Math.min(90, baseVal + 4) : 0, max: 90 },
     ];
-  } else if (skillGroup === 'Reading' || skillGroup === 'Listening') {
+  } else if (skillGroup === 'Listening') {
     enablingRows = [
       { label: 'Accuracy', score: isAttempted ? baseVal : 0, max: 90 },
       { label: 'Comprehension', score: isAttempted ? Math.min(90, baseVal + 3) : 0, max: 90 },
@@ -614,11 +834,9 @@ function buildQuestionScoreResult(item, ans, diffBase) {
         ? `Selected option(s): ${ans.selectedChoices.join(', ')}`
         : (ans?.highlightedWords || []).length > 0
           ? `Highlighted ${ans.highlightedWords.length} word(s)`
-          : (ans?.reorderTargetIds || []).length > 0
-            ? `Ordered sequence: ${ans.reorderTargetIds.join(' -> ')}`
-            : isAttempted
-              ? 'Audio response captured cleanly.'
-              : '';
+          : isAttempted
+            ? 'Audio response captured cleanly.'
+            : '';
 
   return {
     id: question?.id || String(1001000 + item.index),
@@ -632,7 +850,7 @@ function buildQuestionScoreResult(item, ans, diffBase) {
         ? DESCRIBE_IMAGE_URLS[item.index % DESCRIBE_IMAGE_URLS.length]?.src
         : null,
     hasPromptAudio: Boolean(taskMeta?.hasAudioPrompt || skillGroup === 'Listening'),
-    showPromptTextInModal: code === 'RTS' || skillGroup === 'Writing' || skillGroup === 'Reading',
+    showPromptTextInModal: code === 'RTS',
     isAttempted,
     skillPills,
     enablingRows,
@@ -653,13 +871,17 @@ export function buildMockAttemptScore(testItem, session, trackLabel, isCore = fa
   const queue = buildMockExamQueue(testItem, isCore);
   const diffBase = testItem.difficulty === 'Easy' ? 74 : testItem.difficulty === 'Difficult' ? 66 : 70;
   const questionResults = queue.map((item) =>
-    buildQuestionScoreResult(item, session?.answersByIndex?.[item.index], diffBase)
+    buildQuestionScoreResult(item, session?.answersByIndex?.[item.index], diffBase, session?.writingStyle)
   );
 
   const avgSkillFromResults = (skill) => {
     const items = questionResults.filter((r) => r.skillGroup === skill);
     if (items.length === 0) return null;
-    const sum = items.reduce((acc, r) => acc + (r.skillPills?.[0]?.score || 0), 0);
+    const sum = items.reduce((acc, r) => {
+      const p = r.skillPills?.[0];
+      if (!p || !p.max) return acc;
+      return acc + Math.round((p.score / p.max) * 90);
+    }, 0);
     return Math.max(10, Math.round(sum / items.length));
   };
 

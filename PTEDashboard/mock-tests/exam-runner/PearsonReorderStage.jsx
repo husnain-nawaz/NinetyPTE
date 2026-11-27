@@ -1,20 +1,6 @@
 import { useState } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
-
-const REORDER_CARD_BANK = [
-  [
-    { id: 'r1', text: 'As a result, an orchard’s productivity and profitability largely depend on these initial choices.' },
-    { id: 'r2', text: 'They are meticulously organized for efficient growth and harvesting.' },
-    { id: 'r3', text: 'Fruit orchards are specialized plantations dedicated to the cultivation of fruit trees.' },
-    { id: 'r4', text: 'The selection of fruit varieties is crucial, considering factors like climate, soil type, and market demand.' },
-  ],
-  [
-    { id: 'r1', text: 'They provide a sense of connection between the artists and the audience.' },
-    { id: 'r2', text: 'Additionally, live concerts often create a communal atmosphere, bringing people together through shared musical experiences.' },
-    { id: 'r3', text: 'Live music performances offer an experience that recorded music cannot replicate.' },
-    { id: 'r4', text: 'Conversely, the accessibility of live performances can be limited by factors such as location and cost.' },
-  ],
-];
+import { REORDER_CARD_BANK } from './readingExamBank';
 
 /**
  * Pearson two-panel Re-order Paragraphs stage (Source & Target) supporting HTML5 Drag-and-Drop
@@ -27,7 +13,8 @@ export default function PearsonReorderStage({
   onChangeTargetIds,
   darkMode = false,
 }) {
-  const allCards = REORDER_CARD_BANK[questionIndex % REORDER_CARD_BANK.length];
+  const reorderEntry = REORDER_CARD_BANK[questionIndex % REORDER_CARD_BANK.length];
+  const allCards = reorderEntry.cards;
   const [selectedId, setSelectedId] = useState(null);
   const [draggedId, setDraggedId] = useState(null);
 

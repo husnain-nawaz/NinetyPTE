@@ -515,7 +515,9 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                               {pill.key}
                             </span>
                             <span>
-                              {String(pill.score).padStart(2, '0')}/{String(pill.max).padStart(2, '0')}
+                              {item.skillGroup === 'Reading' && pill.max < 10
+                                ? `${pill.score}/${pill.max}`
+                                : `${String(pill.score).padStart(2, '0')}/${String(pill.max).padStart(2, '0')}`}
                             </span>
                           </span>
                         ))}

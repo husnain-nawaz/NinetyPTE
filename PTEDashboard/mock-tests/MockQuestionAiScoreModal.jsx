@@ -28,7 +28,7 @@ const WORD_STATUS_STYLE = {
 
 const SPEED_OPTIONS = [0.75, 1.0, 1.25, 1.5];
 
-function ModalSkillRingCard({ skillKey, score, max }) {
+function ModalSkillRingCard({ skillKey, score, max, wide = false }) {
   const meta = SKILL_RING_META[skillKey] || SKILL_RING_META.S;
   const pct = max > 0 ? Math.max(0, Math.min(100, Math.round((score / max) * 100))) : 0;
   const radius = 24;
@@ -37,7 +37,9 @@ function ModalSkillRingCard({ skillKey, score, max }) {
 
   return (
     <div
-      className={`w-[120px] rounded-lg border ${meta.border} bg-white overflow-hidden flex flex-col items-center shrink-0`}
+      className={`${
+        wide ? 'w-full' : 'w-[120px]'
+      } rounded-lg border ${meta.border} bg-white overflow-hidden flex flex-col items-center shrink-0`}
     >
       <div className={`w-full ${meta.headerBg} text-white text-xs font-bold py-1.5 text-center`}>
         {meta.label}
@@ -68,22 +70,38 @@ function ModalSkillRingCard({ skillKey, score, max }) {
   );
 }
 
+function RedoPromptRow({ onRedo }) {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-500 pt-1">
+      <span>Do you want to re-do this question?</span>
+      <button
+        type="button"
+        onClick={onRedo}
+        className="inline-flex items-center gap-1.5 rounded-md bg-[#0275b8] hover:bg-[#015f97] px-3.5 py-1.5 text-xs font-bold text-white cursor-pointer transition"
+      >
+        <RotateCcw className="w-3.5 h-3.5" />
+        <span>Re-do</span>
+      </button>
+    </div>
+  );
+}
+
 /**
- * Per-question AI Score diagnostic modal matching Speaking (RA/RS/DI/RL/ASQ/SGD/RTS),
- * Writing, Reading, and Listening views with collapsible prompt/audio, waveform playback,
- * AI Speech-to-Text word accuracy breakdown, Re-do navigation, and Annotation/AI Feedback.
+ * Per-question AI Score / Score Analysis diagnostic modal supporting Speaking (RA/RS/DI/RL/ASQ/SGD/RTS),
+ * Writing (SWT with W+R & 2x2 Enabling Skills + Suggestions, WE/WEM with 7 metrics),
+ * and Reading Score Analysis (RWB/RB blanks, MCM/MCS badges, RO square order tiles).
  */
 export default function MockQuestionAiScoreModal({ questionResult, isCore, onClose }) {
   const navigate = useNavigate();
+  const isReadingModal = questionResult.modalVariant === 'reading-score-analysis';
+  const isWritingModal = questionResult.modalVariant === 'writing-ai-score';
+  const isSpeaking = questionResult.skillGroup === 'Speaking';
+
   const [questionOpen, setQuestionOpen] = useState(
-    questionResult.code === 'DI' ||
-      questionResult.code === 'RL' ||
-      questionResult.code === 'ASQ' ||
-      questionResult.code === 'SGD' ||
-      questionResult.code === 'RTS' ||
-      questionResult.skillGroup !== 'Speaking'
+    questionResult.code !== 'RA' &&
+      questionResult.code !== 'SWT'
   );
-  const [annotationOpen, setAnnotationOpen] = useState(true);
+  const [secondaryOpen, setSecondaryOpen] = useState(true);
   const [promptPlaying, setPromptPlaying] = useState(false);
   const [respPlaying, setRespPlaying] = useState(false);
   const [respSec, setRespSec] = useState(0);
@@ -91,10 +109,8 @@ export default function MockQuestionAiScoreModal({ questionResult, isCore, onClo
   const [volume, setVolume] = useState(85);
   const [selectedWordInfo, setSelectedWordInfo] = useState(null);
 
-  const isSpeaking = questionResult.skillGroup === 'Speaking';
   const hasWordAccuracy = questionResult.code === 'RA' || questionResult.code === 'RS';
-  const showAnnotationCard =
-    questionResult.code === 'RA' || questionResult.code === 'ASQ';
+  const showAnnotationCard = questionResult.code === 'RA' || questionResult.code === 'ASQ';
   const showQuestionAccordion = questionResult.code !== 'RA';
   const respDuration = questionResult.code === 'RS' ? 16 : questionResult.code === 'ASQ' ? 10 : 36;
   const promptAudioDuration =
@@ -203,7 +219,7 @@ export default function MockQuestionAiScoreModal({ questionResult, isCore, onClo
 
           <div className="text-center leading-tight">
             <p id="ai-score-modal-title" className="text-sm sm:text-base font-extrabold">
-              AI Score
+              {isReadingModal ? 'Score Analysis' : 'AI Score'}
             </p>
             <p className="text-[10px] opacity-90">ninetypte.com</p>
           </div>
@@ -211,25 +227,204 @@ export default function MockQuestionAiScoreModal({ questionResult, isCore, onClo
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close AI Score modal"
+            aria-label="Close modal"
             className="w-6 h-6 rounded-full bg-white text-[#2ac0cb] hover:bg-slate-100 flex items-center justify-center transition cursor-pointer shrink-0"
           >
             <X className="w-3.5 h-3.5 stroke-[2.5]" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 text-slate-700">
-          {/* Top Score Box(es) & Enabling Skills */}
-          {questionResult.code === 'ASQ' ? (
-            <div className="flex justify-center">
-              <ModalSkillRingCard
-                skillKey="L"
-                score={questionResult.skillPills?.[0]?.score ?? 0}
-                max={1}
-              />
+        {/* Reading Score Analysis Modal */}
+        {isReadingModal && questionResult.analysisData ? (
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 text-slate-700">
+            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+              <button
+                type="button"
+                onClick={() => setQuestionOpen((prev) => !prev)}
+                className="w-full bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between cursor-pointer"
+              >
+                <span className="flex-1 text-center">Question</span>
+                {questionOpen ? (
+                  <ChevronUp className="w-4 h-4 shrink-0" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 shrink-0" />
+                )}
+              </button>
+
+              {questionOpen && (
+                <div className="p-4 sm:p-5 text-xs sm:text-[13px] text-slate-700 leading-relaxed space-y-3">
+                  {questionResult.analysisData.kind === 'blanks' && (
+                    <p>{questionResult.analysisData.questionText}</p>
+                  )}
+
+                  {questionResult.analysisData.kind === 'mcq' && (
+                    <div className="space-y-3">
+                      <p>{questionResult.analysisData.passage}</p>
+                      <p className="font-bold text-slate-900">{questionResult.analysisData.stem}</p>
+                      <div className="space-y-1">
+                        {questionResult.analysisData.options.map((opt) => (
+                          <p key={opt.id}>
+                            <strong>{opt.id}.</strong> {opt.label}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {questionResult.analysisData.kind === 'reorder' && (
+                    <div className="space-y-1.5">
+                      {questionResult.analysisData.cards.map((c) => (
+                        <p key={c.id}>
+                          <strong>{c.letter}.</strong> {c.text}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          ) : (
+
+            <div className="rounded-lg border border-slate-200 bg-white py-2 px-4 text-center text-xs sm:text-[13px] font-medium text-slate-700">
+              Time: {questionResult.analysisData.timeSpent || '00:32'}
+            </div>
+
+            <RedoPromptRow onRedo={handleRedo} />
+
+            {questionResult.analysisData.kind === 'reorder' ? (
+              <div className="space-y-4">
+                <ModalSkillRingCard
+                  skillKey="R"
+                  score={questionResult.skillPills?.[0]?.score ?? 0}
+                  max={questionResult.skillPills?.[0]?.max ?? 3}
+                  wide
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+                    <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 text-center">
+                      Correct Answer
+                    </div>
+                    <div className="p-4 flex flex-wrap items-center justify-center gap-2">
+                      {questionResult.analysisData.correctLetters.map((ltr, idx) => (
+                        <span
+                          key={idx}
+                          className="w-7 h-7 rounded-xs bg-[#1b7a1b] text-white text-xs font-bold flex items-center justify-center"
+                        >
+                          {ltr}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+                    <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 text-center">
+                      User&apos;s Response
+                    </div>
+                    <div className="p-4 flex flex-wrap items-center justify-center gap-2">
+                      {questionResult.analysisData.userLetters.length > 0 ? (
+                        questionResult.analysisData.userLetters.map((entry, idx) => (
+                          <span
+                            key={idx}
+                            className={`w-7 h-7 rounded-xs text-xs font-bold flex items-center justify-center border ${
+                              entry.isMatched
+                                ? 'bg-[#1b7a1b] border-[#1b7a1b] text-white'
+                                : 'bg-white border-slate-200 text-slate-500'
+                            }`}
+                          >
+                            {entry.letter}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-rose-500">No ordering submitted</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
+                <ModalSkillRingCard
+                  skillKey="R"
+                  score={questionResult.skillPills?.[0]?.score ?? 0}
+                  max={questionResult.skillPills?.[0]?.max ?? 1}
+                  wide
+                />
+
+                <div className="rounded-lg border border-slate-200 overflow-hidden bg-white flex flex-col">
+                  <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 text-center">
+                    Correct Answer
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-center">
+                    {questionResult.analysisData.kind === 'blanks' ? (
+                      <ul className="space-y-1.5 text-xs font-semibold text-emerald-600 pl-2">
+                        {questionResult.analysisData.correctList.map((ans, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            <span>&bull;</span>
+                            <span>{ans}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        {questionResult.analysisData.correctIds.map((cid) => (
+                          <span
+                            key={cid}
+                            className="w-7 h-7 rounded-xs bg-[#1b7a1b] text-white text-xs font-bold flex items-center justify-center"
+                          >
+                            {cid}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-slate-200 overflow-hidden bg-white flex flex-col">
+                  <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 text-center">
+                    User&apos;s Response
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-center">
+                    {questionResult.analysisData.kind === 'blanks' ? (
+                      <ul className="space-y-1.5 text-xs font-semibold pl-2">
+                        {questionResult.analysisData.userList.map((u, idx) => (
+                          <li
+                            key={idx}
+                            className={`flex items-center gap-2 ${
+                              u.isCorrect ? 'text-emerald-600' : 'text-rose-500'
+                            }`}
+                          >
+                            <span>&bull;</span>
+                            <span>{u.value}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : questionResult.analysisData.userIds.length > 0 ? (
+                      <div className="flex flex-wrap items-center justify-center gap-2">
+                        {questionResult.analysisData.userIds.map((uid) => {
+                          const ok = questionResult.analysisData.correctIds.includes(uid);
+                          return (
+                            <span
+                              key={uid}
+                              className={`w-7 h-7 rounded-xs text-white text-xs font-bold flex items-center justify-center ${
+                                ok ? 'bg-[#1b7a1b]' : 'bg-rose-500'
+                              }`}
+                            >
+                              {uid}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="text-center text-xs text-rose-500">No option selected</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : isWritingModal && questionResult.writingMeta ? (
+          /* Writing AI Score Modal (SWT & WE/WEM) */
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 text-slate-700">
             <div className="flex flex-col md:flex-row gap-4 items-stretch">
               <div className="flex items-stretch justify-center gap-3 shrink-0">
                 {(questionResult.skillPills || []).map((pill) => (
@@ -246,33 +441,32 @@ export default function MockQuestionAiScoreModal({ questionResult, isCore, onClo
                 <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 px-4 text-center">
                   Enabling Skills
                 </div>
-                <div className="p-4 space-y-3 text-xs">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-xs">
                   {(questionResult.enablingRows || []).map((row) => {
                     const pct =
                       row.max > 0 ? Math.max(0, Math.min(100, (row.score / row.max) * 100)) : 0;
                     return (
-                      <div key={row.label} className="flex items-center gap-3">
-                        <span className="w-28 text-slate-600 font-medium shrink-0">{row.label}</span>
-                        <div className="flex-1 h-1.5 rounded-full bg-[#e2f5f7] overflow-hidden">
+                      <div key={row.label} className="space-y-1">
+                        <div className="flex items-center justify-between text-[11px] font-medium text-slate-600">
+                          <span>{row.label}</span>
+                          <span>
+                            {row.score}/{row.max}
+                          </span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                           <div
                             className="h-full rounded-full bg-[#2ac0cb]"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <span className="w-12 text-right font-semibold text-slate-600 shrink-0">
-                          {row.score}/{row.max}
-                        </span>
                       </div>
                     );
                   })}
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Collapsible Question Strip */}
-          {showQuestionAccordion && (
-            <div className="rounded-lg border border-slate-200 overflow-hidden">
+            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
               <button
                 type="button"
                 onClick={() => setQuestionOpen((prev) => !prev)}
@@ -285,262 +479,370 @@ export default function MockQuestionAiScoreModal({ questionResult, isCore, onClo
                   <ChevronDown className="w-4 h-4 shrink-0" />
                 )}
               </button>
-
               {questionOpen && (
-                <div className="p-4 bg-white space-y-3">
-                  {questionResult.imageUrl && (
-                    <div className="flex justify-center">
-                      <img
-                        src={questionResult.imageUrl}
-                        alt={questionResult.title}
-                        className="max-h-48 rounded-md object-contain border border-slate-100"
-                      />
-                    </div>
-                  )}
-
-                  {questionResult.showPromptTextInModal && questionResult.promptText && (
-                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
-                      {questionResult.promptText}
+                <div className="p-4 text-xs sm:text-[13px] text-slate-600 leading-relaxed space-y-2">
+                  <p>{questionResult.promptText}</p>
+                  {questionResult.code === 'SWT' && (
+                    <p className="text-right text-[11px] font-semibold text-emerald-600">
+                      &bull; Keywords
                     </p>
-                  )}
-
-                  {questionResult.hasPromptAudio && (
-                    <div className="flex items-center gap-3 px-2">
-                      <button
-                        type="button"
-                        onClick={togglePromptAudio}
-                        aria-label="Play question prompt audio"
-                        className="w-8 h-8 rounded-full bg-[#eb8c44] hover:bg-[#d97b34] text-white flex items-center justify-center shrink-0 cursor-pointer transition"
-                      >
-                        {promptPlaying ? (
-                          <Pause className="w-3.5 h-3.5 fill-white" />
-                        ) : (
-                          <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
-                        )}
-                      </button>
-                      <span className="text-[11px] font-mono text-slate-500">00:00</span>
-                      <div className="flex-1 h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                        <div
-                          className={`h-full bg-[#eb8c44] transition-all ${
-                            promptPlaying ? 'w-1/2' : 'w-0'
-                          }`}
-                        />
-                      </div>
-                      <span className="text-[11px] font-mono text-slate-500">
-                        {formatMMSS(promptAudioDuration)}
-                      </span>
-                    </div>
-                  )}
-
-                  {!isSpeaking && (
-                    <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 text-xs space-y-1.5">
-                      <p className="font-bold text-[#0b4a7b]">Your Recorded Response:</p>
-                      <p className="text-slate-600">
-                        {questionResult.responseSummary || 'No response submitted for this question.'}
-                      </p>
-                    </div>
                   )}
                 </div>
               )}
             </div>
-          )}
 
-          {/* Recorded Waveform & Playback Controls (Speaking items) */}
-          {isSpeaking && (
-            <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-              <div className="h-16 px-4 flex items-center justify-around gap-1.5 border-b border-slate-100 bg-slate-50/40">
-                {waveHeights.map((h, i) => (
-                  <span
-                    key={i}
-                    className={`w-1 rounded-full transition-all ${
-                      respPlaying ? 'bg-[#2ac0cb]' : 'bg-slate-400/70'
-                    }`}
-                    style={{ height: `${h}px` }}
-                  />
-                ))}
-              </div>
-              <div className="px-4 py-2.5 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setRespPlaying((prev) => !prev)}
-                  aria-label="Play recorded response"
-                  className="w-7 h-7 rounded-full bg-[#2ac0cb] hover:bg-[#1fa8b3] text-white flex items-center justify-center shrink-0 cursor-pointer transition"
-                >
-                  {respPlaying ? (
-                    <Pause className="w-3.5 h-3.5 fill-white" />
-                  ) : (
-                    <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
-                  )}
-                </button>
-                <span className="text-[11px] font-mono text-slate-500">
-                  {formatMMSS(respSec)} / {formatMMSS(respDuration)}
-                </span>
-                <div className="flex-1" />
-                <button
-                  type="button"
-                  onClick={handleCycleSpeed}
-                  className="rounded-full bg-[#2ac0cb] text-white px-2.5 py-0.5 text-[11px] font-bold cursor-pointer"
-                >
-                  {playbackRate.toFixed(1)} &#9662;
-                </button>
-                <Volume2 className="w-4 h-4 text-[#2ac0cb] shrink-0" />
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={volume}
-                  onChange={(e) => setVolume(Number(e.target.value))}
-                  aria-label="Response volume"
-                  className="w-20 h-1 accent-[#2ac0cb] cursor-pointer"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* AI Speech to Text Card (Speaking items) */}
-          {isSpeaking && (
             <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
-              <div className="bg-[#2ac0cb] text-white px-4 py-2 flex items-center justify-between text-xs sm:text-sm font-bold">
-                <span className="flex-1 text-center">AI Speech to Text</span>
-                <Info className="w-4 h-4 shrink-0" />
+              <div className="bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold text-center">
+                User&apos;s Response
               </div>
-
-              <div className="p-4 space-y-3 text-xs sm:text-[13px] leading-relaxed">
-                {wordTokens.length > 0 ? (
-                  <p className="flex flex-wrap items-center gap-x-1 gap-y-1">
-                    {wordTokens.map((tok, idx) =>
-                      tok.isPause ? (
-                        <span key={idx} className="text-slate-400 font-bold">
-                          /
-                        </span>
-                      ) : (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() =>
-                            hasWordAccuracy
-                              ? setSelectedWordInfo({
-                                  word: tok.word,
-                                  status: tok.status,
-                                  score:
-                                    tok.status === 'good'
-                                      ? 92
-                                      : tok.status === 'average'
-                                        ? 64
-                                        : 0,
-                                })
-                              : undefined
-                          }
-                          className={`rounded px-0.5 ${
-                            hasWordAccuracy ? 'cursor-pointer' : 'cursor-default'
-                          } ${WORD_STATUS_STYLE[tok.status] || 'text-slate-700'}`}
-                        >
-                          {tok.word}
-                        </button>
-                      )
-                    )}
-                  </p>
-                ) : (
-                  <p className="text-slate-400 italic">No speech detected.</p>
-                )}
-
-                {selectedWordInfo && (
-                  <div className="rounded-md bg-[#eefaf9] border border-[#b8ece9] px-3 py-1.5 text-[11px] text-[#0b4a7b] flex items-center justify-between">
-                    <span>
-                      Word <strong>“{selectedWordInfo.word}”</strong> accuracy:{' '}
-                      <strong>{selectedWordInfo.score}%</strong> ({selectedWordInfo.status})
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedWordInfo(null)}
-                      className="text-slate-400 hover:text-slate-700 cursor-pointer"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                )}
-
-                {hasWordAccuracy && (
-                  <div className="space-y-2 pt-2 border-t border-slate-100">
-                    <p className="text-[11px] text-center font-semibold text-[#1ea7a1]">
-                      Click any word to explore your pronunciation accuracy in detail.
-                    </p>
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold">
-                      <span className="text-emerald-600">Good: {goodCount} word</span>
-                      <span className="text-amber-500">Average: {avgCount} word</span>
-                      <span className="text-rose-500">Bad/Missed: {missedCount} words</span>
-                      <span className="text-slate-500">Pauses: /</span>
-                    </div>
-                  </div>
-                )}
-
-                {!hasWordAccuracy && questionResult.code !== 'ASQ' && (
-                  <div className="flex justify-end text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                    <span>Pauses: /</span>
-                  </div>
-                )}
+              <div className="p-4 space-y-3 text-xs sm:text-[13px] text-slate-700">
+                <p className="min-h-8 whitespace-pre-wrap">
+                  {questionResult.writingMeta.responseText || 'No written response submitted.'}
+                </p>
+                <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-slate-600">
+                  <span>Total: {questionResult.writingMeta.wordCount}</span>
+                  <span>Time: {questionResult.writingMeta.timeSpent}</span>
+                  <span>English: {questionResult.writingMeta.englishVariant}</span>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Re-do Prompt */}
-          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-500 pt-1">
-            <span>Do you want to re-do this question?</span>
-            <button
-              type="button"
-              onClick={handleRedo}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#0275b8] hover:bg-[#015f97] px-3.5 py-1.5 text-xs font-bold text-white cursor-pointer transition"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Re-do</span>
-            </button>
-          </div>
+            <RedoPromptRow onRedo={handleRedo} />
 
-          {/* Bottom Annotation OR AI Feedback */}
-          {showAnnotationCard ? (
             <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
               <button
                 type="button"
-                onClick={() => setAnnotationOpen((prev) => !prev)}
+                onClick={() => setSecondaryOpen((prev) => !prev)}
                 className="w-full bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between cursor-pointer"
               >
-                <span className="flex-1 text-center">Annotation</span>
-                {annotationOpen ? (
+                <span className="flex-1 text-center">Suggestions</span>
+                {secondaryOpen ? (
                   <ChevronUp className="w-4 h-4 shrink-0" />
                 ) : (
                   <ChevronDown className="w-4 h-4 shrink-0" />
                 )}
               </button>
-              {annotationOpen && (
-                <div className="p-4 text-[11px] sm:text-xs text-slate-600 space-y-1.5 leading-relaxed">
-                  <p>The Overall Score Prediction is based only on your current response.</p>
-                  <p className="font-bold text-slate-700">A low score could be due to below reasons:</p>
-                  <p>
-                    <strong>Microphone:</strong> A good microphone &amp; how it is positioned plays
-                    an important role.
-                  </p>
-                  <p>
-                    <strong>Browser:</strong> Any browser other than Google Chrome may affect your
-                    score.
-                  </p>
+              {secondaryOpen && (
+                <div className="p-4 text-xs text-slate-600 leading-relaxed">
+                  {questionResult.writingMeta.suggestionsText}
                 </div>
               )}
             </div>
-          ) : (
-            <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
-              <div className="bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold text-center">
-                AI Feedback
+          </div>
+        ) : (
+          /* Speaking & Listening AI Score Modal */
+          <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 text-slate-700">
+            {questionResult.code === 'ASQ' ? (
+              <div className="flex justify-center">
+                <ModalSkillRingCard
+                  skillKey="L"
+                  score={questionResult.skillPills?.[0]?.score ?? 0}
+                  max={1}
+                />
               </div>
-              <div className="p-4 space-y-1.5 text-xs">
-                <p className="font-bold text-slate-800">Comment</p>
-                <p className="text-slate-500">
-                  {questionResult.feedbackComment ||
-                    'Irrelevant or insufficient content provided. Please try again.'}
-                </p>
+            ) : (
+              <div className="flex flex-col md:flex-row gap-4 items-stretch">
+                <div className="flex items-stretch justify-center gap-3 shrink-0">
+                  {(questionResult.skillPills || []).map((pill) => (
+                    <ModalSkillRingCard
+                      key={pill.key}
+                      skillKey={pill.key}
+                      score={pill.score}
+                      max={pill.max}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex-1 rounded-lg border border-slate-200 overflow-hidden bg-white">
+                  <div className="bg-[#2ac0cb] text-white text-xs font-bold py-1.5 px-4 text-center">
+                    Enabling Skills
+                  </div>
+                  <div className="p-4 space-y-3 text-xs">
+                    {(questionResult.enablingRows || []).map((row) => {
+                      const pct =
+                        row.max > 0 ? Math.max(0, Math.min(100, (row.score / row.max) * 100)) : 0;
+                      return (
+                        <div key={row.label} className="flex items-center gap-3">
+                          <span className="w-28 text-slate-600 font-medium shrink-0">
+                            {row.label}
+                          </span>
+                          <div className="flex-1 h-1.5 rounded-full bg-[#e2f5f7] overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-[#2ac0cb]"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="w-12 text-right font-semibold text-slate-600 shrink-0">
+                            {row.score}/{row.max}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+
+            {showQuestionAccordion && (
+              <div className="rounded-lg border border-slate-200 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setQuestionOpen((prev) => !prev)}
+                  className="w-full bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex-1 text-center">Question</span>
+                  {questionOpen ? (
+                    <ChevronUp className="w-4 h-4 shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 shrink-0" />
+                  )}
+                </button>
+
+                {questionOpen && (
+                  <div className="p-4 bg-white space-y-3">
+                    {questionResult.imageUrl && (
+                      <div className="flex justify-center">
+                        <img
+                          src={questionResult.imageUrl}
+                          alt={questionResult.title}
+                          className="max-h-48 rounded-md object-contain border border-slate-100"
+                        />
+                      </div>
+                    )}
+
+                    {questionResult.showPromptTextInModal && questionResult.promptText && (
+                      <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed">
+                        {questionResult.promptText}
+                      </p>
+                    )}
+
+                    {questionResult.hasPromptAudio && (
+                      <div className="flex items-center gap-3 px-2">
+                        <button
+                          type="button"
+                          onClick={togglePromptAudio}
+                          aria-label="Play question prompt audio"
+                          className="w-8 h-8 rounded-full bg-[#eb8c44] hover:bg-[#d97b34] text-white flex items-center justify-center shrink-0 cursor-pointer transition"
+                        >
+                          {promptPlaying ? (
+                            <Pause className="w-3.5 h-3.5 fill-white" />
+                          ) : (
+                            <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+                          )}
+                        </button>
+                        <span className="text-[11px] font-mono text-slate-500">00:00</span>
+                        <div className="flex-1 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                          <div
+                            className={`h-full bg-[#eb8c44] transition-all ${
+                              promptPlaying ? 'w-1/2' : 'w-0'
+                            }`}
+                          />
+                        </div>
+                        <span className="text-[11px] font-mono text-slate-500">
+                          {formatMMSS(promptAudioDuration)}
+                        </span>
+                      </div>
+                    )}
+
+                    {!isSpeaking && (
+                      <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 text-xs space-y-1.5">
+                        <p className="font-bold text-[#0b4a7b]">Your Recorded Response:</p>
+                        <p className="text-slate-600">
+                          {questionResult.responseSummary ||
+                            'No response submitted for this question.'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isSpeaking && (
+              <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+                <div className="h-16 px-4 flex items-center justify-around gap-1.5 border-b border-slate-100 bg-slate-50/40">
+                  {waveHeights.map((h, i) => (
+                    <span
+                      key={i}
+                      className={`w-1 rounded-full transition-all ${
+                        respPlaying ? 'bg-[#2ac0cb]' : 'bg-slate-400/70'
+                      }`}
+                      style={{ height: `${h}px` }}
+                    />
+                  ))}
+                </div>
+                <div className="px-4 py-2.5 flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRespPlaying((prev) => !prev)}
+                    aria-label="Play recorded response"
+                    className="w-7 h-7 rounded-full bg-[#2ac0cb] hover:bg-[#1fa8b3] text-white flex items-center justify-center shrink-0 cursor-pointer transition"
+                  >
+                    {respPlaying ? (
+                      <Pause className="w-3.5 h-3.5 fill-white" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+                    )}
+                  </button>
+                  <span className="text-[11px] font-mono text-slate-500">
+                    {formatMMSS(respSec)} / {formatMMSS(respDuration)}
+                  </span>
+                  <div className="flex-1" />
+                  <button
+                    type="button"
+                    onClick={handleCycleSpeed}
+                    className="rounded-full bg-[#2ac0cb] text-white px-2.5 py-0.5 text-[11px] font-bold cursor-pointer"
+                  >
+                    {playbackRate.toFixed(1)} &#9662;
+                  </button>
+                  <Volume2 className="w-4 h-4 text-[#2ac0cb] shrink-0" />
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={volume}
+                    onChange={(e) => setVolume(Number(e.target.value))}
+                    aria-label="Response volume"
+                    className="w-20 h-1 accent-[#2ac0cb] cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {isSpeaking && (
+              <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+                <div className="bg-[#2ac0cb] text-white px-4 py-2 flex items-center justify-between text-xs sm:text-sm font-bold">
+                  <span className="flex-1 text-center">AI Speech to Text</span>
+                  <Info className="w-4 h-4 shrink-0" />
+                </div>
+
+                <div className="p-4 space-y-3 text-xs sm:text-[13px] leading-relaxed">
+                  {wordTokens.length > 0 ? (
+                    <p className="flex flex-wrap items-center gap-x-1 gap-y-1">
+                      {wordTokens.map((tok, idx) =>
+                        tok.isPause ? (
+                          <span key={idx} className="text-slate-400 font-bold">
+                            /
+                          </span>
+                        ) : (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() =>
+                              hasWordAccuracy
+                                ? setSelectedWordInfo({
+                                    word: tok.word,
+                                    status: tok.status,
+                                    score:
+                                      tok.status === 'good'
+                                        ? 92
+                                        : tok.status === 'average'
+                                          ? 64
+                                          : 0,
+                                  })
+                                : undefined
+                            }
+                            className={`rounded px-0.5 ${
+                              hasWordAccuracy ? 'cursor-pointer' : 'cursor-default'
+                            } ${WORD_STATUS_STYLE[tok.status] || 'text-slate-700'}`}
+                          >
+                            {tok.word}
+                          </button>
+                        )
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-slate-400 italic">No speech detected.</p>
+                  )}
+
+                  {selectedWordInfo && (
+                    <div className="rounded-md bg-[#eefaf9] border border-[#b8ece9] px-3 py-1.5 text-[11px] text-[#0b4a7b] flex items-center justify-between">
+                      <span>
+                        Word <strong>“{selectedWordInfo.word}”</strong> accuracy:{' '}
+                        <strong>{selectedWordInfo.score}%</strong> ({selectedWordInfo.status})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedWordInfo(null)}
+                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  )}
+
+                  {hasWordAccuracy && (
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <p className="text-[11px] text-center font-semibold text-[#1ea7a1]">
+                        Click any word to explore your pronunciation accuracy in detail.
+                      </p>
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold">
+                        <span className="text-emerald-600">Good: {goodCount} word</span>
+                        <span className="text-amber-500">Average: {avgCount} word</span>
+                        <span className="text-rose-500">Bad/Missed: {missedCount} words</span>
+                        <span className="text-slate-500">Pauses: /</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {!hasWordAccuracy && questionResult.code !== 'ASQ' && (
+                    <div className="flex justify-end text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                      <span>Pauses: /</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <RedoPromptRow onRedo={handleRedo} />
+
+            {showAnnotationCard ? (
+              <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+                <button
+                  type="button"
+                  onClick={() => setSecondaryOpen((prev) => !prev)}
+                  className="w-full bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex-1 text-center">Annotation</span>
+                  {secondaryOpen ? (
+                    <ChevronUp className="w-4 h-4 shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 shrink-0" />
+                  )}
+                </button>
+                {secondaryOpen && (
+                  <div className="p-4 text-[11px] sm:text-xs text-slate-600 space-y-1.5 leading-relaxed">
+                    <p>The Overall Score Prediction is based only on your current response.</p>
+                    <p className="font-bold text-slate-700">
+                      A low score could be due to below reasons:
+                    </p>
+                    <p>
+                      <strong>Microphone:</strong> A good microphone &amp; how it is positioned
+                      plays an important role.
+                    </p>
+                    <p>
+                      <strong>Browser:</strong> Any browser other than Google Chrome may affect
+                      your score.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-slate-200 overflow-hidden bg-white">
+                <div className="bg-[#2ac0cb] text-white px-4 py-2 text-xs sm:text-sm font-bold text-center">
+                  AI Feedback
+                </div>
+                <div className="p-4 space-y-1.5 text-xs">
+                  <p className="font-bold text-slate-800">Comment</p>
+                  <p className="text-slate-500">
+                    {questionResult.feedbackComment ||
+                      'Irrelevant or insufficient content provided. Please try again.'}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
