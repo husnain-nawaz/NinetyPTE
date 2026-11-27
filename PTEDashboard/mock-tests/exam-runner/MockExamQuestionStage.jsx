@@ -1,11 +1,47 @@
-import { useState } from 'react';
-import { BarChart3, CheckCircle2, Play, Square, Volume2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import TaskResponseInputs from '../../practice-arena/TaskResponseInputs';
+import AudioPromptSpeakingStage from './AudioPromptSpeakingStage';
 import SpeakingRecorderWidget from './SpeakingRecorderWidget';
 
+const DESCRIBE_IMAGE_URLS = [
+  {
+    src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+    alt: 'Data visualization and analytics chart',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1661548306911-7821c3b64be3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Mother and child together in the kitchen',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Statistical market and trend line chart',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=900&q=80',
+    alt: 'Family preparing meal together at kitchen counter',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Business performance charts and graphs',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1477959858617-67f30bc47b82?auto=format&fit=crop&w=900&q=80',
+    alt: 'Modern city skyline architecture view',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
+    alt: 'Dashboard metrics and visual reports',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=80',
+    alt: 'Urban city skyline and bridge view',
+  },
+];
+
 /**
- * Renders the live active exam question stage (Speaking countdown + waveform recorder
+ * Renders the live active exam question stage (Describe Image side-by-side embedded photo,
+ * Audio Prompt blue player + Ready/Recording transition, Read Aloud passage + recorder,
  * or shared Writing/Reading/Listening response widgets) and the post-submission Scorecard.
  */
 export function MockExamQuestionStage({
@@ -17,7 +53,6 @@ export function MockExamQuestionStage({
 }) {
   const { taskMeta, question, skillGroup } = activeItem;
   const isSpeaking = skillGroup === 'Speaking';
-  const [promptPlaying, setPromptPlaying] = useState(false);
 
   const responseText = savedAnswer?.responseText || '';
   const blankSelections = savedAnswer?.blankSelections || {};
@@ -33,8 +68,67 @@ export function MockExamQuestionStage({
   };
 
   if (isSpeaking) {
-    const prepSec = taskMeta.slug === 'repeat-sentence' || taskMeta.slug === 'answer-short-question' ? 5 : 12;
-    const recSec = taskMeta.slug === 'read-aloud' ? 35 : taskMeta.slug === 'describe-image' ? 40 : 25;
+    if (taskMeta.slug === 'describe-image') {
+      const pickedImg =
+        DESCRIBE_IMAGE_URLS[activeItem.index % DESCRIBE_IMAGE_URLS.length] || DESCRIBE_IMAGE_URLS[0];
+
+      return (
+        <div className="max-w-5xl space-y-8">
+          <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            {taskMeta.instruction}
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-8 pt-2">
+            <div className="md:col-span-6 flex justify-center md:justify-start">
+              <div
+                className={`p-2 rounded-xs ${
+                  darkMode ? 'bg-white' : 'bg-white'
+                } shadow-sm border border-slate-200/70`}
+              >
+                <img
+                  src={pickedImg.src}
+                  alt={pickedImg.alt || question.title}
+                  className="w-full max-w-[440px] max-h-[300px] object-cover"
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-6 flex justify-center">
+              <SpeakingRecorderWidget
+                prepSeconds={25}
+                recordSeconds={40}
+                darkMode={darkMode}
+                initialCompleted={Boolean(savedAnswer?.recorded)}
+                onPhaseChange={onSpeakingPhaseChange}
+                onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (taskMeta.hasAudioPrompt) {
+      const recDuration =
+        taskMeta.slug === 'repeat-sentence' ? 15 : taskMeta.slug === 'answer-short-question' ? 10 : 40;
+
+      return (
+        <div className="max-w-5xl space-y-8">
+          <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            {taskMeta.instruction}
+          </p>
+
+          <AudioPromptSpeakingStage
+            promptSpeechText={question.contentSnippet || taskMeta.promptText}
+            recordSeconds={recDuration}
+            darkMode={darkMode}
+            initialCompleted={Boolean(savedAnswer?.recorded)}
+            onPhaseChange={onSpeakingPhaseChange}
+            onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="max-w-5xl space-y-8">
@@ -42,71 +136,22 @@ export function MockExamQuestionStage({
           {taskMeta.instruction}
         </p>
 
-        {taskMeta.hasAudioPrompt && (
-          <div className="mx-auto w-full max-w-[300px] rounded-xs bg-[#3792b5] text-white px-5 py-4 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between text-[11px] font-semibold">
-              <span>Status</span>
-              <span>{promptPlaying ? 'Playing Audio' : 'Ready'}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setPromptPlaying((p) => !p)}
-                aria-label={promptPlaying ? 'Stop prompt audio' : 'Play prompt audio'}
-                className="text-white hover:opacity-80 cursor-pointer shrink-0"
-              >
-                {promptPlaying ? <Square className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
-              </button>
-              <div className="h-2.5 flex-1 bg-white overflow-hidden">
-                <div className={`h-full bg-[#0997d6] transition-all duration-500 ${promptPlaying ? 'w-3/4' : 'w-0'}`} />
-              </div>
-              <Volume2 className="w-4 h-4 shrink-0" />
-            </div>
-          </div>
-        )}
-
         <SpeakingRecorderWidget
-          prepSeconds={prepSec}
-          recordSeconds={recSec}
+          prepSeconds={12}
+          recordSeconds={35}
           darkMode={darkMode}
           initialCompleted={Boolean(savedAnswer?.recorded)}
           onPhaseChange={onSpeakingPhaseChange}
           onCompleteRecording={() => updateAnswer({ recorded: true, answered: true })}
         />
 
-        {taskMeta.slug === 'describe-image' && (
-          <div
-            className={`mx-auto rounded-lg border p-5 max-w-lg space-y-3 ${
-              darkMode ? 'border-zinc-600 bg-[#2a2a2a]' : 'border-slate-200 bg-slate-50'
-            }`}
-          >
-            <div className="flex items-center gap-2 text-xs font-bold text-[#3792b5]">
-              <BarChart3 className="w-4 h-4" />
-              <span>{question.title}</span>
-            </div>
-            <div className="grid grid-cols-4 items-end gap-3 h-28 pt-2">
-              {[42, 68, 86, 61].map((pct, i) => (
-                <div key={i} className="flex flex-col items-center gap-1 h-full justify-end">
-                  <span className="text-[10px] font-semibold">{pct}%</span>
-                  <div className="w-8 rounded-t bg-[#3792b5]" style={{ height: `${pct}%` }} />
-                  <span className={`text-[10px] ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                    Q{i + 1}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {!taskMeta.hasAudioPrompt && (
-          <p
-            className={`text-xs sm:text-[13px] leading-relaxed ${
-              darkMode ? 'text-zinc-100' : 'text-slate-700'
-            }`}
-          >
-            {question.contentSnippet || taskMeta.promptText}
-          </p>
-        )}
+        <p
+          className={`text-xs sm:text-[13px] leading-relaxed ${
+            darkMode ? 'text-zinc-100' : 'text-slate-700'
+          }`}
+        >
+          {question.contentSnippet || taskMeta.promptText}
+        </p>
       </div>
     );
   }
