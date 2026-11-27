@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AudioLines, BookOpen, Clock, Maximize2, Minimize2, Moon, Sun } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import MockReportIssueModal, { MockActionToast } from '../MockReportIssueModal';
 import ExamCentreNoiseModal from './ExamCentreNoiseModal';
 import { ExamNextConfirmDialog, ExamNoticeDialog } from './ExamDialogs';
 import {
@@ -35,17 +37,20 @@ export default function MockTestExamShell({
   initialSession,
   isCore,
   trackLabel,
-  scoreHistoryRoute,
+  viewScoreRoute,
   onPersistSession,
   onFinishAttempt,
   onSaveAndExit,
 }) {
+  const navigate = useNavigate();
   const [session, setSession] = useState(initialSession);
   const [completedScore, setCompletedScore] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(Boolean(document.fullscreenElement));
   const [noticeMessage, setNoticeMessage] = useState('');
   const [confirmNextOpen, setConfirmNextOpen] = useState(false);
   const [noiseModalOpen, setNoiseModalOpen] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [personalIntroSeconds, setPersonalIntroSeconds] = useState(25);
   const [partIntroSeconds, setPartIntroSeconds] = useState(116);
   const [pendingPartIntro, setPendingPartIntro] = useState(null);
@@ -250,7 +255,7 @@ export default function MockTestExamShell({
         return;
       }
 
-      const finalPayload = buildMockAttemptScore(testItem, session, trackLabel);
+      const finalPayload = buildMockAttemptScore(testItem, session, trackLabel, isCore);
       setCompletedScore(finalPayload);
       setSession((prev) => ({ ...prev, stage: 'completed' }));
       onFinishAttempt(finalPayload);
@@ -428,6 +433,19 @@ export default function MockTestExamShell({
         />
       )}
 
+      {reportModalOpen && (
+        <MockReportIssueModal
+          contextTitle={testItem.title}
+          onClose={() => setReportModalOpen(false)}
+          onSubmitted={() => {
+            setToastMessage('Issue reported successfully!');
+            setTimeout(() => setToastMessage(''), 3200);
+          }}
+        />
+      )}
+
+      <MockActionToast message={toastMessage} />
+
       {/* Top Grey Title Bar (Test Name on Left + Time Remaining / Item Counter on Right) */}
       <header className={`h-11 px-4 sm:px-6 flex items-center justify-between border-b shrink-0 ${chromeBarClass}`}>
         <span className="text-sm sm:text-base font-medium truncate">
@@ -516,10 +534,15 @@ export default function MockTestExamShell({
       <main className={`flex-1 overflow-y-auto px-5 sm:px-10 py-6 sm:py-8 ${bodySurfaceClass}`}>
         {completedScore ? (
           <MockExamCompletedScreen
-            scorePayload={completedScore}
-            scoreHistoryRoute={scoreHistoryRoute}
-            onExit={() => onSaveAndExit(null)}
             darkMode={darkMode}
+            onContinue={() => {
+              onSaveAndExit(null);
+              const target = viewScoreRoute
+                ? `${viewScoreRoute}/${completedScore.id}`
+                : `/v1/mock-test/mock-test-result-list/view-score/${completedScore.id}`;
+              navigate(target);
+            }}
+            onOpenReport={() => setReportModalOpen(true)}
           />
         ) : pendingPartIntro === '3-headset' ? (
           <HeadphoneReminderScreen darkMode={darkMode} />

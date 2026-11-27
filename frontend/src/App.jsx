@@ -63,6 +63,7 @@ import {
   PortalProfilePage,
   PortalBuySubscriptionPage,
   PortalHelpDeskPage,
+  PortalMockResultPage,
   PortalMockTestsPage,
   PortalScoreHistoryPage,
   PortalSectionPracticeHistoryPage,
@@ -689,6 +690,22 @@ function AppContent() {
             }
           />
           <Route
+            path="/v1/mock-test/mock-test-result-list/view-score/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockResultPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-result-list/view-score"
+            element={
+              <ProtectedRoute>
+                <PortalMockResultPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/v1/mock-test/score-history"
             element={
               <ProtectedRoute>
@@ -729,6 +746,22 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PortalMockTestsPage syncCoreMode initialTopTab="scores" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/view-score/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockResultPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/view-score"
+            element={
+              <ProtectedRoute>
+                <PortalMockResultPage syncCoreMode />
               </ProtectedRoute>
             }
           />

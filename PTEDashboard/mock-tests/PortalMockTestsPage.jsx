@@ -794,10 +794,10 @@ export default function PortalMockTestsPage({
                           Overall: {entry.overall} / 90
                         </span>
                         <Link
-                          to={dataset.routes.history}
-                          className="text-xs font-bold text-[#0b4a7b] underline"
+                          to={`${dataset.routes.viewScore}/${entry.id}`}
+                          className="rounded-full bg-[#0b4a7b] hover:bg-[#08385f] px-3.5 py-1 text-xs font-bold text-white transition"
                         >
-                          View History
+                          View Score
                         </Link>
                       </div>
                     </div>
@@ -837,7 +837,7 @@ export default function PortalMockTestsPage({
           initialSession={activeExamSession}
           isCore={isCoreMode}
           trackLabel={dataset.trackLabel}
-          scoreHistoryRoute={dataset.routes.history}
+          viewScoreRoute={dataset.routes.viewScore}
           onPersistSession={handlePersistExamSession}
           onFinishAttempt={handleCompleteAttempt}
           onSaveAndExit={handleSaveAndExitExam}

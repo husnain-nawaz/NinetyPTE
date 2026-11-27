@@ -197,6 +197,7 @@ export function getMockTestsDataset(track) {
       sectional: `${basePath}/mock-test-list/sectional-mock-test`,
       timed: `${basePath}/mock-test-list/timed-section-mock-test/timed-section-mock-test-list`,
       scores: `${basePath}/mock-test-result-list`,
+      viewScore: `${basePath}/mock-test-result-list/view-score`,
       history: `${basePath}/score-history`,
     },
     freeFullTest: {
@@ -258,6 +259,12 @@ export function readMockAttempts(track) {
   } catch {
     return [];
   }
+}
+
+export function readMockAttemptById(track, attemptId) {
+  const list = readMockAttempts(track);
+  if (!attemptId) return list[0] || null;
+  return list.find((entry) => String(entry.id) === String(attemptId)) || list[0] || null;
 }
 
 export function appendMockAttempt(track, attempt) {

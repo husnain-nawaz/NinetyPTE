@@ -1,6 +1,5 @@
-import { CheckCircle2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import AudioPromptSpeakingStage from './AudioPromptSpeakingStage';
+import { DESCRIBE_IMAGE_URLS } from './mockTestSessionStore';
 import PearsonDragDropBlanksStage from './PearsonDragDropBlanksStage';
 import PearsonDropdownBlanksStage from './PearsonDropdownBlanksStage';
 import PearsonListeningStage from './PearsonListeningStage';
@@ -8,41 +7,6 @@ import PearsonMcqStage from './PearsonMcqStage';
 import PearsonReorderStage from './PearsonReorderStage';
 import PearsonWritingStage from './PearsonWritingStage';
 import SpeakingRecorderWidget from './SpeakingRecorderWidget';
-
-const DESCRIBE_IMAGE_URLS = [
-  {
-    src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
-    alt: 'Data visualization and analytics chart',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1661548306911-7821c3b64be3?auto=format&fit=crop&w=900&q=80',
-    alt: 'Mother and child together in the kitchen',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=80',
-    alt: 'Statistical market and trend line chart',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=900&q=80',
-    alt: 'Family preparing meal together at kitchen counter',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=80',
-    alt: 'Business performance charts and graphs',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1477959858617-67f30bc47b82?auto=format&fit=crop&w=900&q=80',
-    alt: 'Modern city skyline architecture view',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
-    alt: 'Dashboard metrics and visual reports',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=80',
-    alt: 'Urban city skyline and bridge view',
-  },
-];
 
 /**
  * Renders the live active exam question stage (Describe Image side-by-side embedded photo,
@@ -277,78 +241,41 @@ export function MockExamQuestionStage({
 }
 
 /**
- * AI Scorecard view shown once all questions of the mock test have been submitted.
+ * Pearson end-of-mock-test completion screen rendered inside the exam shell
+ * with Continue (to View Score) and Report an Issue actions in Light & Dark mode.
  */
-export function MockExamCompletedScreen({ scorePayload, scoreHistoryRoute, onExit, darkMode }) {
-  const skillScores = [
-    { label: 'Speaking', value: scorePayload.speaking },
-    { label: 'Writing', value: scorePayload.writing },
-    { label: 'Reading', value: scorePayload.reading },
-    { label: 'Listening', value: scorePayload.listening },
-  ].filter((item) => item.value !== null && item.value !== undefined);
-
+export function MockExamCompletedScreen({ onContinue, onOpenReport, darkMode }) {
   return (
-    <div className="max-w-xl mx-auto py-8 space-y-6 text-center">
-      <div className="mx-auto w-14 h-14 rounded-full bg-[#e5f8f6] text-[#1ea7a1] flex items-center justify-center">
-        <CheckCircle2 className="w-8 h-8" />
-      </div>
-
-      <div className="space-y-1.5">
-        <h2 className={`text-xl font-extrabold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
-          Mock Test Completed
-        </h2>
-        <p className={`text-xs sm:text-sm ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
-          {scorePayload.title} ({scorePayload.writingStyle}) has been scored and saved to Score History.
-        </p>
-      </div>
-
+    <div className="max-w-4xl space-y-5 pt-2">
       <div
-        className={`rounded-2xl border p-6 space-y-5 ${
-          darkMode ? 'border-zinc-600 bg-[#2a2a2a]' : 'border-slate-200 bg-slate-50/70'
+        className={`space-y-4 text-xs sm:text-[13px] leading-relaxed ${
+          darkMode ? 'text-zinc-200' : 'text-slate-700'
         }`}
       >
-        <div>
-          <p className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-            Overall Score
-          </p>
-          <p className="text-4xl font-extrabold text-[#1ea7a1] mt-1">
-            {scorePayload.overall} <span className="text-base font-semibold">/ 90</span>
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-slate-200/30">
-          {skillScores.map((s) => (
-            <div
-              key={s.label}
-              className={`rounded-xl p-3 border ${
-                darkMode ? 'border-zinc-600 bg-[#1f1f1f]' : 'border-slate-200 bg-white'
-              }`}
-            >
-              <p className={`text-[11px] font-medium ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                {s.label}
-              </p>
-              <p className={`text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
-                {s.value}
-              </p>
-            </div>
-          ))}
-        </div>
+        <p>You have now reached the end of this mock test.</p>
+        <p>The scorecard is being processed &amp; will be available in a few minutes.</p>
+        <p>
+          Scorecards can be seen from the{' '}
+          <strong className={darkMode ? 'text-white' : 'text-slate-900'}>View Score</strong> Screen.
+        </p>
+        <p>Click on Continue to go there.</p>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="pt-8 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
-          onClick={onExit}
-          className="rounded-full border border-[#0b4a7b] bg-white hover:bg-slate-50 px-6 py-2 text-xs font-bold text-[#0b4a7b] cursor-pointer"
+          onClick={onContinue}
+          className="rounded-xs bg-[#00738e] hover:bg-[#005f75] px-5 py-2 text-xs font-semibold text-white cursor-pointer transition"
         >
-          Back to Mock Tests
+          Continue
         </button>
-        <Link
-          to={scoreHistoryRoute}
-          className="rounded-full bg-[#0b4a7b] hover:bg-[#08385f] px-6 py-2 text-xs font-bold text-white"
+        <button
+          type="button"
+          onClick={onOpenReport}
+          className="rounded-xs bg-[#00738e] hover:bg-[#005f75] px-5 py-2 text-xs font-semibold text-white cursor-pointer transition"
         >
-          View Score History
-        </Link>
+          Report an Issue
+        </button>
       </div>
     </div>
   );

@@ -5,6 +5,41 @@ import {
 
 const IN_PROGRESS_KEY_PREFIX = 'ninetypte_mock_inprogress_v1_';
 
+export const DESCRIBE_IMAGE_URLS = [
+  {
+    src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+    alt: 'Data visualization and analytics chart',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1661548306911-7821c3b64be3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Mother and child together in the kitchen',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Statistical market and trend line chart',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=900&q=80',
+    alt: 'Family preparing meal together at kitchen counter',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=900&q=80',
+    alt: 'Business performance charts and graphs',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1477959858617-67f30bc47b82?auto=format&fit=crop&w=900&q=80',
+    alt: 'Modern city skyline architecture view',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',
+    alt: 'Dashboard metrics and visual reports',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=80',
+    alt: 'Urban city skyline and bridge view',
+  },
+];
+
 const PART_TASK_PLANS = {
   Speaking: [
     'speaking/read-aloud',
@@ -465,17 +500,178 @@ export function createMockSession(testItem, isCore) {
   };
 }
 
-/**
- * Produces an authentic scorecard payload from completed answers.
- */
-export function buildMockAttemptScore(testItem, session, trackLabel) {
-  const answeredCount = Object.keys(session?.answersByIndex || {}).length;
-  const totalQ = Math.max(1, session?.totalQuestions || testItem.questions || 20);
-  const completionRatio = Math.min(1, answeredCount / totalQ);
-  const diffBase = testItem.difficulty === 'Easy' ? 74 : testItem.difficulty === 'Difficult' ? 66 : 70;
-  const overall = Math.min(89, Math.max(52, Math.round(diffBase + completionRatio * 10)));
+function buildSpeechTokensForItem(promptText, isAttempted, code) {
+  const words = String(promptText || 'Respond clearly with structured academic phrasing.')
+    .replace(/[.,]/g, '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 52);
 
-  const isAll = !testItem.skill || testItem.skill === 'All';
+  if (!isAttempted) {
+    if (code === 'DI') {
+      return [
+        { isPause: true },
+        { word: 'You', status: 'average' },
+        { word: 'know', status: 'average' },
+        { isPause: true },
+      ];
+    }
+    if (code === 'SGD') {
+      return [
+        { isPause: true },
+        { word: 'oh', status: 'average' },
+        { word: 'oh', status: 'average' },
+        { isPause: true },
+        { word: 'no', status: 'average' },
+        { isPause: true },
+      ];
+    }
+    if (code === 'ASQ') {
+      return [{ word: 'Radius', status: 'missed' }];
+    }
+    return [
+      { isPause: true },
+      ...words.map((w) => ({ word: w.toLowerCase(), status: 'missed' })),
+    ];
+  }
+
+  const out = [{ isPause: true }];
+  words.forEach((w, idx) => {
+    const status = idx % 9 === 6 ? 'average' : 'good';
+    out.push({ word: w, status });
+    if (idx > 0 && idx % 8 === 0) out.push({ isPause: true });
+  });
+  out.push({ isPause: true });
+  return out;
+}
+
+function buildQuestionScoreResult(item, ans, diffBase) {
+  const { taskMeta, question, skillGroup } = item;
+  const code = taskMeta?.code || 'RA';
+  const promptText = question?.contentSnippet || taskMeta?.promptText || '';
+  const hasBlank = Object.values(ans?.blankSelections || {}).some((v) => String(v || '').trim());
+  const isAttempted = Boolean(
+    ans?.recorded ||
+      ans?.responseText?.trim() ||
+      hasBlank ||
+      (ans?.selectedChoices || []).length > 0 ||
+      (ans?.highlightedWords || []).length > 0 ||
+      (ans?.reorderTargetIds || []).length > 0
+  );
+
+  const seed = Math.abs((item.index * 17 + Number(question?.id || 11)) % 14);
+  const baseVal = isAttempted ? Math.min(89, Math.max(52, diffBase + seed - 4)) : 0;
+
+  let skillPills = [{ key: skillGroup[0], score: baseVal, max: 90 }];
+  if (code === 'RS' || code === 'RL' || code === 'SGD') {
+    skillPills = [
+      { key: 'S', score: baseVal, max: 90 },
+      { key: 'L', score: isAttempted ? Math.max(45, baseVal - 3) : 0, max: 90 },
+    ];
+  } else if (code === 'ASQ') {
+    skillPills = [{ key: 'L', score: isAttempted ? 1 : 0, max: 1 }];
+  } else if (code === 'RWB') {
+    skillPills = [
+      { key: 'R', score: baseVal, max: 90 },
+      { key: 'W', score: isAttempted ? Math.max(48, baseVal - 2) : 0, max: 90 },
+    ];
+  } else if (code === 'SST' || code === 'WFD') {
+    skillPills = [
+      { key: 'L', score: baseVal, max: 90 },
+      { key: 'W', score: isAttempted ? Math.max(48, baseVal - 2) : 0, max: 90 },
+    ];
+  } else if (code === 'HIW') {
+    skillPills = [
+      { key: 'L', score: baseVal, max: 90 },
+      { key: 'R', score: isAttempted ? Math.max(46, baseVal - 3) : 0, max: 90 },
+    ];
+  }
+
+  let enablingRows = [
+    { label: 'Content', score: isAttempted ? Math.min(90, baseVal + 2) : 0, max: 90 },
+    { label: 'Fluency', score: isAttempted ? Math.max(45, baseVal - 2) : 0, max: 90 },
+    { label: 'Pronunciation', score: isAttempted ? baseVal : 0, max: 90 },
+  ];
+  if (skillGroup === 'Writing' || code === 'SST' || code === 'WFD') {
+    enablingRows = [
+      { label: 'Content', score: isAttempted ? baseVal : 0, max: 90 },
+      { label: 'Form', score: isAttempted ? Math.min(90, baseVal + 6) : 0, max: 90 },
+      { label: 'Grammar', score: isAttempted ? Math.max(45, baseVal - 3) : 0, max: 90 },
+      { label: 'Spelling', score: isAttempted ? Math.min(90, baseVal + 4) : 0, max: 90 },
+    ];
+  } else if (skillGroup === 'Reading' || skillGroup === 'Listening') {
+    enablingRows = [
+      { label: 'Accuracy', score: isAttempted ? baseVal : 0, max: 90 },
+      { label: 'Comprehension', score: isAttempted ? Math.min(90, baseVal + 3) : 0, max: 90 },
+    ];
+  }
+
+  const responseSummary = ans?.responseText?.trim()
+    ? ans.responseText.trim()
+    : hasBlank
+      ? `Filled blanks: ${Object.values(ans.blankSelections).filter(Boolean).join(', ')}`
+      : (ans?.selectedChoices || []).length > 0
+        ? `Selected option(s): ${ans.selectedChoices.join(', ')}`
+        : (ans?.highlightedWords || []).length > 0
+          ? `Highlighted ${ans.highlightedWords.length} word(s)`
+          : (ans?.reorderTargetIds || []).length > 0
+            ? `Ordered sequence: ${ans.reorderTargetIds.join(' -> ')}`
+            : isAttempted
+              ? 'Audio response captured cleanly.'
+              : '';
+
+  return {
+    id: question?.id || String(1001000 + item.index),
+    code,
+    slug: taskMeta?.slug || 'read-aloud',
+    skillGroup,
+    title: question?.title || `${taskMeta?.title || 'Question'} #${item.index + 1}`,
+    promptText,
+    imageUrl:
+      code === 'DI'
+        ? DESCRIBE_IMAGE_URLS[item.index % DESCRIBE_IMAGE_URLS.length]?.src
+        : null,
+    hasPromptAudio: Boolean(taskMeta?.hasAudioPrompt || skillGroup === 'Listening'),
+    showPromptTextInModal: code === 'RTS' || skillGroup === 'Writing' || skillGroup === 'Reading',
+    isAttempted,
+    skillPills,
+    enablingRows,
+    speechTokens:
+      skillGroup === 'Speaking' ? buildSpeechTokensForItem(promptText, isAttempted, code) : [],
+    responseSummary,
+    feedbackComment: isAttempted
+      ? 'Good attempt. Maintain steady pacing, clear phrasing, and key terminology coverage.'
+      : 'Irrelevant or insufficient content spoken. Please try again.',
+  };
+}
+
+/**
+ * Produces an authentic scorecard payload with per-question AI diagnostic items
+ * from completed mock test answers.
+ */
+export function buildMockAttemptScore(testItem, session, trackLabel, isCore = false) {
+  const queue = buildMockExamQueue(testItem, isCore);
+  const diffBase = testItem.difficulty === 'Easy' ? 74 : testItem.difficulty === 'Difficult' ? 66 : 70;
+  const questionResults = queue.map((item) =>
+    buildQuestionScoreResult(item, session?.answersByIndex?.[item.index], diffBase)
+  );
+
+  const avgSkillFromResults = (skill) => {
+    const items = questionResults.filter((r) => r.skillGroup === skill);
+    if (items.length === 0) return null;
+    const sum = items.reduce((acc, r) => acc + (r.skillPills?.[0]?.score || 0), 0);
+    return Math.max(10, Math.round(sum / items.length));
+  };
+
+  const speaking = avgSkillFromResults('Speaking');
+  const writing = avgSkillFromResults('Writing');
+  const reading = avgSkillFromResults('Reading');
+  const listening = avgSkillFromResults('Listening');
+  const activeVals = [speaking, writing, reading, listening].filter((v) => v !== null);
+  const overall = activeVals.length
+    ? Math.max(10, Math.round(activeVals.reduce((a, b) => a + b, 0) / activeVals.length))
+    : 12;
+
   return {
     id: `attempt-${Date.now()}`,
     testId: testItem.id,
@@ -483,12 +679,14 @@ export function buildMockAttemptScore(testItem, session, trackLabel) {
     mode: testItem.mode,
     skill: testItem.skill || 'All',
     trackLabel,
+    isCore,
     writingStyle: session?.writingStyle || 'American (US)',
     overall,
-    speaking: isAll || testItem.skill === 'Speaking' ? Math.min(90, overall + 2) : null,
-    writing: isAll || testItem.skill === 'Writing' ? Math.max(45, overall - 1) : null,
-    reading: isAll || testItem.skill === 'Reading' ? Math.min(90, overall + 1) : null,
-    listening: isAll || testItem.skill === 'Listening' ? Math.max(45, overall - 2) : null,
+    speaking,
+    writing,
+    reading,
+    listening,
+    questionResults,
     completedAt: new Date().toISOString(),
   };
 }

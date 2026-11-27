@@ -361,9 +361,17 @@ export default function PortalScoreHistoryPage({ syncCoreMode = false }) {
                             {new Date(entry.completedAt).toLocaleString()}
                           </p>
                         </div>
-                        <span className="rounded-lg bg-[#eefaf9] px-3 py-1 text-xs font-extrabold text-[#1ea7a1]">
-                          Score: {entry.overall} / 90
-                        </span>
+                        <div className="flex items-center gap-2.5">
+                          <span className="rounded-lg bg-[#eefaf9] px-3 py-1 text-xs font-extrabold text-[#1ea7a1]">
+                            Score: {entry.overall} / 90
+                          </span>
+                          <Link
+                            to={`${dataset.routes.viewScore}/${entry.id}`}
+                            className="rounded-full border border-[#0b4a7b] px-3 py-1 text-xs font-bold text-[#0b4a7b] hover:bg-[#0b4a7b] hover:text-white transition"
+                          >
+                            View Score
+                          </Link>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -413,9 +421,17 @@ export default function PortalScoreHistoryPage({ syncCoreMode = false }) {
                           {new Date(entry.completedAt).toLocaleString()}
                         </p>
                       </div>
-                      <span className="rounded-lg bg-[#eefaf9] px-3 py-1 text-xs font-extrabold text-[#1ea7a1]">
-                        {activeSkill}: {entry.overall} / 90
-                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <span className="rounded-lg bg-[#eefaf9] px-3 py-1 text-xs font-extrabold text-[#1ea7a1]">
+                          {activeSkill}: {entry.overall} / 90
+                        </span>
+                        <Link
+                          to={`${dataset.routes.viewScore}/${entry.id}`}
+                          className="rounded-full border border-[#0b4a7b] px-3 py-1 text-xs font-bold text-[#0b4a7b] hover:bg-[#0b4a7b] hover:text-white transition"
+                        >
+                          View Score
+                        </Link>
+                      </div>
                     </div>
                   ))}
                 </div>
