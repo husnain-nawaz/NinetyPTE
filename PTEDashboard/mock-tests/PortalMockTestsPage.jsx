@@ -99,17 +99,34 @@ function MockTestListRow({
   bookmarked,
   onStart,
   onToggleBookmark,
+  darkMode = false,
 }) {
   const isResumable = inProgressPercent !== null || attemptsCount > 0;
 
   return (
-    <div className="rounded-xl border border-slate-200/80 bg-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 hover:border-[#9be5de] transition">
+    <div
+      className={`rounded-xl border px-4 py-3 flex flex-wrap items-center justify-between gap-3 transition ${
+        darkMode
+          ? 'border-zinc-800 bg-[#181c23] hover:border-[#3dc8c1]/60'
+          : 'border-slate-200/80 bg-white hover:border-[#9be5de]'
+      }`}
+    >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="w-9 h-9 rounded-lg bg-[#eef3f8] text-[#0b4a7b] flex items-center justify-center shrink-0">
+        <span
+          className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+            darkMode ? 'bg-[#202632] text-[#4ea5f5]' : 'bg-[#eef3f8] text-[#0b4a7b]'
+          }`}
+        >
           <FileText className="w-4 h-4" />
         </span>
         <div className="min-w-0">
-          <p className="text-xs sm:text-[13px] font-bold text-[#0b4a7b] truncate">{item.title}</p>
+          <p
+            className={`text-xs sm:text-[13px] font-bold truncate ${
+              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+            }`}
+          >
+            {item.title}
+          </p>
           <div className="mt-0.5 flex flex-wrap items-center gap-4 text-[11px] text-slate-400">
             <span className="inline-flex items-center gap-1">
               <Clock className="w-3 h-3" />
@@ -180,7 +197,7 @@ export default function PortalMockTestsPage({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { portalMode, setPortalMode } = usePortal();
+  const { portalMode, setPortalMode, portalDarkMode: darkMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
   const activeTrack = isCoreMode ? 'core' : 'academic';
 
@@ -381,28 +398,48 @@ export default function PortalMockTestsPage({
       : null;
 
   return (
-    <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        darkMode ? 'bg-[#0a0c0e] text-zinc-200' : 'bg-[#f8fbfd] text-slate-800'
+      }`}
+    >
       <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
         {/* Page Heading */}
         <div className="flex items-center gap-3">
-          <span className="w-10 h-10 rounded-full bg-[#e6eef6] text-[#0b4a7b] flex items-center justify-center shrink-0">
+          <span
+            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+              darkMode ? 'bg-[#1a2433] text-[#4ea5f5]' : 'bg-[#e6eef6] text-[#0b4a7b]'
+            }`}
+          >
             <ClipboardCheck className="w-5 h-5" />
           </span>
-          <h1 className="text-lg sm:text-xl font-extrabold text-[#0b4a7b]">Mock Tests</h1>
+          <h1
+            className={`text-lg sm:text-xl font-extrabold ${
+              darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
+            }`}
+          >
+            Mock Tests
+          </h1>
         </div>
 
         {/* Top Segmented Tabs + Score History Button */}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex rounded-full border border-slate-200 bg-white p-0.5 shadow-2xs">
+          <div
+            className={`inline-flex rounded-full border p-0.5 shadow-2xs ${
+              darkMode ? 'border-zinc-700 bg-[#14171c]' : 'border-slate-200 bg-white'
+            }`}
+          >
             <button
               type="button"
               onClick={() => handleSelectTopTab('mock-test')}
               className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'mock-test'
                   ? 'bg-[#3dc8c1] text-white shadow-2xs'
-                  : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
+                  : darkMode
+                    ? 'bg-transparent text-zinc-300 hover:text-[#3dc8c1]'
+                    : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
               }`}
             >
               Mock Test
@@ -413,7 +450,9 @@ export default function PortalMockTestsPage({
               className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'scores'
                   ? 'bg-[#3dc8c1] text-white shadow-2xs'
-                  : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
+                  : darkMode
+                    ? 'bg-transparent text-zinc-300 hover:text-[#3dc8c1]'
+                    : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
               }`}
             >
               Scores
@@ -430,9 +469,17 @@ export default function PortalMockTestsPage({
         </div>
 
         {topTab === 'mock-test' ? (
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-2xs space-y-5">
+          <section
+            className={`rounded-2xl border p-4 sm:p-6 shadow-2xs space-y-5 ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
             {/* Mode Switcher & Filter Toolbar */}
-            <div className="rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            <div
+              className={`rounded-xl border px-3 py-2.5 flex flex-wrap items-center justify-between gap-3 ${
+                darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+              }`}
+            >
               <div className="inline-flex flex-wrap items-center rounded-full border border-slate-200 bg-white p-0.5">
                 {MOCK_TEST_MODES.map((tab) => {
                   const isActive = mode === tab.id;
@@ -689,6 +736,7 @@ export default function PortalMockTestsPage({
                     bookmarked={bookmarkedIds.includes(item.id)}
                     onStart={handleRequestStartTest}
                     onToggleBookmark={handleToggleBookmark}
+                    darkMode={darkMode}
                   />
                 ))}
               </div>
@@ -742,7 +790,11 @@ export default function PortalMockTestsPage({
           </section>
         ) : (
           /* Mock Test -> Scores View (/mock-test-result-list) */
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-2xs space-y-5">
+          <section
+            className={`rounded-2xl border p-4 sm:p-6 shadow-2xs space-y-5 ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 {MOCK_TEST_MODES.map((tab) => {
@@ -755,7 +807,9 @@ export default function PortalMockTestsPage({
                       className={`rounded-lg px-4 py-2 text-xs font-semibold transition cursor-pointer ${
                         isActive
                           ? 'bg-[#12738b] text-white shadow-2xs'
-                          : 'bg-white text-slate-600 hover:text-[#0b4a7b]'
+                          : darkMode
+                            ? 'bg-[#1a1f28] text-zinc-300 hover:text-white'
+                            : 'bg-white text-slate-600 hover:text-[#0b4a7b]'
                       }`}
                     >
                       {tab.label}
@@ -778,7 +832,11 @@ export default function PortalMockTestsPage({
               )}
             </div>
 
-            <div className="rounded-xl border border-slate-200/80 min-h-[340px] p-4">
+            <div
+              className={`rounded-xl border min-h-[340px] p-4 ${
+                darkMode ? 'border-zinc-800' : 'border-slate-200/80'
+              }`}
+            >
               {scoreFilteredAttempts.length === 0 ? (
                 <ScoreEmptyState />
               ) : (
@@ -786,14 +844,24 @@ export default function PortalMockTestsPage({
                   {scoreFilteredAttempts.map((entry) => (
                     <div
                       key={entry.id}
-                      className="rounded-xl border border-slate-200/80 px-4 py-3 flex flex-wrap items-center justify-between gap-3"
+                      className={`rounded-xl border px-4 py-3 flex flex-wrap items-center justify-between gap-3 ${
+                        darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+                      }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="w-9 h-9 rounded-lg bg-[#eef3f8] text-[#0b4a7b] flex items-center justify-center shrink-0">
+                        <span
+                          className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                            darkMode ? 'bg-[#202632] text-[#4ea5f5]' : 'bg-[#eef3f8] text-[#0b4a7b]'
+                          }`}
+                        >
                           <FileText className="w-4 h-4" />
                         </span>
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-bold text-[#0b4a7b] inline-flex items-center gap-1.5">
+                          <p
+                            className={`text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 ${
+                              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                            }`}
+                          >
                             <span>{entry.title}</span>
                             <Monitor className="w-3.5 h-3.5 text-slate-400" />
                           </p>
@@ -809,21 +877,33 @@ export default function PortalMockTestsPage({
                       <div className="flex flex-wrap items-center gap-2 ml-auto">
                         <Link
                           to={`${dataset.routes.analytics}/${entry.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:border-[#0b4a7b] px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition"
+                          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                            darkMode
+                              ? 'border-zinc-700 text-zinc-200 hover:border-[#4ea5f5]'
+                              : 'border-slate-200 text-[#0b4a7b] hover:border-[#0b4a7b]'
+                          }`}
                         >
                           <BarChart3 className="w-3.5 h-3.5" />
                           <span>Analytics</span>
                         </Link>
                         <Link
                           to={`${dataset.routes.viewScore}/${entry.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 hover:bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-600 transition"
+                          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                            darkMode
+                              ? 'border-purple-700/60 text-purple-300 hover:bg-purple-950/40'
+                              : 'border-purple-200 text-purple-600 hover:bg-purple-50'
+                          }`}
                         >
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>View Score</span>
                         </Link>
                         <Link
                           to={`${dataset.routes.aiFeedback}/${entry.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 hover:bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-600 transition"
+                          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
+                            darkMode
+                              ? 'border-sky-700/60 text-sky-300 hover:bg-sky-950/40'
+                              : 'border-sky-200 text-sky-600 hover:bg-sky-50'
+                          }`}
                         >
                           <Sparkles className="w-3.5 h-3.5" />
                           <span>AI Feedback</span>
@@ -834,7 +914,7 @@ export default function PortalMockTestsPage({
                             const remaining = deleteMockAttempt(activeTrack, entry.id);
                             setAttemptsStore((prev) => ({ ...prev, [activeTrack]: remaining }));
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-500 transition cursor-pointer"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-400/50 hover:bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-500 transition cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span>Delete</span>

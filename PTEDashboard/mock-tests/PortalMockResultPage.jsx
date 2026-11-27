@@ -38,7 +38,7 @@ const SKILL_PILL_COLOR = {
   L: 'bg-[#0b4a7b] text-white',
 };
 
-function CommSkillRing({ value, label, color }) {
+function CommSkillRing({ value, label, color, darkMode = false }) {
   const numericVal = typeof value === 'number' ? value : 0;
   const pct = Math.max(0, Math.min(100, Math.round((numericVal / 90) * 100)));
   const radius = 34;
@@ -49,7 +49,14 @@ function CommSkillRing({ value, label, color }) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative w-24 h-24 flex items-center justify-center">
         <svg className="w-24 h-24 -rotate-90" viewBox="0 0 84 84" aria-hidden="true">
-          <circle cx="42" cy="42" r={radius} fill="none" stroke="#e8eef5" strokeWidth="10" />
+          <circle
+            cx="42"
+            cy="42"
+            r={radius}
+            fill="none"
+            stroke={darkMode ? '#272c35' : '#e8eef5'}
+            strokeWidth="10"
+          />
           <circle
             cx="42"
             cy="42"
@@ -61,7 +68,11 @@ function CommSkillRing({ value, label, color }) {
             strokeDashoffset={strokeDashoffset}
           />
         </svg>
-        <span className="absolute text-lg font-extrabold text-[#0b4a7b]">
+        <span
+          className={`absolute text-lg font-extrabold ${
+            darkMode ? 'text-white' : 'text-[#0b4a7b]'
+          }`}
+        >
           {typeof value === 'number' ? value : 'N/A'}
         </span>
       </div>
@@ -137,7 +148,7 @@ function ShareConfirmModal({ onClose, onConfirmYes }) {
  */
 export default function PortalMockResultPage({ syncCoreMode = false }) {
   const { attemptId } = useParams();
-  const { portalMode, setPortalMode } = usePortal();
+  const { portalMode, setPortalMode, portalDarkMode: darkMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
   const activeTrack = isCoreMode ? 'core' : 'academic';
 
@@ -242,6 +253,9 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
   }
 
   const formattedDate = new Date(attempt.completedAt).toLocaleDateString('en-GB');
+  const isSectionalReport = attempt.mode === 'sectional' || attempt.mode === 'timed';
+  const displayedSkills = isSectionalReport ? availableTabs : REPORT_SKILLS;
+  const overallLinePct = Math.max(8, Math.min(96, Math.round((attempt.overall / 90) * 100)));
   const initials = candidateName
     .split(/\s+/)
     .slice(0, 2)
@@ -250,22 +264,40 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        darkMode ? 'bg-[#0a0c0e] text-zinc-200' : 'bg-[#f8fbfd] text-slate-800'
+      }`}
+    >
       <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Top Heading */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-full bg-[#e6eef6] text-[#0b4a7b] flex items-center justify-center shrink-0">
+            <span
+              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                darkMode ? 'bg-[#1a2433] text-[#4ea5f5]' : 'bg-[#e6eef6] text-[#0b4a7b]'
+              }`}
+            >
               <ClipboardCheck className="w-5 h-5" />
             </span>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0b4a7b]">Mock Test Result</h1>
+            <h1
+              className={`text-lg sm:text-xl font-extrabold ${
+                darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
+              }`}
+            >
+              Mock Test Result
+            </h1>
           </div>
 
           <Link
             to={dataset.routes.scores}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0b4a7b] hover:text-[#1ea7a1] transition"
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold transition ${
+              darkMode
+                ? 'text-zinc-300 hover:text-[#3dc8c1]'
+                : 'text-[#0b4a7b] hover:text-[#1ea7a1]'
+            }`}
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Scores</span>
@@ -273,10 +305,18 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
         </div>
 
         {/* Score Report Summary Card */}
-        <section className="rounded-2xl border border-slate-200/80 bg-white shadow-2xs overflow-hidden">
-          <div className="bg-[#0b4a7b] text-white px-5 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <section
+          className={`rounded-2xl border shadow-2xs overflow-hidden ${
+            darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+          }`}
+        >
+          <div
+            className={`px-5 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 text-white ${
+              darkMode ? 'bg-[#2c5274]' : 'bg-[#0b4a7b]'
+            }`}
+          >
             <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide">
-              MOCK TEST | SCORE REPORT
+              {isSectionalReport ? 'SECTIONAL MOCK TEST | SCORE REPORT' : 'MOCK TEST | SCORE REPORT'}
             </span>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -314,45 +354,62 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                   {initials || 'NP'}
                 </div>
                 <div className="space-y-0.5">
-                  <h2 className="text-base sm:text-lg font-extrabold text-[#0b4a7b]">
+                  <h2
+                    className={`text-base sm:text-lg font-extrabold ${
+                      darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                    }`}
+                  >
                     {candidateName}
                   </h2>
-                  <p className="text-xs font-semibold text-slate-600">{attempt.title}</p>
-                  <p className="text-xs text-slate-500">Test Date: {formattedDate}</p>
+                  <p className={`text-xs font-semibold ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
+                    {attempt.title}
+                  </p>
+                  <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                    Test Date: {formattedDate}
+                  </p>
                 </div>
               </div>
 
-              <div className="w-24 rounded-t-xl rounded-b-full bg-[#4ecdc4] text-white text-center shadow-sm overflow-hidden shrink-0">
-                <div className="bg-[#dff7f5] text-[#0b4a7b] text-[11px] font-bold py-1.5">
-                  Overall Score
+              {!isSectionalReport && (
+                <div className="w-24 rounded-t-xl rounded-b-full bg-[#4ecdc4] text-white text-center shadow-sm overflow-hidden shrink-0">
+                  <div className="bg-[#dff7f5] text-[#0b4a7b] text-[11px] font-bold py-1.5">
+                    Overall Score
+                  </div>
+                  <div className="py-3 text-2xl sm:text-3xl font-extrabold leading-none">
+                    {attempt.overall}
+                  </div>
                 </div>
-                <div className="py-3 text-2xl sm:text-3xl font-extrabold leading-none">
-                  {attempt.overall}
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Communication Skills Rings */}
             <div className="space-y-4">
-              <h3 className="text-xs sm:text-sm font-extrabold text-[#0b4a7b] border-b border-slate-100 pb-2">
+              <h3
+                className={`text-xs sm:text-sm font-extrabold border-b pb-2 ${
+                  darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
+                }`}
+              >
                 Communication Skills
               </h3>
 
               <div className="relative py-4">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none select-none absolute inset-0 flex items-center justify-center text-5xl sm:text-7xl font-black tracking-tight text-slate-100/80"
+                  className={`pointer-events-none select-none absolute inset-0 flex items-center justify-center text-5xl sm:text-7xl font-black tracking-tight ${
+                    darkMode ? 'text-zinc-800/40' : 'text-slate-100/80'
+                  }`}
                 >
                   NinetyPTE
                 </div>
 
                 <div className="relative z-10 flex flex-wrap items-center justify-center gap-8 sm:gap-14">
-                  {REPORT_SKILLS.map((skill) => (
+                  {displayedSkills.map((skill) => (
                     <CommSkillRing
                       key={skill.key}
                       label={skill.key}
                       value={attempt[skill.field]}
                       color={skill.color}
+                      darkMode={darkMode}
                     />
                   ))}
                 </div>
@@ -361,24 +418,26 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
 
             {/* Skills Breakdown */}
             <div className="space-y-4">
-              <h3 className="text-xs sm:text-sm font-extrabold text-[#0b4a7b] border-b border-slate-100 pb-2">
+              <h3
+                className={`text-xs sm:text-sm font-extrabold border-b pb-2 ${
+                  darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
+                }`}
+              >
                 Skills Breakdown
               </h3>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <div className="lg:col-span-6 space-y-2.5">
-                  <div className="flex justify-center">
-                    <span className="rounded-md border border-slate-200 bg-white px-2.5 py-0.5 text-[11px] font-bold text-[#0b4a7b] shadow-2xs">
-                      Overall Score: {attempt.overall}
-                    </span>
-                  </div>
-
-                  {REPORT_SKILLS.map((skill) => {
+              {isSectionalReport ? (
+                <div className="space-y-5">
+                  {displayedSkills.map((skill) => {
                     const val = typeof attempt[skill.field] === 'number' ? attempt[skill.field] : 0;
                     const widthPct = Math.max(6, Math.min(100, Math.round((val / 90) * 100)));
                     return (
                       <div key={skill.key} className="flex items-center gap-3 text-xs">
-                        <span className="w-28 text-slate-600 font-medium text-right shrink-0">
+                        <span
+                          className={`w-28 font-medium text-right shrink-0 ${
+                            darkMode ? 'text-zinc-300' : 'text-slate-600'
+                          }`}
+                        >
                           {skill.key} ({val})
                         </span>
                         <div className="flex-1">
@@ -390,11 +449,15 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                       </div>
                     );
                   })}
-                </div>
 
-                <div className="lg:col-span-6">
-                  <div className="rounded-xl border border-slate-200/80 bg-[#f8fafc] p-4 flex items-start gap-3 text-xs text-slate-500 leading-relaxed">
-                    <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <div
+                    className={`rounded-xl border p-4 flex items-start gap-3 text-xs leading-relaxed ${
+                      darkMode
+                        ? 'border-zinc-800 bg-[#1a1f28] text-zinc-400'
+                        : 'border-slate-200/80 bg-[#f8fafc] text-slate-500'
+                    }`}
+                  >
+                    <Info className="w-4 h-4 opacity-70 shrink-0 mt-0.5" />
                     <p>
                       This scorecard has been generated solely on the basis of your performance in
                       the above-mentioned mock test provided by NinetyPTE. Please note that this
@@ -403,51 +466,139 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                     </p>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                  <div className="lg:col-span-6 space-y-2.5">
+                    <div className="flex items-center gap-3">
+                      <span className="w-28 shrink-0" />
+                      <div className="flex-1 relative h-6">
+                        <span
+                          style={{ left: `${overallLinePct}%` }}
+                          className={`-translate-x-1/2 absolute top-0 whitespace-nowrap rounded-md border px-2.5 py-0.5 text-[11px] font-bold shadow-2xs ${
+                            darkMode
+                              ? 'border-zinc-700 bg-[#1c2028] text-[#4ea5f5]'
+                              : 'border-slate-200 bg-white text-[#0b4a7b]'
+                          }`}
+                        >
+                          Overall Score: {attempt.overall}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="relative space-y-2.5">
+                      <div className="flex items-stretch">
+                        <span className="w-28 shrink-0" />
+                        <div className="flex-1 relative">
+                          <span
+                            style={{ left: `${overallLinePct}%` }}
+                            className={`pointer-events-none absolute top-0 bottom-0 w-0.5 z-10 ${
+                              darkMode ? 'bg-white/80' : 'bg-[#0b4a7b]/70'
+                            }`}
+                          />
+                        </div>
+                      </div>
+
+                      {REPORT_SKILLS.map((skill) => {
+                        const val = typeof attempt[skill.field] === 'number' ? attempt[skill.field] : 0;
+                        const widthPct = Math.max(6, Math.min(100, Math.round((val / 90) * 100)));
+                        return (
+                          <div key={skill.key} className="flex items-center gap-3 text-xs relative">
+                            <span
+                              className={`w-28 font-medium text-right shrink-0 ${
+                                darkMode ? 'text-zinc-300' : 'text-slate-600'
+                              }`}
+                            >
+                              {skill.key} ({val})
+                            </span>
+                            <div className="flex-1 relative">
+                              <div
+                                className="h-3.5 rounded-r-full transition-all"
+                                style={{ width: `${widthPct}%`, backgroundColor: skill.color }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-6">
+                    <div
+                      className={`rounded-xl border p-4 flex items-start gap-3 text-xs leading-relaxed ${
+                        darkMode
+                          ? 'border-zinc-800 bg-[#1a1f28] text-zinc-400'
+                          : 'border-slate-200/80 bg-[#f8fafc] text-slate-500'
+                      }`}
+                    >
+                      <Info className="w-4 h-4 opacity-70 shrink-0 mt-0.5" />
+                      <p>
+                        This scorecard has been generated solely on the basis of your performance in
+                        the above-mentioned mock test provided by NinetyPTE. Please note that this
+                        score report cannot be used for applying to any university or for migration
+                        purposes.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
 
         {/* Detailed Question Analysis */}
         <section className="space-y-4">
-          <h2 className="text-sm sm:text-base font-extrabold text-[#0b4a7b]">
+          <h2
+            className={`text-sm sm:text-base font-extrabold ${
+              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+            }`}
+          >
             Detailed Question Analysis
           </h2>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            {availableTabs.map((skill) => {
-              const isActive = skill.key === resolvedSkillTab;
-              const TabIcon = skill.Icon;
-              return (
-                <button
-                  key={skill.key}
-                  type="button"
-                  onClick={() => setActiveSkillTab(skill.key)}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
-                    isActive
-                      ? skill.activeBg
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
-                  }`}
-                >
-                  <TabIcon className="w-3.5 h-3.5" />
-                  <span>{skill.key}</span>
-                </button>
-              );
-            })}
-          </div>
+          {!isSectionalReport && (
+            <div className="flex flex-wrap items-center gap-2.5">
+              {availableTabs.map((skill) => {
+                const isActive = skill.key === resolvedSkillTab;
+                const TabIcon = skill.Icon;
+                return (
+                  <button
+                    key={skill.key}
+                    type="button"
+                    onClick={() => setActiveSkillTab(skill.key)}
+                    className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
+                      isActive
+                        ? skill.activeBg
+                        : darkMode
+                          ? 'bg-[#16191e] border border-zinc-800 text-zinc-300 hover:border-zinc-600'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    <TabIcon className="w-3.5 h-3.5" />
+                    <span>{skill.key}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xs overflow-hidden">
+          <div
+            className={`rounded-2xl border shadow-2xs overflow-hidden ${
+              darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
             {activeQuestions.length === 0 ? (
               <ScoreEmptyState message={`No ${resolvedSkillTab} questions recorded in this mock test.`} />
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className={`divide-y ${darkMode ? 'divide-zinc-800' : 'divide-slate-100'}`}>
                 {activeQuestions.map((item, idx) => {
                   const tabMeta =
                     REPORT_SKILLS.find((s) => s.key === item.skillGroup) || REPORT_SKILLS[0];
                   return (
                     <div
                       key={`${item.id}-${idx}`}
-                      className="px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-slate-50/60 transition"
+                      className={`px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 transition ${
+                        darkMode ? 'hover:bg-[#1a1f28]' : 'hover:bg-slate-50/60'
+                      }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
@@ -456,7 +607,11 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                           {item.code}
                         </span>
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-bold text-[#0b4a7b] truncate">
+                          <p
+                            className={`text-xs sm:text-sm font-bold truncate ${
+                              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                            }`}
+                          >
                             {item.title}
                           </p>
                           <p className="text-[11px] text-slate-400">#{item.id}</p>
@@ -467,7 +622,11 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                         {(item.skillPills || []).map((pill) => (
                           <span
                             key={pill.key}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-[#0b4a7b]"
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
+                              darkMode
+                                ? 'border-zinc-700 bg-[#1a1f28] text-zinc-100'
+                                : 'border-slate-200 bg-white text-[#0b4a7b]'
+                            }`}
                           >
                             <span
                               className={`w-4 h-4 rounded-full text-[9px] font-extrabold flex items-center justify-center ${

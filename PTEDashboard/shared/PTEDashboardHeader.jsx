@@ -28,16 +28,6 @@ import NotificationsDrawer from './NotificationsDrawer';
 import { INITIAL_NOTIFICATIONS } from './notificationsData';
 import { usePortal } from './portalContext';
 
-const PORTAL_DARK_MODE_KEY = 'ninetypte_portal_dark';
-
-function readInitialDarkMode() {
-  try {
-    return localStorage.getItem(PORTAL_DARK_MODE_KEY) === 'true';
-  } catch {
-    return false;
-  }
-}
-
 const EXAM_TRACK_OPTIONS = [
   { id: 'academic', label: 'PTE A / UKVI' },
   { id: 'core', label: 'PTE Core' },
@@ -50,7 +40,7 @@ const EXAM_TRACK_OPTIONS = [
 export default function PTEDashboardHeader({ onOpenReferModal }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { portalMode, setPortalMode } = usePortal();
+  const { portalMode, setPortalMode, portalDarkMode: darkMode, setPortalDarkMode } = usePortal();
   const user = getStoredUser() || {};
   const superAdmin = isSuperAdmin(user);
   const closeTimeoutRef = useRef(null);
@@ -71,7 +61,6 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [idCopied, setIdCopied] = useState(false);
-  const [darkMode, setDarkMode] = useState(readInitialDarkMode);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const unreadCount = notifications.filter((item) => item.unread).length;
@@ -89,13 +78,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
   };
 
   const handleToggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    try {
-      localStorage.setItem(PORTAL_DARK_MODE_KEY, String(next));
-    } catch {
-      // Ignore storage failures
-    }
+    setPortalDarkMode((prev) => !prev);
   };
 
   const isHomeRoute =
@@ -152,17 +135,31 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         </div>
 
         {/* Main Portal Header */}
-        <header className="relative bg-white border-b border-slate-200/90 px-4 sm:px-6 lg:px-8">
+        <header
+          className={`relative border-b px-4 sm:px-6 lg:px-8 transition-colors ${
+            darkMode
+              ? 'bg-[#0d0f12] border-zinc-800 text-zinc-200'
+              : 'bg-white border-slate-200/90 text-slate-800'
+          }`}
+        >
           <div className="max-w-[1440px] mx-auto h-[72px] flex items-center justify-between gap-4">
             <div className="flex items-center gap-7">
               <Link to={homePath} className="inline-flex items-center gap-0.5 shrink-0">
-                <span className="text-[26px] font-black tracking-tighter text-[#0f3554]">
+                <span
+                  className={`text-[26px] font-black tracking-tighter ${
+                    darkMode ? 'text-white' : 'text-[#0f3554]'
+                  }`}
+                >
                   ninety<span className="text-[#00b4c6]">pte</span>
                 </span>
               </Link>
 
               {/* Portal Desktop Navigation */}
-              <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
+              <nav
+                className={`hidden lg:flex items-center gap-6 text-sm font-medium ${
+                  darkMode ? 'text-zinc-300' : 'text-slate-600'
+                }`}
+              >
                 <Link
                   to={homePath}
                   className={isHomeRoute ? 'text-[#00b4c6] font-semibold' : 'hover:text-[#00b4c6] transition'}
@@ -206,10 +203,18 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
 
                 <Link
                   to="/book-exam"
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white pl-3.5 pr-2 py-1.5 hover:border-cyan-400 transition shadow-2xs"
+                  className={`inline-flex items-center gap-2 rounded-full border pl-3.5 pr-2 py-1.5 hover:border-cyan-400 transition shadow-2xs ${
+                    darkMode ? 'border-zinc-700 bg-[#1a1d24]' : 'border-slate-200 bg-white'
+                  }`}
                 >
-                  <Calendar className="w-4 h-4 text-[#0d5488]" />
-                  <span className="text-xs sm:text-[13px] font-semibold text-slate-700">Book Exam</span>
+                  <Calendar className={`w-4 h-4 ${darkMode ? 'text-cyan-400' : 'text-[#0d5488]'}`} />
+                  <span
+                    className={`text-xs sm:text-[13px] font-semibold ${
+                      darkMode ? 'text-zinc-100' : 'text-slate-700'
+                    }`}
+                  >
+                    Book Exam
+                  </span>
                   <span className="rounded-full bg-[#e53935] px-2.5 py-0.5 text-[11px] font-bold text-white">
                     Save Rs 7,100
                   </span>
@@ -312,17 +317,37 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                 </button>
 
                 {profileOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-2xl z-50 text-xs sm:text-[13px] space-y-2">
-                    <div className="rounded-xl bg-slate-50/90 border border-slate-100 p-3 flex items-center justify-between gap-2.5">
+                  <div
+                    className={`absolute right-0 top-full mt-2 w-72 rounded-2xl border p-3.5 shadow-2xl z-50 text-xs sm:text-[13px] space-y-2 ${
+                      darkMode
+                        ? 'border-zinc-800 bg-[#181a1f] text-zinc-200'
+                        : 'border-slate-200/90 bg-white text-slate-700'
+                    }`}
+                  >
+                    <div
+                      className={`rounded-xl border p-3 flex items-center justify-between gap-2.5 ${
+                        darkMode
+                          ? 'bg-[#20242c] border-zinc-700/80'
+                          : 'bg-slate-50/90 border-slate-100'
+                      }`}
+                    >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-2xs">
                           {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-extrabold text-slate-800 text-sm truncate">
+                          <p
+                            className={`font-extrabold text-sm truncate ${
+                              darkMode ? 'text-white' : 'text-slate-800'
+                            }`}
+                          >
                             {user.name || 'NinetyPTE Student'}
                           </p>
-                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                          <div
+                            className={`flex items-center gap-1 text-[11px] mt-0.5 ${
+                              darkMode ? 'text-zinc-400' : 'text-slate-500'
+                            }`}
+                          >
                             <span>User #002087161</span>
                             <button
                               type="button"
@@ -350,28 +375,36 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                       </Link>
                     </div>
 
-                    <div className="divide-y divide-slate-100">
+                    <div className={`divide-y ${darkMode ? 'divide-zinc-800' : 'divide-slate-100'}`}>
                       <Link
                         to="/mobile-app"
                         onClick={() => setProfileOpen(false)}
-                        className="flex items-center gap-3 px-2.5 py-2.5 text-slate-700 hover:text-[#0c4a7e] font-medium transition"
+                        className={`flex items-center gap-3 px-2.5 py-2.5 font-medium transition ${
+                          darkMode ? 'text-zinc-200 hover:text-cyan-300' : 'text-slate-700 hover:text-[#0c4a7e]'
+                        }`}
                       >
-                        <Smartphone className="w-4 h-4 text-slate-500" />
+                        <Smartphone className="w-4 h-4 opacity-70" />
                         <span>Mobile App</span>
                       </Link>
 
                       <Link
                         to={contactPath}
                         onClick={() => setProfileOpen(false)}
-                        className="flex items-center gap-3 px-2.5 py-2.5 text-slate-700 hover:text-[#0c4a7e] font-medium transition"
+                        className={`flex items-center gap-3 px-2.5 py-2.5 font-medium transition ${
+                          darkMode ? 'text-zinc-200 hover:text-cyan-300' : 'text-slate-700 hover:text-[#0c4a7e]'
+                        }`}
                       >
-                        <Headphones className="w-4 h-4 text-slate-500" />
+                        <Headphones className="w-4 h-4 opacity-70" />
                         <span>Help Desk</span>
                       </Link>
 
-                      <div className="flex items-center justify-between px-2.5 py-2.5 text-slate-700 font-medium">
+                      <div
+                        className={`flex items-center justify-between px-2.5 py-2.5 font-medium ${
+                          darkMode ? 'text-cyan-400' : 'text-slate-700'
+                        }`}
+                      >
                         <span className="flex items-center gap-3">
-                          <Moon className="w-4 h-4 text-slate-500" />
+                          <Moon className="w-4 h-4 opacity-75" />
                           <span>Dark Mode</span>
                         </span>
                         <button
@@ -381,7 +414,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
                           aria-label="Toggle dark mode"
                           onClick={handleToggleDarkMode}
                           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
-                            darkMode ? 'bg-[#0d5488]' : 'bg-slate-200'
+                            darkMode ? 'bg-[#3dc8c1]' : 'bg-slate-200'
                           }`}
                         >
                           <span

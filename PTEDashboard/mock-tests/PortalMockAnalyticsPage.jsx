@@ -153,7 +153,7 @@ function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
  */
 export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   const { attemptId } = useParams();
-  const { portalMode, setPortalMode } = usePortal();
+  const { portalMode, setPortalMode, portalDarkMode: darkMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
   const activeTrack = isCoreMode ? 'core' : 'academic';
 
@@ -244,21 +244,37 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        darkMode ? 'bg-[#0a0c0e] text-zinc-200' : 'bg-[#f8fbfd] text-slate-800'
+      }`}
+    >
       <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-full bg-[#e6eef6] text-[#0b4a7b] flex items-center justify-center shrink-0">
+            <span
+              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                darkMode ? 'bg-[#1a2433] text-[#4ea5f5]' : 'bg-[#e6eef6] text-[#0b4a7b]'
+              }`}
+            >
               <Gauge className="w-5 h-5" />
             </span>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0b4a7b]">Mock Test Analytics</h1>
+            <h1
+              className={`text-lg sm:text-xl font-extrabold ${
+                darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
+              }`}
+            >
+              Mock Test Analytics
+            </h1>
           </div>
 
           <Link
             to={dataset.routes.scores}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0b4a7b] hover:text-[#1ea7a1]"
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
+              darkMode ? 'text-zinc-300 hover:text-[#3dc8c1]' : 'text-[#0b4a7b] hover:text-[#1ea7a1]'
+            }`}
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Scores</span>
@@ -266,7 +282,11 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
         </div>
 
         {/* Radar & Attempted Overview */}
-        <section className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5">
+        <section
+          className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-5 ${
+            darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+          }`}
+        >
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
@@ -323,19 +343,29 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 return (
                   <div
                     key={sec.key}
-                    className="rounded-xl border border-slate-200/80 p-4 space-y-2.5"
+                    className={`rounded-xl border p-4 space-y-2.5 ${
+                      darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
+                    }`}
                   >
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: sec.color }}>
                       <Icon className="w-3.5 h-3.5" />
                       <span>{sec.key}</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-slate-600">
+                    <div
+                      className={`flex items-center justify-between text-xs ${
+                        darkMode ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
                       <span>Attempted Questions</span>
                       <span className="font-bold" style={{ color: sec.color }}>
                         {attemptedCount}/{subset.length}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-slate-600">
+                    <div
+                      className={`flex items-center justify-between text-xs ${
+                        darkMode ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
                       <span>Score</span>
                       <span className="font-bold" style={{ color: sec.color }}>
                         {val}
@@ -349,14 +379,30 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
         </section>
 
         {/* Time Taken Bar Chart + Section Timing */}
-        <section className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5">
-          <h2 className="text-sm sm:text-base font-extrabold text-[#0b4a7b]">
+        <section
+          className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-5 ${
+            darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+          }`}
+        >
+          <h2
+            className={`text-sm sm:text-base font-extrabold ${
+              darkMode ? 'text-white' : 'text-[#0b4a7b]'
+            }`}
+          >
             Time Taken: {formatMMSS(takenSec)} / {formatMMSS(totalSec)}
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8 rounded-xl border border-slate-100 p-4 space-y-4">
-              <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold text-slate-600">
+            <div
+              className={`lg:col-span-8 rounded-xl border p-4 space-y-4 ${
+                darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-100'
+              }`}
+            >
+              <div
+                className={`flex flex-wrap items-center justify-center gap-4 text-[11px] font-semibold ${
+                  darkMode ? 'text-zinc-300' : 'text-slate-600'
+                }`}
+              >
                 {SKILL_SECTIONS.map((s) => (
                   <span key={s.key} className="inline-flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
@@ -394,22 +440,40 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                 return (
                   <div
                     key={sec.key}
-                    className="rounded-xl border border-slate-200/80 px-4 py-3 flex items-center justify-between"
+                    className={`rounded-xl border px-4 py-3 flex items-center justify-between ${
+                      darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
+                    }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${sec.tintBg}`}>
                         <Icon className="w-3.5 h-3.5" />
                       </span>
-                      <span className="text-xs font-bold text-slate-700">{sec.key}</span>
+                      <span
+                        className={`text-xs font-bold ${
+                          darkMode ? 'text-zinc-200' : 'text-slate-700'
+                        }`}
+                      >
+                        {sec.key}
+                      </span>
                     </div>
                     <div className="text-right leading-tight">
-                      <p className="text-sm font-extrabold text-[#0b4a7b]">{formatMMSS(estSec)}</p>
+                      <p
+                        className={`text-sm font-extrabold ${
+                          darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                        }`}
+                      >
+                        {formatMMSS(estSec)}
+                      </p>
                       <p className="text-[10px] text-slate-400">(MM:SS)</p>
                     </div>
                   </div>
                 );
               })}
-              <p className="text-[11px] font-medium text-[#0b4a7b] pt-1">
+              <p
+                className={`text-[11px] font-medium pt-1 ${
+                  darkMode ? 'text-[#4ea5f5]' : 'text-[#0b4a7b]'
+                }`}
+              >
                 Listening time does not include SST
               </p>
             </div>
@@ -425,7 +489,9 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
             return (
               <section
                 key={sec.key}
-                className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden shadow-2xs"
+                className={`rounded-2xl border overflow-hidden shadow-2xs ${
+                  darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+                }`}
               >
                 <div className={`${sec.headerBg} text-white px-5 py-2.5 flex items-center gap-2 text-sm font-bold`}>
                   <Icon className="w-4 h-4" />
@@ -449,14 +515,26 @@ export default function PortalMockAnalyticsPage({ syncCoreMode = false }) {
                     return (
                       <div
                         key={task.code}
-                        className="rounded-xl border border-slate-200/80 p-3.5 space-y-2.5"
+                        className={`rounded-xl border p-3.5 space-y-2.5 ${
+                          darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80'
+                        }`}
                       >
-                        <p className="text-xs font-bold text-[#0b4a7b] truncate">{task.label}</p>
+                        <p
+                          className={`text-xs font-bold truncate ${
+                            darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                          }`}
+                        >
+                          {task.label}
+                        </p>
                         <div className="flex items-center gap-3">
-                          <span className="text-[11px] font-bold text-slate-500">
+                          <span className="text-[11px] font-bold text-slate-400">
                             {avgTaskScore}/90
                           </span>
-                          <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                          <div
+                            className={`flex-1 h-1.5 rounded-full overflow-hidden ${
+                              darkMode ? 'bg-zinc-800' : 'bg-slate-100'
+                            }`}
+                          >
                             <div
                               className="h-full rounded-full"
                               style={{ width: `${pct}%`, backgroundColor: sec.color }}

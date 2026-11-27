@@ -1,5 +1,9 @@
 import { useCallback, useState } from 'react';
-import { PORTAL_MODE_KEY, PortalContext } from './portalContext';
+import {
+  PORTAL_DARK_MODE_KEY,
+  PORTAL_MODE_KEY,
+  PortalContext,
+} from './portalContext';
 
 function readInitialMode() {
   try {
@@ -10,12 +14,21 @@ function readInitialMode() {
   }
 }
 
+function readInitialDark() {
+  try {
+    return localStorage.getItem(PORTAL_DARK_MODE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Persists active dashboard track ('academic' for PTE A/UKVI vs 'core' for PTE Core)
- * across all student portal routes.
+ * and portal dark theme across all student portal routes.
  */
 export default function PortalProvider({ children }) {
   const [portalMode, setModeState] = useState(readInitialMode);
+  const [portalDarkMode, setDarkState] = useState(readInitialDark);
 
   const setPortalMode = useCallback((nextMode) => {
     const valid = nextMode === 'core' ? 'core' : 'academic';
@@ -27,8 +40,22 @@ export default function PortalProvider({ children }) {
     }
   }, []);
 
+  const setPortalDarkMode = useCallback((nextVal) => {
+    setDarkState((prev) => {
+      const resolved = typeof nextVal === 'function' ? Boolean(nextVal(prev)) : Boolean(nextVal);
+      try {
+        localStorage.setItem(PORTAL_DARK_MODE_KEY, String(resolved));
+      } catch {
+        // Ignore storage quota / privacy mode failures gracefully
+      }
+      return resolved;
+    });
+  }, []);
+
   return (
-    <PortalContext.Provider value={{ portalMode, setPortalMode }}>
+    <PortalContext.Provider
+      value={{ portalMode, setPortalMode, portalDarkMode, setPortalDarkMode }}
+    >
       {children}
     </PortalContext.Provider>
   );

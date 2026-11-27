@@ -11,8 +11,8 @@ export const SCORE_HISTORY_MODES = [
 
 export const SCORE_HISTORY_FILTER_OPTIONS = [
   { id: 'all', label: 'All' },
-  { id: 'resume', label: 'Resume Current Test' },
-  { id: 'restart', label: 'End Current Test & Start Now' },
+  { id: 'today', label: 'Today' },
+  { id: 'yesterday', label: 'Yesterday' },
   { id: '7d', label: 'Last 7 days' },
   { id: '15d', label: 'Last 15 days' },
   { id: '30d', label: 'Last 30 days' },

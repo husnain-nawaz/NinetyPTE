@@ -106,7 +106,7 @@ function SkillMiniRing({ value, color }) {
  */
 export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
   const { attemptId } = useParams();
-  const { portalMode, setPortalMode } = usePortal();
+  const { portalMode, setPortalMode, portalDarkMode: darkMode } = usePortal();
   const isCoreMode = portalMode === 'core' || syncCoreMode;
   const activeTrack = isCoreMode ? 'core' : 'academic';
 
@@ -123,18 +123,31 @@ export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
   const [stepIdx, setStepIdx] = useState(0);
   const current = FEEDBACK_SECTIONS[stepIdx] || FEEDBACK_SECTIONS[0];
   const scoreVal = typeof attempt?.[current.field] === 'number' ? attempt[current.field] : 10;
+  const targetAchieved = scoreVal >= 71;
 
   return (
-    <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
+    <div
+      className={`min-h-screen flex flex-col font-sans transition-colors ${
+        darkMode ? 'bg-[#0a0c0e] text-zinc-200' : 'bg-[#f8fbfd] text-slate-800'
+      }`}
+    >
       <PTEDashboardHeader />
 
       <main className="flex-1 w-full max-w-[1260px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-full bg-[#e6eef6] text-[#0b4a7b] flex items-center justify-center shrink-0">
+            <span
+              className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                darkMode ? 'bg-[#1a2433] text-[#4ea5f5]' : 'bg-[#e6eef6] text-[#0b4a7b]'
+              }`}
+            >
               <Sparkles className="w-4 h-4" />
             </span>
-            <h1 className="text-lg sm:text-xl font-extrabold text-[#0b4a7b] inline-flex items-center gap-1.5">
+            <h1
+              className={`text-lg sm:text-xl font-extrabold inline-flex items-center gap-1.5 ${
+                darkMode ? 'text-white' : 'text-[#0b4a7b]'
+              }`}
+            >
               <span>AI Feedback</span>
               <Info className="w-4 h-4 text-slate-400" />
             </h1>
@@ -142,14 +155,24 @@ export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
 
           <Link
             to={dataset.routes.scores}
-            className="text-xs font-semibold text-[#0b4a7b] hover:text-[#1ea7a1]"
+            className={`text-xs font-semibold ${
+              darkMode ? 'text-zinc-300 hover:text-[#3dc8c1]' : 'text-[#0b4a7b] hover:text-[#1ea7a1]'
+            }`}
           >
             &larr; Back to Scores
           </Link>
         </div>
 
-        <section className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-2xs space-y-5">
-          <h2 className="text-sm sm:text-base font-extrabold text-[#0b4a7b] border-b border-slate-100 pb-3">
+        <section
+          className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-5 ${
+            darkMode ? 'border-zinc-800 bg-[#14171c]' : 'border-slate-200/80 bg-white'
+          }`}
+        >
+          <h2
+            className={`text-sm sm:text-base font-extrabold border-b pb-3 ${
+              darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
+            }`}
+          >
             AI Score Report Analysis
           </h2>
 
@@ -166,7 +189,9 @@ export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                     active
                       ? sec.activeBg
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
+                      : darkMode
+                        ? 'bg-[#1a1f28] border border-zinc-700 text-zinc-300 hover:border-zinc-500'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -176,17 +201,29 @@ export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
             })}
           </div>
 
-          <div className="rounded-xl border border-slate-100 p-4 sm:p-5 space-y-4">
+          <div
+            className={`rounded-xl border p-4 sm:p-5 space-y-4 ${
+              darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-100 bg-white'
+            }`}
+          >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs font-bold text-[#0b4a7b]">Feedback</span>
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0b4a7b]">
+              <span className={`text-xs font-bold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                Feedback
+              </span>
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-bold ${
+                  darkMode ? 'text-white' : 'text-[#0b4a7b]'
+                }`}
+              >
                 <Target className="w-3.5 h-3.5 text-[#1ea7a1]" />
                 Target Score: <strong className="text-[#1ea7a1]">Superior</strong>
               </span>
             </div>
 
             <div
-              className={`rounded-xl border px-4 py-3 flex items-center justify-between gap-4 ${current.bannerBg}`}
+              className={`rounded-xl border px-4 py-3 flex items-center justify-between gap-4 ${
+                darkMode ? 'bg-[#1a2230] border-zinc-700/80' : current.bannerBg
+              }`}
             >
               <span className="text-sm font-extrabold" style={{ color: current.accentColor }}>
                 {current.key}
@@ -194,11 +231,28 @@ export default function PortalMockAiFeedbackPage({ syncCoreMode = false }) {
               <SkillMiniRing value={scoreVal} color={current.accentColor} />
             </div>
 
-            <div className="space-y-3 text-xs sm:text-[13px] text-slate-600 leading-relaxed pt-1">
-              <p>{current.headline}</p>
-              <p>{current.detail}</p>
-              <p>{current.closing}</p>
-            </div>
+            {targetAchieved ? (
+              <div
+                className={`space-y-3 text-xs sm:text-[13px] leading-relaxed pt-1 ${
+                  darkMode ? 'text-zinc-300' : 'text-slate-600'
+                }`}
+              >
+                <p>Well done! You&apos;ve achieved your target score in this module!</p>
+              </div>
+            ) : (
+              <div
+                className={`space-y-3 text-xs sm:text-[13px] leading-relaxed pt-1 ${
+                  darkMode ? 'text-zinc-300' : 'text-slate-600'
+                }`}
+              >
+                <p>{current.headline}</p>
+                <p>{current.detail}</p>
+                <p>{current.closing}</p>
+                {scoreVal >= 50 && (
+                  <p>You are near your target score. Keep up the good efforts.</p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between pt-2">
