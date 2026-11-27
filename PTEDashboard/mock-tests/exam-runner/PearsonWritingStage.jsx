@@ -84,7 +84,7 @@ export default function PearsonWritingStage({
   const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
 
   return (
-    <div className="max-w-5xl space-y-5">
+    <div className={instruction ? 'max-w-5xl space-y-5' : 'w-full space-y-5'}>
       {instruction && (
         <p className={`text-xs sm:text-[13px] font-bold leading-relaxed ${darkMode ? 'text-white' : 'text-slate-900'}`}>
           {instruction}

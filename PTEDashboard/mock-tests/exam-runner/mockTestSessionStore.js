@@ -33,11 +33,11 @@ const PART_TASK_PLANS = {
   ],
   Listening: [
     'listening/summarize-spoken-text',
-    'listening/multiple-choice-multiple',
     'listening/fill-in-the-blanks',
-    'listening/highlight-correct-summary',
     'listening/multiple-choice-single',
     'listening/select-missing-word',
+    'listening/multiple-choice-multiple',
+    'listening/highlight-correct-summary',
     'listening/highlight-incorrect-words',
     'listening/write-from-dictation',
   ],
@@ -229,7 +229,11 @@ export function buildMockExamQueue(testItem, isCore) {
     const taskKeys = PART_TASK_PLANS[planKey] || PART_TASK_PLANS.Speaking;
 
     for (let i = 0; i < countForSkill; i += 1) {
-      const taskKey = taskKeys[i % taskKeys.length];
+      const planIdx =
+        countForSkill >= taskKeys.length
+          ? Math.min(taskKeys.length - 1, Math.floor((i * taskKeys.length) / countForSkill))
+          : i % taskKeys.length;
+      const taskKey = taskKeys[planIdx];
       const [taskSkill, taskSlug] = taskKey.split('/');
       const taskMeta = resolvePracticeTask(taskSkill, taskSlug, isCore);
       const bankItems = buildTaskQuestionList(taskMeta);

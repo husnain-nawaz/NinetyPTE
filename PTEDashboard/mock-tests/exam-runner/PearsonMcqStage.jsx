@@ -91,9 +91,9 @@ export default function PearsonMcqStage({
               return (
                 <label
                   key={opt.id}
-                  className={`flex items-start gap-2.5 px-2 py-1 text-xs sm:text-[13px] cursor-pointer transition w-fit max-w-full ${
+                  className={`flex items-center gap-2.5 px-2 py-1 text-xs sm:text-[13px] cursor-pointer transition w-fit max-w-full ${
                     checked
-                      ? 'bg-[#fef08a] text-slate-900'
+                      ? 'bg-[#fde047] text-slate-900'
                       : darkMode
                         ? 'text-zinc-200 hover:text-white'
                         : 'text-slate-700 hover:text-slate-900'
@@ -104,7 +104,7 @@ export default function PearsonMcqStage({
                     name={singleChoice ? `mcq-${questionIndex}` : undefined}
                     checked={checked}
                     onChange={() => toggleChoice(opt.id)}
-                    className="mt-1 accent-[#00738e] cursor-pointer shrink-0"
+                    className="accent-[#00738e] cursor-pointer shrink-0"
                   />
                   <span>{opt.label}</span>
                 </label>

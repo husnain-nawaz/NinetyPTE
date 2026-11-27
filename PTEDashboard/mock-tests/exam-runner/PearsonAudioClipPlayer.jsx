@@ -97,17 +97,23 @@ export default function PearsonAudioClipPlayer({
         </button>
 
         <div className="flex-1 space-y-1.5">
-          <div className="h-3 w-full bg-white/95 border border-[#1d6e8f] overflow-hidden">
+          <div
+            className={`h-3 w-full border overflow-hidden ${
+              clipPhase === 'done'
+                ? 'bg-[#2a7997] border-[#1c5e77]'
+                : 'bg-white/95 border-[#1d6e8f]'
+            }`}
+          >
             <div
               className="h-full bg-[#0997d6] transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
+              style={{ width: `${clipPhase === 'done' ? 0 : progressPct}%` }}
             />
           </div>
-          <p className="text-[11px] text-white/95">
+          <p className="text-[11px] text-white/95 h-4">
             {clipPhase === 'delay'
               ? `The clip will begin in ${delayLeft} seconds`
               : clipPhase === 'playing'
-                ? 'Playing...'
+                ? '\u00A0'
                 : 'Completed'}
           </p>
         </div>
