@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   BarChart2,
   Bookmark,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
@@ -44,6 +45,9 @@ const DIFFICULTY_PILL_CLASSES = {
   Medium: 'bg-amber-50 text-amber-500',
   Difficult: 'bg-rose-50 text-rose-500',
 };
+
+const getAttemptsCount = (item, attemptsCountMap) =>
+  (item?.attempts || 0) + (attemptsCountMap[item?.id] || 0);
 
 function MockTestListRow({ item, attemptsCount, bookmarked, onStart, onToggleBookmark }) {
   return (
@@ -92,7 +96,7 @@ function MockTestListRow({ item, attemptsCount, bookmarked, onStart, onToggleBoo
           className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
         >
           <Play className="w-3 h-3" />
-          <span>Start</span>
+          <span>{attemptsCount > 0 ? 'Resume' : 'Start'}</span>
         </button>
 
         <button
@@ -142,6 +146,7 @@ export default function PortalMockTestsPage({
   const [presetOnly, setPresetOnly] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterValue, setFilterValue] = useState('All');
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
   const [pageByScope, setPageByScope] = useState({});
 
   const [bookmarkedIds, setBookmarkedIds] = useState(readMockBookmarks);
@@ -201,16 +206,13 @@ export default function PortalMockTestsPage({
       if (presetOnly && !item.isPreset) return false;
       if (q && !item.title.toLowerCase().includes(q)) return false;
 
-      const count = attemptsCountMap[item.id] || 0;
       if (filterValue === 'Easy' || filterValue === 'Medium' || filterValue === 'Difficult') {
         return item.difficulty === filterValue;
       }
-      if (filterValue === 'Bookmarked') return bookmarkedIds.includes(item.id);
-      if (filterValue === 'Attempted') return count > 0;
-      if (filterValue === 'Unattempted') return count === 0;
+      if (filterValue === 'Bookmark') return bookmarkedIds.includes(item.id);
       return true;
     });
-  }, [rawRows, predictionOnly, presetOnly, searchQuery, filterValue, bookmarkedIds, attemptsCountMap]);
+  }, [rawRows, predictionOnly, presetOnly, searchQuery, filterValue, bookmarkedIds]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
@@ -234,6 +236,7 @@ export default function PortalMockTestsPage({
     setPresetOnly(true);
     setSearchQuery('');
     setFilterValue('All');
+    setFilterMenuOpen(false);
     setCurrentPage(1);
   };
 
@@ -268,6 +271,8 @@ export default function PortalMockTestsPage({
     setAttemptsStore((prev) => ({ ...prev, [activeTrack]: next }));
   };
 
+  const freeTestAttempts = getAttemptsCount(dataset.freeFullTest, attemptsCountMap);
+
   return (
     <div className="min-h-screen bg-[#f8fbfd] text-slate-800 flex flex-col font-sans">
       <PTEDashboardHeader />
@@ -283,14 +288,14 @@ export default function PortalMockTestsPage({
 
         {/* Top Segmented Tabs + Score History Button */}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex rounded-xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+          <div className="inline-flex rounded-full border border-slate-200 bg-white p-0.5 shadow-2xs">
             <button
               type="button"
               onClick={() => handleSelectTopTab('mock-test')}
-              className={`min-w-[130px] px-5 py-2.5 text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'mock-test'
-                  ? 'bg-[#3dc8c1] text-white'
-                  : 'bg-white text-[#0b4a7b] hover:bg-slate-50'
+                  ? 'bg-[#3dc8c1] text-white shadow-2xs'
+                  : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
               }`}
             >
               Mock Test
@@ -298,10 +303,10 @@ export default function PortalMockTestsPage({
             <button
               type="button"
               onClick={() => handleSelectTopTab('scores')}
-              className={`min-w-[130px] px-5 py-2.5 text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'scores'
-                  ? 'bg-[#3dc8c1] text-white'
-                  : 'bg-white text-[#0b4a7b] hover:bg-slate-50'
+                  ? 'bg-[#3dc8c1] text-white shadow-2xs'
+                  : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
               }`}
             >
               Scores
@@ -310,7 +315,7 @@ export default function PortalMockTestsPage({
 
           <Link
             to={dataset.routes.history}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#0b4a7b] hover:bg-[#08385f] px-4 py-2 text-xs font-bold text-white shadow-2xs transition"
+            className="inline-flex items-center gap-2 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] px-4 py-2 text-xs font-bold text-white shadow-2xs transition"
           >
             <Clock className="w-3.5 h-3.5" />
             <span>Score History</span>
@@ -321,7 +326,7 @@ export default function PortalMockTestsPage({
           <section className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-2xs space-y-5">
             {/* Mode Switcher & Filter Toolbar */}
             <div className="rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex flex-wrap items-center rounded-full border border-slate-200 bg-white p-0.5">
                 {MOCK_TEST_MODES.map((tab) => {
                   const isActive = mode === tab.id;
                   return (
@@ -329,10 +334,10 @@ export default function PortalMockTestsPage({
                       key={tab.id}
                       type="button"
                       onClick={() => handleSelectMode(tab.id)}
-                      className={`rounded-lg px-3.5 py-2 text-xs font-semibold transition cursor-pointer ${
+                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition cursor-pointer ${
                         isActive
-                          ? 'bg-[#12738b] text-white shadow-2xs'
-                          : 'border border-slate-200 bg-white text-slate-600 hover:border-[#00b4c6]'
+                          ? 'bg-[#109aa8] text-white shadow-2xs'
+                          : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
                       }`}
                     >
                       {tab.label}
@@ -369,7 +374,7 @@ export default function PortalMockTestsPage({
                 </label>
 
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="search"
                     value={searchQuery}
@@ -379,31 +384,72 @@ export default function PortalMockTestsPage({
                     }}
                     placeholder="Search..."
                     aria-label="Search mock tests"
-                    className="w-36 sm:w-44 rounded-lg border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#00b4c6]"
+                    className="w-40 sm:w-48 rounded-full border border-slate-200 bg-white pl-8.5 pr-3.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#00b4c6]"
                   />
                 </div>
 
-                <select
-                  value={filterValue}
-                  onChange={(e) => {
-                    setFilterValue(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  aria-label="Filter mock tests"
-                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-600 focus:outline-none focus:border-[#00b4c6] cursor-pointer"
-                >
-                  {MOCK_DIFFICULTY_FILTERS.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setFilterMenuOpen((prev) => !prev)}
+                    aria-haspopup="listbox"
+                    aria-expanded={filterMenuOpen}
+                    aria-label="Filter mock tests"
+                    className="min-w-[100px] inline-flex items-center justify-between gap-4 rounded-full border border-slate-200 bg-white hover:border-[#00b4c6] px-4 py-1.5 text-xs font-medium text-[#0b4a7b] focus:outline-none focus:border-[#00b4c6] cursor-pointer transition"
+                  >
+                    <span>{filterValue}</span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-500 transition-transform ${
+                        filterMenuOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {filterMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-20"
+                        onClick={() => setFilterMenuOpen(false)}
+                        aria-hidden="true"
+                      />
+                      <div
+                        role="listbox"
+                        aria-label="Mock test filter options"
+                        className="absolute left-0 top-full mt-2 w-40 rounded-xl border border-slate-100 bg-white shadow-lg divide-y divide-slate-100 overflow-hidden z-30"
+                      >
+                        {MOCK_DIFFICULTY_FILTERS.map((opt) => {
+                          const isSelected = filterValue === opt;
+                          return (
+                            <button
+                              key={opt}
+                              type="button"
+                              role="option"
+                              aria-selected={isSelected}
+                              onClick={() => {
+                                setFilterValue(opt);
+                                setCurrentPage(1);
+                                setFilterMenuOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-2.5 text-xs transition cursor-pointer ${
+                                isSelected
+                                  ? 'font-bold text-[#0b4a7b] bg-slate-50/70'
+                                  : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-[#0b4a7b]'
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
 
                 {mode === 'full' && (
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="rounded-lg border border-slate-200 bg-white hover:border-[#00b4c6] px-3 py-1.5 text-xs font-medium text-slate-600 transition cursor-pointer"
+                    className="rounded-full border border-[#0b4a7b]/40 bg-white hover:border-[#0b4a7b] px-4 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
                   >
                     Reset
                   </button>
@@ -430,15 +476,15 @@ export default function PortalMockTestsPage({
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <BarChart2 className="w-3 h-3" />
-                          Attempt(s) : {attemptsCountMap[dataset.freeFullTest.id] || 0}
+                          Attempt(s) : {freeTestAttempts}
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 ml-auto">
-                    <span className="text-[11px] font-semibold text-[#1ea7a1]">
-                      {dataset.freeFullTest.trackLabel}
+                    <span className="rounded-md bg-[#e5f8f6] px-2.5 py-0.5 text-[11px] font-semibold text-[#1ea7a1]">
+                      Free
                     </span>
                     <button
                       type="button"
@@ -446,7 +492,7 @@ export default function PortalMockTestsPage({
                       className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
                     >
                       <Play className="w-3 h-3" />
-                      <span>Start</span>
+                      <span>{freeTestAttempts > 0 ? 'Resume' : 'Start'}</span>
                     </button>
                     <button
                       type="button"
@@ -489,7 +535,7 @@ export default function PortalMockTestsPage({
                     <button
                       type="button"
                       onClick={() => setCustomModalOpen(true)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-[#0b4a7b] hover:bg-[#08385f] px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition cursor-pointer"
+                      className="inline-flex items-center gap-1 rounded-full bg-[#0b4a7b] hover:bg-[#08385f] px-4 py-1.5 text-xs font-bold text-white shadow-2xs transition cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Create</span>
@@ -518,7 +564,7 @@ export default function PortalMockTestsPage({
                   <MockTestListRow
                     key={item.id}
                     item={item}
-                    attemptsCount={attemptsCountMap[item.id] || 0}
+                    attemptsCount={getAttemptsCount(item, attemptsCountMap)}
                     bookmarked={bookmarkedIds.includes(item.id)}
                     onStart={setActiveTestModal}
                     onToggleBookmark={handleToggleBookmark}

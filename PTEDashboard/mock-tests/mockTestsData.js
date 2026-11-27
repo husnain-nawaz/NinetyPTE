@@ -20,12 +20,10 @@ export const SCORE_HISTORY_FILTER_OPTIONS = [
 
 export const MOCK_DIFFICULTY_FILTERS = [
   'All',
-  'Easy',
-  'Medium',
   'Difficult',
-  'Bookmarked',
-  'Attempted',
-  'Unattempted',
+  'Medium',
+  'Easy',
+  'Bookmark',
 ];
 
 export const SECTION_TABS = ['Speaking', 'Writing', 'Reading', 'Listening'];
@@ -205,8 +203,8 @@ export function getMockTestsDataset(track) {
       id: `${isCore ? 'core' : 'academic'}-full-free`,
       mode: 'full',
       title: 'Free Mock Test',
-      questions: isCore ? 62 : 70,
-      attempts: 0,
+      questions: isCore ? 62 : 78,
+      attempts: 1,
       trackLabel: isCore ? 'PTE Core' : 'PTE Academic',
       isFree: true,
       durationMinutes: isCore ? 115 : 120,
