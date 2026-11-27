@@ -19,12 +19,12 @@ export default function QuestionToolbarHeader({
   taskMeta,
   activeQuestion,
   isCoreMode,
-  micAutoStart,
-  onToggleMicMode,
+  noiseEnabled,
+  onOpenNoiseModal,
+  onOpenDictionary,
   onToggleBookmark,
 }) {
   const [infoOpen, setInfoOpen] = useState(false);
-  const [dictOpen, setDictOpen] = useState(false);
 
   const strategyPath = isCoreMode ? '/v1/core/templates' : '/v1/templates';
   const weightagePath = isCoreMode ? '/v1/core/exam-pattern' : '/v1/question-weightage';
@@ -102,19 +102,20 @@ export default function QuestionToolbarHeader({
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
           <button
             type="button"
-            onClick={onToggleMicMode}
-            title="Toggle auto-recording prep mode"
+            onClick={onOpenNoiseModal}
+            title="Exam Centre Noise settings"
+            aria-label="Open Exam Centre Noise settings"
             className="inline-flex items-center gap-1 rounded-full bg-white/15 hover:bg-white/25 px-2.5 py-1 text-white transition cursor-pointer"
           >
             <Mic className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-extrabold">{micAutoStart ? 'ON' : 'OFF'}</span>
+            <span className="text-[10px] font-extrabold">{noiseEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           <button
             type="button"
-            onClick={() => setDictOpen((prev) => !prev)}
-            title="Quick vocabulary & pronunciation hint"
-            aria-label="Toggle quick dictionary hint"
+            onClick={onOpenDictionary}
+            title="Open word dictionary"
+            aria-label="Open word dictionary"
             className="w-7 h-7 rounded-full border border-white/50 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
           >
             <Type className="w-3.5 h-3.5" />
@@ -137,24 +138,6 @@ export default function QuestionToolbarHeader({
             <span>Appeared ({activeQuestion.appearedCount || 0})</span>
           </span>
         </div>
-
-        {dictOpen && (
-          <div className="absolute right-4 top-12 z-30 w-72 rounded-xl border border-slate-200 bg-white p-3.5 text-slate-700 shadow-xl space-y-1.5 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[#0b4a7b]">Vocab &amp; Keyword Note</span>
-              <button
-                type="button"
-                onClick={() => setDictOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-            <p className="leading-relaxed text-slate-500">
-              Pause briefly at commas and stress multi-syllable keywords clearly on first reading.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

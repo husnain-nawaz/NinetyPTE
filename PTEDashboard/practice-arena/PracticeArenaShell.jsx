@@ -8,6 +8,7 @@ import QuestionFooterControls from './QuestionFooterControls';
 import QuestionToolbarHeader from './QuestionToolbarHeader';
 import SpeakingRecorderPanel from './SpeakingRecorderPanel';
 import TaskResponseInputs from './TaskResponseInputs';
+import { DictionaryModal, ExamCentreNoiseModal } from './ToolbarFeatureModals';
 import TranslateModal from './TranslateModal';
 import { buildTaskQuestionList, resolvePracticeTask } from './practiceTaskCatalog';
 
@@ -31,7 +32,10 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
   const [selectedQuestion, setSelectedQuestion] = useState(() => initialQuestions[0]);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const [micAutoStart, setMicAutoStart] = useState(true);
+  const [micAutoStart] = useState(true);
+  const [noiseConfig, setNoiseConfig] = useState({ enabled: false, scope: 'question', volume: 72 });
+  const [noiseModalOpen, setNoiseModalOpen] = useState(false);
+  const [dictionaryOpen, setDictionaryOpen] = useState(false);
   const [recorderState, setRecorderState] = useState('idle'); // 'idle' | 'recording' | 'recorded'
   const [prepSecondsLeft, setPrepSecondsLeft] = useState(DEFAULT_PREP_SECONDS);
   const [recordElapsed, setRecordElapsed] = useState(0);
@@ -265,8 +269,9 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
           taskMeta={taskMeta}
           activeQuestion={activeQuestion}
           isCoreMode={isCoreMode}
-          micAutoStart={micAutoStart}
-          onToggleMicMode={() => setMicAutoStart((p) => !p)}
+          noiseEnabled={noiseConfig.enabled}
+          onOpenNoiseModal={() => setNoiseModalOpen(true)}
+          onOpenDictionary={() => setDictionaryOpen(true)}
           onToggleBookmark={handleToggleBookmark}
         />
 
@@ -342,6 +347,22 @@ export default function PracticeArenaShell({ skill, taskSlug, isCoreMode = false
           questionId={activeQuestion.id}
           promptText={activeQuestion.contentSnippet || taskMeta.promptText}
           onClose={() => setTranslateOpen(false)}
+        />
+      )}
+
+      {noiseModalOpen && (
+        <ExamCentreNoiseModal
+          initialEnabled={noiseConfig.enabled}
+          initialScope={noiseConfig.scope}
+          onClose={() => setNoiseModalOpen(false)}
+          onSave={setNoiseConfig}
+        />
+      )}
+
+      {dictionaryOpen && (
+        <DictionaryModal
+          promptText={activeQuestion.contentSnippet || taskMeta.promptText}
+          onClose={() => setDictionaryOpen(false)}
         />
       )}
 

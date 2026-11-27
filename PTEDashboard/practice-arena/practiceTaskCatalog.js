@@ -86,8 +86,15 @@ export const COMMUNITY_SCORE_SEEDS = [
   { id: 'cs-15', tier: 'Competent', author: 'Nishat Jahan', timestamp: '00:49 27/11/2026', sortTime: 202611270049, score: 68, content: 67, fluency: 69, pronunciation: 68, likes: 0, replies: [] },
   { id: 'cs-16', tier: 'Competent', author: 'mahadi hassan', timestamp: '00:41 27/11/2026', sortTime: 202611270041, score: 74, content: 73, fluency: 74, pronunciation: 75, likes: 0, replies: [] },
   { id: 'cs-17', tier: 'Competent', author: 'GeetArshad', timestamp: '01:13 27/11/2026', sortTime: 202611270113, score: 65, content: 64, fluency: 66, pronunciation: 65, likes: 0, replies: [] },
-  { id: 'cs-18', tier: 'Vocational', author: 'Arjun Patel', timestamp: '14:20 22/11/2026', sortTime: 202611221420, score: 46, content: 48, fluency: 45, pronunciation: 44, likes: 0, replies: [] },
-  { id: 'cs-19', tier: 'Vocational', author: 'Elena Petrova', timestamp: '11:05 20/11/2026', sortTime: 202611201105, score: 42, content: 44, fluency: 40, pronunciation: 42, likes: 0, replies: [] },
+  { id: 'cs-18', tier: 'Competent', author: 'Taboada Pardo Carlos', timestamp: '01:22 27/11/2026', sortTime: 202611270122, score: 64, content: 63, fluency: 65, pronunciation: 64, likes: 0, replies: [] },
+  { id: 'cs-19', tier: 'Competent', author: 'Taboada Pardo Carlos', timestamp: '01:21 27/11/2026', sortTime: 202611270121, score: 59, content: 58, fluency: 60, pronunciation: 59, likes: 0, replies: [] },
+  { id: 'cs-20', tier: 'Competent', author: 'Taboada Pardo Carlos', timestamp: '01:19 27/11/2026', sortTime: 202611270119, score: 74, content: 72, fluency: 75, pronunciation: 74, likes: 0, replies: [] },
+  { id: 'cs-21', tier: 'Vocational', author: 'Malik moiz', timestamp: '22:48 26/11/2026', sortTime: 202611262248, score: 53, content: 52, fluency: 54, pronunciation: 53, likes: 0, replies: [] },
+  { id: 'cs-22', tier: 'Vocational', author: 'Abishek', timestamp: '19:58 26/11/2026', sortTime: 202611261958, score: 53, content: 54, fluency: 52, pronunciation: 53, likes: 0, replies: [] },
+  { id: 'cs-23', tier: 'Vocational', author: 'Shabrin Alam', timestamp: '17:17 26/11/2026', sortTime: 202611261717, score: 53, content: 52, fluency: 53, pronunciation: 54, likes: 0, replies: [] },
+  { id: 'cs-24', tier: 'Vocational', author: 'Anjana pariyar', timestamp: '16:52 26/11/2026', sortTime: 202611261652, score: 53, content: 53, fluency: 52, pronunciation: 53, likes: 0, replies: [] },
+  { id: 'cs-25', tier: 'Vocational', author: 'Jomish', timestamp: '15:53 26/11/2026', sortTime: 202611261553, score: 53, content: 51, fluency: 54, pronunciation: 53, likes: 0, replies: [] },
+  { id: 'cs-26', tier: 'Vocational', author: 'Arjun Patel', timestamp: '14:20 22/11/2026', sortTime: 202611221420, score: 46, content: 48, fluency: 45, pronunciation: 44, likes: 0, replies: [] },
 ];
 
 const READ_ALOUD_SEED_ROWS = [

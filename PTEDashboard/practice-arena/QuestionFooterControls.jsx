@@ -8,7 +8,11 @@ import {
   Shuffle,
 } from 'lucide-react';
 
-const DIFFICULTY_OPTIONS = ['Easy', 'Medium', 'Difficult'];
+const DIFFICULTY_OPTIONS = [
+  { id: 'Easy', activeClass: 'border-emerald-300 bg-emerald-50 text-emerald-700', dotClass: 'bg-emerald-500' },
+  { id: 'Medium', activeClass: 'border-amber-300 bg-amber-50 text-amber-700', dotClass: 'bg-amber-500' },
+  { id: 'Difficult', activeClass: 'border-rose-300 bg-rose-100 text-rose-700', dotClass: 'bg-rose-500' },
+];
 
 /**
  * Shared difficulty poll, Submit/Redo/Translate/Answer action row,
@@ -42,19 +46,20 @@ export default function QuestionFooterControls({
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="font-bold text-slate-800 mr-1">How difficult was this question?</span>
         {DIFFICULTY_OPTIONS.map((lvl) => {
-          const active = difficultyVote === lvl;
+          const active = difficultyVote === lvl.id;
           return (
             <button
-              key={lvl}
+              key={lvl.id}
               type="button"
-              onClick={() => onVoteDifficulty(lvl)}
-              className={`rounded border px-2.5 py-0.5 text-[11px] font-medium transition cursor-pointer ${
+              onClick={() => onVoteDifficulty(lvl.id)}
+              className={`inline-flex items-center gap-1.5 rounded border px-2.5 py-0.5 text-[11px] font-medium transition cursor-pointer ${
                 active
-                  ? 'border-[#1db3a8] bg-[#eefaf9] text-[#0b4a7b]'
+                  ? lvl.activeClass
                   : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
               }`}
             >
-              {lvl}
+              {active && <span className={`w-1.5 h-1.5 rounded-full ${lvl.dotClass}`} />}
+              <span>{lvl.id}</span>
             </button>
           );
         })}
