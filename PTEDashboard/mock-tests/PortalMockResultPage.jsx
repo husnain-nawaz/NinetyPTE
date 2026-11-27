@@ -188,7 +188,6 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
   }, [attempt]);
 
   const [activeSkillTab, setActiveSkillTab] = useState('Speaking');
-  const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [selectedAiItem, setSelectedAiItem] = useState(null);
@@ -203,21 +202,6 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
       (attempt?.questionResults || []).filter((item) => item.skillGroup === resolvedSkillTab),
     [attempt, resolvedSkillTab]
   );
-
-  const analyticsStats = useMemo(() => {
-    const items = attempt?.questionResults || [];
-    return availableTabs.map((skill) => {
-      const subset = items.filter((r) => r.skillGroup === skill.key);
-      const attemptedCount = subset.filter((r) => r.isAttempted).length;
-      return {
-        skill: skill.key,
-        total: subset.length,
-        attempted: attemptedCount,
-        color: skill.color,
-        score: attempt?.[skill.field] ?? 0,
-      };
-    });
-  }, [attempt, availableTabs]);
 
   const triggerToast = (msg) => {
     setToastMsg(msg);
@@ -312,39 +296,17 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                 <Share2 className="w-3.5 h-3.5" />
                 <span>Share</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setAnalyticsOpen((prev) => !prev)}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${
-                  analyticsOpen
-                    ? 'border-[#48c9c2] bg-[#48c9c2] text-white'
-                    : 'border-white/40 hover:bg-white/10'
-                }`}
+              <Link
+                to={`${dataset.routes.analytics}/${attempt.id}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/40 hover:bg-white/10 px-3.5 py-1.5 text-xs font-semibold transition"
               >
                 <BarChart3 className="w-3.5 h-3.5" />
                 <span>Analytics</span>
-              </button>
+              </Link>
             </div>
           </div>
 
           <div className="p-5 sm:p-8 space-y-8">
-            {/* Optional Toggleable Analytics Breakdown */}
-            {analyticsOpen && (
-              <div className="rounded-xl border border-[#bceee9] bg-[#f4fcfb] p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {analyticsStats.map((stat) => (
-                  <div key={stat.skill} className="rounded-lg bg-white border border-slate-100 p-3 space-y-1">
-                    <p className="text-xs font-bold" style={{ color: stat.color }}>
-                      {stat.skill}
-                    </p>
-                    <p className="text-sm font-extrabold text-[#0b4a7b]">
-                      {stat.attempted} / {stat.total} Answered
-                    </p>
-                    <p className="text-[11px] text-slate-500">Section Score: {stat.score} / 90</p>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* Candidate Info + Overall Shield Badge */}
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
@@ -515,7 +477,8 @@ export default function PortalMockResultPage({ syncCoreMode = false }) {
                               {pill.key}
                             </span>
                             <span>
-                              {item.skillGroup === 'Reading' && pill.max < 10
+                              {(item.skillGroup === 'Reading' || item.skillGroup === 'Listening') &&
+                              pill.max < 10
                                 ? `${pill.score}/${pill.max}`
                                 : `${String(pill.score).padStart(2, '0')}/${String(pill.max).padStart(2, '0')}`}
                             </span>

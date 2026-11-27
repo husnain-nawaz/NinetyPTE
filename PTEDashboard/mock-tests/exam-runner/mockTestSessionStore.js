@@ -3,6 +3,12 @@ import {
   resolvePracticeTask,
 } from '../../practice-arena/practiceTaskCatalog';
 import {
+  HIGHLIGHT_INCORRECT_WORDS_PASSAGES,
+  LISTENING_CHOICE_BANK,
+  LISTENING_DICTATION_SENTENCES,
+  LISTENING_TYPED_BLANKS_PASSAGES,
+} from './listeningExamBank';
+import {
   DRAG_DROP_BANK,
   DROPDOWN_PASSAGE_BANK,
   READING_MCQ_PASSAGES,
@@ -787,6 +793,229 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
     };
   }
 
+  // Listening: SST, FIB, MCS, SMW, MCM, HCS, HIW, WFD
+  if (skillGroup === 'Listening') {
+    if (code === 'SST') {
+      const responseText = ans?.responseText?.trim() || '';
+      const wordCount = responseText ? responseText.split(/\s+/).length : 0;
+      const validForm = wordCount >= 40 && wordCount <= 100;
+      const lScore = validForm ? Math.min(89, Math.max(55, diffBase + seed - 2)) : 0;
+      const wScore = validForm ? Math.max(50, lScore - 3) : 0;
+      return {
+        id: question?.id || String(1300000 + item.index),
+        code,
+        slug: 'summarize-spoken-text',
+        skillGroup,
+        title: question?.title || 'Summarize Spoken Text',
+        promptText,
+        hasPromptAudio: true,
+        isAttempted: wordCount > 0,
+        skillPills: [
+          { key: 'L', score: lScore, max: 90 },
+          { key: 'W', score: wScore, max: 90 },
+        ],
+        enablingRows: [
+          { label: 'Content', score: validForm ? 3 : 0, max: 4 },
+          { label: 'Grammar', score: validForm ? 2 : 0, max: 2 },
+          { label: 'Spelling', score: validForm ? 2 : 0, max: 2 },
+          { label: 'Vocabulary Range', score: validForm ? 2 : 0, max: 2 },
+          { label: 'Form', score: validForm ? 2 : 0, max: 2 },
+        ],
+        modalVariant: 'sst-ai-score',
+        writingMeta: {
+          responseText,
+          wordCount,
+          timeSpent: '01:56',
+          audioDuration: '01:06',
+          englishVariant,
+          suggestionsText: validForm
+            ? 'Form: Well-paced summary within the target word limit.'
+            : 'Form: Your response has to be within the word limit of 50-70 words. Summaries with fewer than 40 words or more than 100 words will not receive a score in any of the enabling skills.',
+        },
+      };
+    }
+
+    if (code === 'WFD') {
+      const targetEntry =
+        LISTENING_DICTATION_SENTENCES[item.index % LISTENING_DICTATION_SENTENCES.length];
+      const targetSentence = targetEntry.sentence;
+      const cleanTarget = targetSentence.replace(/[.,!?]/g, '').split(/\s+/).filter(Boolean);
+      const userRaw = ans?.responseText?.trim() || '';
+      const userWords = userRaw.replace(/[.,!?]/g, '').split(/\s+/).filter(Boolean);
+      const lowerSet = new Set(userWords.map((w) => w.toLowerCase()));
+      const targetLowerSet = new Set(cleanTarget.map((w) => w.toLowerCase()));
+
+      const matched = cleanTarget.filter((w) => lowerSet.has(w.toLowerCase()));
+      const missed = cleanTarget.filter((w) => !lowerSet.has(w.toLowerCase()));
+      const extra = userWords.filter((w) => !targetLowerSet.has(w.toLowerCase()));
+      const earned = Math.max(0, matched.length - extra.length);
+      const maxW = cleanTarget.length;
+
+      return {
+        id: question?.id || String(2000000 + item.index),
+        code,
+        slug: 'write-from-dictation',
+        skillGroup,
+        title: targetEntry.title || question?.title || `WFD${3480 + item.index}`,
+        promptText: targetSentence,
+        hasPromptAudio: true,
+        isAttempted: Boolean(userRaw),
+        skillPills: [
+          { key: 'L', score: earned, max: maxW },
+          { key: 'W', score: earned, max: maxW },
+        ],
+        modalVariant: 'wfd-ai-score',
+        wfdData: {
+          correctSentence: targetSentence,
+          userRaw,
+          matchedWords: matched,
+          missedWords: missed,
+          extraWords: extra,
+          missingCap: !userRaw || userRaw[0] !== userRaw[0]?.toUpperCase(),
+          missingPeriod: !userRaw.endsWith('.'),
+          minutes: '00',
+          seconds: '47',
+          audioDuration: '00:04',
+        },
+      };
+    }
+
+    if (code === 'FIB') {
+      const fibEntry = LISTENING_TYPED_BLANKS_PASSAGES[item.index % LISTENING_TYPED_BLANKS_PASSAGES.length];
+      const blanks = fibEntry.segments.filter((s) => typeof s !== 'string');
+      const questionWithBlanks = fibEntry.segments
+        .map((s) => (typeof s === 'string' ? s : '______'))
+        .join('');
+      const userList = blanks.map((b, idx) => {
+        const expected = fibEntry.answers[idx];
+        const given = ans?.blankSelections?.[b.id]?.trim() || '';
+        return {
+          value: given || '-',
+          isCorrect: Boolean(given && given.toLowerCase() === expected.toLowerCase()),
+        };
+      });
+      const earned = userList.filter((u) => u.isCorrect).length;
+      return {
+        id: question?.id || String(1500000 + item.index),
+        code,
+        slug: 'fill-in-the-blanks',
+        skillGroup,
+        title: fibEntry.title,
+        promptText: questionWithBlanks,
+        hasPromptAudio: true,
+        isAttempted: hasBlank,
+        skillPills: [{ key: 'L', score: earned, max: blanks.length }],
+        modalVariant: 'listening-score-analysis',
+        analysisData: {
+          kind: 'blanks',
+          questionText: questionWithBlanks,
+          correctList: fibEntry.answers,
+          userList,
+          audioDuration: '00:41',
+          timeSpent: '00:03',
+        },
+      };
+    }
+
+    if (code === 'HIW') {
+      const hiwEntry =
+        HIGHLIGHT_INCORRECT_WORDS_PASSAGES[item.index % HIGHLIGHT_INCORRECT_WORDS_PASSAGES.length];
+      const allWords = hiwEntry.paragraphs.join(' ').split(/\s+/).filter(Boolean);
+      const replaceIndices = Object.keys(hiwEntry.replacements).map(Number);
+      const userIndices = ans?.highlightedWords || [];
+      const correctPicked = userIndices.filter((i) => replaceIndices.includes(i));
+      const wrongPicked = userIndices.filter((i) => !replaceIndices.includes(i));
+      const lEarned = Math.max(0, correctPicked.length - wrongPicked.length);
+      const rMax = Math.max(1, replaceIndices.length - 3);
+      const rEarned = Math.min(rMax, lEarned);
+
+      const paragraphWordGroups = hiwEntry.paragraphs.reduce((acc, para) => {
+        const offset = acc.length > 0 ? acc[acc.length - 1].endOffset : 0;
+        const words = para.split(/\s+/).filter(Boolean);
+        acc.push({
+          tokens: words.map((w, idx) => ({
+            word: w,
+            replacement: hiwEntry.replacements[offset + idx] || null,
+          })),
+          endOffset: offset + words.length,
+        });
+        return acc;
+      }, []);
+
+      return {
+        id: question?.id || String(1600000 + item.index),
+        code,
+        slug: 'highlight-incorrect-words',
+        skillGroup,
+        title: hiwEntry.title,
+        promptText: hiwEntry.paragraphs.join(' '),
+        hasPromptAudio: true,
+        isAttempted: userIndices.length > 0,
+        skillPills: [
+          { key: 'L', score: lEarned, max: replaceIndices.length },
+          { key: 'R', score: rEarned, max: rMax },
+        ],
+        modalVariant: 'listening-score-analysis',
+        analysisData: {
+          kind: 'hiw',
+          paragraphWordGroups,
+          correctList: replaceIndices.map((idx) =>
+            (allWords[idx] || '').replace(/[.,":?]/g, '')
+          ),
+          userList: userIndices.map((idx) => ({
+            value: allWords[idx] || '-',
+            isCorrect: replaceIndices.includes(idx),
+          })),
+          audioDuration: '01:02',
+          timeSpent: '00:07',
+        },
+      };
+    }
+
+    const bankList = LISTENING_CHOICE_BANK[taskMeta?.slug] || LISTENING_CHOICE_BANK['multiple-choice-single'];
+    const choiceEntry = bankList[item.index % bankList.length];
+    const userIds = ans?.selectedChoices || [];
+    const correctIds = choiceEntry.correctIds || ['A'];
+    const isHcs = code === 'HCS';
+    const isMulti = code === 'MCM';
+    const earned = isMulti
+      ? Math.max(
+          0,
+          userIds.filter((id) => correctIds.includes(id)).length -
+            userIds.filter((id) => !correctIds.includes(id)).length
+        )
+      : userIds[0] && correctIds.includes(userIds[0])
+        ? 1
+        : 0;
+
+    return {
+      id: question?.id || String(1700000 + item.index),
+      code,
+      slug: taskMeta?.slug || 'multiple-choice-single',
+      skillGroup,
+      title: choiceEntry.title || question?.title || taskMeta?.title,
+      promptText: choiceEntry.speech || promptText,
+      hasPromptAudio: true,
+      isAttempted: userIds.length > 0,
+      skillPills: isHcs
+        ? [
+            { key: 'L', score: earned, max: 1 },
+            { key: 'R', score: earned, max: 1 },
+          ]
+        : [{ key: 'L', score: earned, max: correctIds.length }],
+      modalVariant: 'listening-score-analysis',
+      analysisData: {
+        kind: isHcs ? 'hcs' : 'mcq',
+        stem: choiceEntry.stem || '',
+        options: choiceEntry.options || [],
+        correctIds,
+        userIds,
+        audioDuration: isHcs ? '01:29' : code === 'MCM' ? '02:18' : '01:08',
+        timeSpent: isHcs ? '00:02' : '00:14',
+      },
+    };
+  }
+
   let skillPills = [{ key: skillGroup[0], score: baseVal, max: 90 }];
   if (code === 'RS' || code === 'RL' || code === 'SGD') {
     skillPills = [
@@ -795,48 +1024,15 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
     ];
   } else if (code === 'ASQ') {
     skillPills = [{ key: 'L', score: isAttempted ? 1 : 0, max: 1 }];
-  } else if (code === 'SST' || code === 'WFD') {
-    skillPills = [
-      { key: 'L', score: baseVal, max: 90 },
-      { key: 'W', score: isAttempted ? Math.max(48, baseVal - 2) : 0, max: 90 },
-    ];
-  } else if (code === 'HIW') {
-    skillPills = [
-      { key: 'L', score: baseVal, max: 90 },
-      { key: 'R', score: isAttempted ? Math.max(46, baseVal - 3) : 0, max: 90 },
-    ];
   }
 
-  let enablingRows = [
+  const enablingRows = [
     { label: 'Content', score: isAttempted ? Math.min(90, baseVal + 2) : 0, max: 90 },
     { label: 'Fluency', score: isAttempted ? Math.max(45, baseVal - 2) : 0, max: 90 },
     { label: 'Pronunciation', score: isAttempted ? baseVal : 0, max: 90 },
   ];
-  if (code === 'SST' || code === 'WFD') {
-    enablingRows = [
-      { label: 'Content', score: isAttempted ? baseVal : 0, max: 90 },
-      { label: 'Form', score: isAttempted ? Math.min(90, baseVal + 6) : 0, max: 90 },
-      { label: 'Grammar', score: isAttempted ? Math.max(45, baseVal - 3) : 0, max: 90 },
-      { label: 'Spelling', score: isAttempted ? Math.min(90, baseVal + 4) : 0, max: 90 },
-    ];
-  } else if (skillGroup === 'Listening') {
-    enablingRows = [
-      { label: 'Accuracy', score: isAttempted ? baseVal : 0, max: 90 },
-      { label: 'Comprehension', score: isAttempted ? Math.min(90, baseVal + 3) : 0, max: 90 },
-    ];
-  }
 
-  const responseSummary = ans?.responseText?.trim()
-    ? ans.responseText.trim()
-    : hasBlank
-      ? `Filled blanks: ${Object.values(ans.blankSelections).filter(Boolean).join(', ')}`
-      : (ans?.selectedChoices || []).length > 0
-        ? `Selected option(s): ${ans.selectedChoices.join(', ')}`
-        : (ans?.highlightedWords || []).length > 0
-          ? `Highlighted ${ans.highlightedWords.length} word(s)`
-          : isAttempted
-            ? 'Audio response captured cleanly.'
-            : '';
+  const responseSummary = isAttempted ? 'Audio response captured cleanly.' : '';
 
   return {
     id: question?.id || String(1001000 + item.index),
@@ -849,7 +1045,7 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
       code === 'DI'
         ? DESCRIBE_IMAGE_URLS[item.index % DESCRIBE_IMAGE_URLS.length]?.src
         : null,
-    hasPromptAudio: Boolean(taskMeta?.hasAudioPrompt || skillGroup === 'Listening'),
+    hasPromptAudio: Boolean(taskMeta?.hasAudioPrompt),
     showPromptTextInModal: code === 'RTS',
     isAttempted,
     skillPills,
@@ -865,7 +1061,7 @@ function buildQuestionScoreResult(item, ans, diffBase, writingStyle) {
 
 /**
  * Produces an authentic scorecard payload with per-question AI diagnostic items
- * from completed mock test answers.
+ * and section timing metrics from completed mock test answers.
  */
 export function buildMockAttemptScore(testItem, session, trackLabel, isCore = false) {
   const queue = buildMockExamQueue(testItem, isCore);
@@ -894,6 +1090,16 @@ export function buildMockAttemptScore(testItem, session, trackLabel, isCore = fa
     ? Math.max(10, Math.round(activeVals.reduce((a, b) => a + b, 0) / activeVals.length))
     : 12;
 
+  const breakdown = getMockTestPartBreakdown(testItem, isCore);
+  const totalAllowedSeconds = breakdown.totalMinutes * 60;
+  const elapsedSeconds = Math.max(
+    60,
+    Math.min(
+      totalAllowedSeconds,
+      totalAllowedSeconds - Math.max(0, Number(session?.remainingSeconds) || 0)
+    )
+  );
+
   return {
     id: `attempt-${Date.now()}`,
     testId: testItem.id,
@@ -908,6 +1114,8 @@ export function buildMockAttemptScore(testItem, session, trackLabel, isCore = fa
     writing,
     reading,
     listening,
+    elapsedSeconds,
+    totalAllowedSeconds,
     questionResults,
     completedAt: new Date().toISOString(),
   };

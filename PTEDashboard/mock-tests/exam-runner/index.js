@@ -4,6 +4,7 @@ export {
   buildMockAttemptScore,
   clearInProgressMock,
   createMockSession,
+  formatMMSS,
   getSessionProgressPercent,
   readInProgressMock,
   saveInProgressMock,

@@ -9,7 +9,13 @@ export { default as PortalProfilePage } from './shared/profile/PortalProfilePage
 export { default as PortalBuySubscriptionPage } from './shared/subscription/PortalBuySubscriptionPage';
 export { default as PortalHelpDeskPage } from './shared/contact/PortalHelpDeskPage';
 export { SectionPracticeHistoryPage as PortalSectionPracticeHistoryPage } from './shared/history';
-export { PortalMockResultPage, PortalMockTestsPage, PortalScoreHistoryPage } from './mock-tests';
+export {
+  PortalMockAiFeedbackPage,
+  PortalMockAnalyticsPage,
+  PortalMockResultPage,
+  PortalMockTestsPage,
+  PortalScoreHistoryPage,
+} from './mock-tests';
 export { default as CyanBarsLoader, PortalLoadGate } from './shared/CyanBarsLoader';
 export { default as PortalProvider } from './shared/PortalProvider';
 export { default as ProtectedRoute } from './shared/ProtectedRoute';

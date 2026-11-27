@@ -3,7 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   BarChart2,
+  BarChart3,
   Bookmark,
+  Calendar,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -11,11 +13,14 @@ import {
   Clock,
   FileText,
   Gift,
+  Monitor,
   Play,
   Plus,
   RotateCcw,
   Search,
   Sliders,
+  Sparkles,
+  Trash2,
 } from 'lucide-react';
 import PTEDashboardHeader from '../shared/PTEDashboardHeader';
 import PTEDashboardTealFooter from '../shared/PTEDashboardTealFooter';
@@ -38,6 +43,7 @@ import {
   appendCustomMock,
   appendMockAttempt,
   clearMockAttempts,
+  deleteMockAttempt,
   getMockTestsDataset,
   MOCK_DIFFICULTY_FILTERS,
   MOCK_TEST_MODES,
@@ -782,23 +788,57 @@ export default function PortalMockTestsPage({
                       key={entry.id}
                       className="rounded-xl border border-slate-200/80 px-4 py-3 flex flex-wrap items-center justify-between gap-3"
                     >
-                      <div>
-                        <p className="text-sm font-bold text-[#0b4a7b]">{entry.title}</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          {entry.trackLabel} • Completed{' '}
-                          {new Date(entry.completedAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="rounded-lg bg-[#eefaf9] px-3 py-1 text-xs font-extrabold text-[#1ea7a1]">
-                          Overall: {entry.overall} / 90
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="w-9 h-9 rounded-lg bg-[#eef3f8] text-[#0b4a7b] flex items-center justify-center shrink-0">
+                          <FileText className="w-4 h-4" />
                         </span>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-bold text-[#0b4a7b] inline-flex items-center gap-1.5">
+                            <span>{entry.title}</span>
+                            <Monitor className="w-3.5 h-3.5 text-slate-400" />
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            <span>
+                              Date Taken: {new Date(entry.completedAt).toLocaleDateString('en-GB')}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 ml-auto">
+                        <Link
+                          to={`${dataset.routes.analytics}/${entry.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 hover:border-[#0b4a7b] px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition"
+                        >
+                          <BarChart3 className="w-3.5 h-3.5" />
+                          <span>Analytics</span>
+                        </Link>
                         <Link
                           to={`${dataset.routes.viewScore}/${entry.id}`}
-                          className="rounded-full bg-[#0b4a7b] hover:bg-[#08385f] px-3.5 py-1 text-xs font-bold text-white transition"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 hover:bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-600 transition"
                         >
-                          View Score
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>View Score</span>
                         </Link>
+                        <Link
+                          to={`${dataset.routes.aiFeedback}/${entry.id}`}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200 hover:bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-600 transition"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>AI Feedback</span>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const remaining = deleteMockAttempt(activeTrack, entry.id);
+                            setAttemptsStore((prev) => ({ ...prev, [activeTrack]: remaining }));
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-500 transition cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
                       </div>
                     </div>
                   ))}

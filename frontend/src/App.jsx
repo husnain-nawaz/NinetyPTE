@@ -63,6 +63,8 @@ import {
   PortalProfilePage,
   PortalBuySubscriptionPage,
   PortalHelpDeskPage,
+  PortalMockAiFeedbackPage,
+  PortalMockAnalyticsPage,
   PortalMockResultPage,
   PortalMockTestsPage,
   PortalScoreHistoryPage,
@@ -706,6 +708,38 @@ function AppContent() {
             }
           />
           <Route
+            path="/v1/mock-test/mock-test-result-list/full-test-analytics/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-result-list/full-test-analytics"
+            element={
+              <ProtectedRoute>
+                <PortalMockAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-result-list/ai-feedback/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockAiFeedbackPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/mock-test/mock-test-result-list/ai-feedback"
+            element={
+              <ProtectedRoute>
+                <PortalMockAiFeedbackPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/v1/mock-test/score-history"
             element={
               <ProtectedRoute>
@@ -762,6 +796,38 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <PortalMockResultPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/full-test-analytics/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockAnalyticsPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/full-test-analytics"
+            element={
+              <ProtectedRoute>
+                <PortalMockAnalyticsPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/ai-feedback/:attemptId"
+            element={
+              <ProtectedRoute>
+                <PortalMockAiFeedbackPage syncCoreMode />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/v1/core/mock-test/mock-test-result-list/ai-feedback"
+            element={
+              <ProtectedRoute>
+                <PortalMockAiFeedbackPage syncCoreMode />
               </ProtectedRoute>
             }
           />

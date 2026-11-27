@@ -198,6 +198,8 @@ export function getMockTestsDataset(track) {
       timed: `${basePath}/mock-test-list/timed-section-mock-test/timed-section-mock-test-list`,
       scores: `${basePath}/mock-test-result-list`,
       viewScore: `${basePath}/mock-test-result-list/view-score`,
+      analytics: `${basePath}/mock-test-result-list/full-test-analytics`,
+      aiFeedback: `${basePath}/mock-test-result-list/ai-feedback`,
       history: `${basePath}/score-history`,
     },
     freeFullTest: {
@@ -284,6 +286,17 @@ export function clearMockAttempts(track) {
   } catch {
     // Ignore storage errors gracefully
   }
+}
+
+export function deleteMockAttempt(track, attemptId) {
+  const prev = readMockAttempts(track);
+  const next = prev.filter((item) => String(item.id) !== String(attemptId));
+  try {
+    localStorage.setItem(`${ATTEMPTS_KEY_PREFIX}${track}`, JSON.stringify(next));
+  } catch {
+    // Ignore storage errors gracefully
+  }
+  return next;
 }
 
 export function readCustomMocks(track) {
