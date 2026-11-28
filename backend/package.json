@@ -5,15 +5,20 @@
   "type": "module",
   "description": "Modular Express + MySQL2 API server for NinetyPTE",
   "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "build": "npm install --prefix ../frontend && npm run build --prefix ../frontend",
     "test-db": "node -e \"import('./config/database.js').then(async ({ verifyDatabaseConnection, closeDatabasePool }) => { const info = await verifyDatabaseConnection(); console.log('MySQL Connected:', info); await closeDatabasePool(); })\""
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mysql2": "^3.11.5"
+    "mysql2": "^3.11.5",
+    "ninetypte": "file:.."
   }
 }

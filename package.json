@@ -1,0 +1,22 @@
+{
+  "name": "ninetypte",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NinetyPTE full-stack PTE preparation platform (Frontend + Express/MySQL API)",
+  "main": "backend/server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5"
+  }
+}

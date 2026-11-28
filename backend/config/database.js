@@ -4,7 +4,7 @@ import { env } from './env.js';
 let pool = null;
 
 /**
- * Ensures the target MySQL schema exists before creating the connection pool.
+ * Creates the target MySQL schema when missing on self-hosted/local MySQL instances.
  */
 export async function ensureDatabaseExists() {
   const bootstrapConn = await mysql.createConnection({
@@ -46,15 +46,27 @@ export function getPool() {
 }
 
 /**
- * Verifies live MySQL connectivity and returns server metadata.
+ * Verifies live MySQL connectivity; only attempts CREATE DATABASE when schema is missing.
  */
 export async function verifyDatabaseConnection() {
-  await ensureDatabaseExists();
-  const activePool = getPool();
-  const [rows] = await activePool.query(
-    'SELECT DATABASE() AS databaseName, VERSION() AS mysqlVersion, NOW() AS serverTime'
-  );
-  return rows[0];
+  const queryMetadata = async () => {
+    const activePool = getPool();
+    const [rows] = await activePool.query(
+      'SELECT DATABASE() AS databaseName, VERSION() AS mysqlVersion, NOW() AS serverTime'
+    );
+    return rows[0];
+  };
+
+  try {
+    return await queryMetadata();
+  } catch (err) {
+    if (err.code === 'ER_BAD_DB_ERROR') {
+      await ensureDatabaseExists();
+      await closeDatabasePool();
+      return queryMetadata();
+    }
+    throw err;
+  }
 }
 
 /**
