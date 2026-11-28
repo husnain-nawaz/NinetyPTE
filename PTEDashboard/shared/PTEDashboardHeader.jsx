@@ -144,7 +144,7 @@ export default function PTEDashboardHeader({ onOpenReferModal }) {
         >
           <div className="max-w-[1440px] mx-auto h-[72px] flex items-center justify-between gap-4">
             <div className="flex items-center gap-7">
-              <Link to={homePath} className="inline-flex items-center gap-0.5 shrink-0">
+              <Link to="/" className="inline-flex items-center gap-0.5 shrink-0">
                 <span
                   className={`text-[26px] font-black tracking-tighter ${
                     darkMode ? 'text-white' : 'text-[#0f3554]'

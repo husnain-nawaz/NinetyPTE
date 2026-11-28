@@ -36,7 +36,7 @@ export default function DashboardHomeShell({ data, showExpiryToast = false }) {
       <footer className="bg-white border-t border-slate-200 px-6 py-6 mt-10">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-[13px] text-slate-500">
           <div className="flex items-center gap-3.5">
-            <Link to={isCoreMode ? '/v1/core/dashboard' : '/dashboard'} className="text-2xl font-black tracking-tighter text-[#0f3554]">
+            <Link to="/" className="text-2xl font-black tracking-tighter text-[#0f3554]">
               ninety<span className="text-[#00b4c6]">pte</span>
             </Link>
             <span>All rights reserved &copy; NinetyPTE Education, 2026</span>

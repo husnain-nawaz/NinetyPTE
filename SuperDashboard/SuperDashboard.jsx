@@ -21,9 +21,11 @@ export default function SuperDashboard() {
       {/* Super Admin Topbar */}
       <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2.5">
-          <span className="text-xl font-black tracking-tight text-slate-900">
-            ninety<span className="text-cyan-500 font-extrabold">pte</span>
-          </span>
+          <Link to="/" className="inline-flex items-center hover:opacity-85 transition">
+            <span className="text-xl font-black tracking-tight text-slate-900">
+              ninety<span className="text-cyan-500 font-extrabold">pte</span>
+            </span>
+          </Link>
           <span className="inline-flex items-center gap-1 text-[11px] bg-slate-900 text-white px-2.5 py-0.5 rounded font-bold uppercase tracking-wider ml-1">
             <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
             Super Admin
