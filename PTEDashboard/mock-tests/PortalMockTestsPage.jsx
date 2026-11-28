@@ -874,6 +874,14 @@ export default function PortalMockTestsPage({
                 />
               )}
 
+              {scoreMode !== 'full' && (
+                <ModuleTabsBar
+                  tabs={SECTION_TABS}
+                  activeTab={activeScoreSkill}
+                  onSelect={setActiveScoreSkill}
+                />
+              )}
+
               {scoreFilteredAttempts.length === 0 ? (
                 <ScoreEmptyState darkMode={darkMode} />
               ) : (

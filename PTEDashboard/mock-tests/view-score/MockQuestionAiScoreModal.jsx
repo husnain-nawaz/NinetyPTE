@@ -11,7 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { formatMMSS } from './exam-runner/mockTestSessionStore';
+import { formatMMSS } from '../exam-runner/mockTestSessionStore';
 
 const SKILL_RING_META = {
   S: { label: 'Speaking', headerBg: 'bg-[#f49d56]', stroke: '#f49d56', border: 'border-[#f49d56]' },
