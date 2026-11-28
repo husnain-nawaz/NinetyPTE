@@ -9,7 +9,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "postinstall": "node backend/scripts/buildFrontend.mjs",
+    "build": "npm install --prefix backend --ignore-scripts --no-audit --no-fund && node backend/scripts/buildFrontend.mjs",
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js"
   },

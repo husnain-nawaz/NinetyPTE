@@ -9,9 +9,10 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "postinstall": "node scripts/buildFrontend.mjs",
+    "build": "node scripts/buildFrontend.mjs",
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "build": "npm install --prefix ../frontend && npm run build --prefix ../frontend",
     "test-db": "node -e \"import('./config/database.js').then(async ({ verifyDatabaseConnection, closeDatabasePool }) => { const info = await verifyDatabaseConnection(); console.log('MySQL Connected:', info); await closeDatabasePool(); })\""
   },
   "dependencies": {

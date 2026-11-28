@@ -17,6 +17,7 @@ dist
 dist-ssr
 frontend/dist
 backend/dist
+backend/public
 *.local
 
 # Environment variables
