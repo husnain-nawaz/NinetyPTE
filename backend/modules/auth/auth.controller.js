@@ -2,6 +2,7 @@ import { env } from '../../config/env.js';
 import { asyncHandler, sendError, sendSuccess } from '../../shared/apiResponse.js';
 import { ensureUsersTable, findUserByEmailWithSecret, createLocalUser, upsertGoogleUser, markUserLastLogin, createPasswordResetRequest, sanitizePublicUser } from './auth.model.js';
 import { findUiControlByKey } from '../ui-control/uiControl.model.js';
+import { writeAuthSecurityLog } from '../logs/logs.model.js';
 import {
   AUTH_COOKIE_NAME,
   buildAuthCookieOptions,
@@ -31,6 +32,16 @@ function attachSessionCookie(res, token, rememberMe = true) {
 
 function resolveRedirectPath(user) {
   return user?.role === 'superadmin' ? '/super-dashboard' : '/dashboard';
+}
+
+function logAuthEvent(req, eventType, email, details = {}) {
+  writeAuthSecurityLog({
+    email: email || null,
+    eventType,
+    ipAddress: req.ip || null,
+    userAgent: req.headers?.['user-agent'] || null,
+    details,
+  }).catch(() => {});
 }
 
 /**
@@ -103,6 +114,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const expiresInSec = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
   const token = signAuthToken(user, expiresInSec);
   attachSessionCookie(res, token, Boolean(rememberMe));
+  logAuthEvent(req, 'register_success', user.email, { userId: user.id });
 
   return sendSuccess(
     res,
@@ -126,6 +138,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const userRecord = await findUserByEmailWithSecret(trimmedEmail);
   if (!userRecord) {
+    logAuthEvent(req, 'login_failed', trimmedEmail, { reason: 'not_found' });
     return sendError(res, 'Invalid email or password.', 401);
   }
 
@@ -139,6 +152,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const valid = verifyPassword(password, userRecord.passwordHash);
   if (!valid) {
+    logAuthEvent(req, 'login_failed', trimmedEmail, { reason: 'invalid_password' });
     const isSuper = userRecord.role === 'superadmin';
     return sendError(
       res,
@@ -155,6 +169,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   const expiresInSec = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
   const token = signAuthToken(user, expiresInSec);
   attachSessionCookie(res, token, Boolean(rememberMe));
+  logAuthEvent(req, 'login_success', user.email, { userId: user.id, role: user.role });
 
   return sendSuccess(
     res,
@@ -179,6 +194,7 @@ export const googleDirectAuth = asyncHandler(async (req, res) => {
   try {
     googleProfile = await verifyGoogleToken({ credential, accessToken, expectedClientId });
   } catch (err) {
+    logAuthEvent(req, 'google_failed', null, { error: err.message });
     return sendError(res, err.message || 'Google verification failed.', 401);
   }
 
@@ -186,6 +202,7 @@ export const googleDirectAuth = asyncHandler(async (req, res) => {
   const expiresInSec = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
   const token = signAuthToken(user, expiresInSec);
   attachSessionCookie(res, token, Boolean(rememberMe));
+  logAuthEvent(req, 'google_success', user.email, { userId: user.id });
 
   return sendSuccess(
     res,
@@ -222,6 +239,7 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
   const user = await findUserByEmailWithSecret(email);
   if (user && user.role !== 'superadmin') {
     await createPasswordResetRequest(user.id);
+    logAuthEvent(req, 'password_reset_requested', email, { userId: user.id });
   }
 
   return sendSuccess(

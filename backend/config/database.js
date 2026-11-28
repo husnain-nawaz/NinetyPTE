@@ -1,22 +1,31 @@
 import mysql from 'mysql2/promise';
-import { env } from './env.js';
+import { DB_DEFINITIONS, env } from './env.js';
 
-let pool = null;
+const pools = new Map();
+
+function resolveDbConfig(dbKey = 'auth') {
+  const config = env.databases[dbKey];
+  if (!config) {
+    throw new Error(`Unknown database key "${dbKey}"`);
+  }
+  return config;
+}
 
 /**
  * Creates the target MySQL schema when missing on self-hosted/local MySQL instances.
  */
-export async function ensureDatabaseExists() {
+export async function ensureDatabaseExists(dbKey = 'auth') {
+  const cfg = resolveDbConfig(dbKey);
   const bootstrapConn = await mysql.createConnection({
-    host: env.db.host,
-    port: env.db.port,
-    user: env.db.user,
-    password: env.db.password,
+    host: cfg.host,
+    port: cfg.port,
+    user: cfg.user,
+    password: cfg.password,
     multipleStatements: false,
   });
 
   try {
-    const safeDbName = env.db.database.replace(/[^a-zA-Z0-9_]/g, '');
+    const safeDbName = cfg.database.replace(/[^a-zA-Z0-9_]/g, '');
     await bootstrapConn.query(
       `CREATE DATABASE IF NOT EXISTS \`${safeDbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
@@ -26,31 +35,35 @@ export async function ensureDatabaseExists() {
 }
 
 /**
- * Returns the shared MySQL2 connection pool for the NinetyPTE database.
+ * Returns the pooled MySQL/MariaDB client for a specific feature database key.
  */
-export function getPool() {
-  if (!pool) {
-    pool = mysql.createPool({
-      host: env.db.host,
-      port: env.db.port,
-      user: env.db.user,
-      password: env.db.password,
-      database: env.db.database,
-      waitForConnections: true,
-      connectionLimit: env.db.connectionLimit,
-      queueLimit: 0,
-      timezone: 'Z',
-    });
+export function getPool(dbKey = 'auth') {
+  const cfg = resolveDbConfig(dbKey);
+  if (!pools.has(dbKey)) {
+    pools.set(
+      dbKey,
+      mysql.createPool({
+        host: cfg.host,
+        port: cfg.port,
+        user: cfg.user,
+        password: cfg.password,
+        database: cfg.database,
+        waitForConnections: true,
+        connectionLimit: cfg.connectionLimit,
+        queueLimit: 0,
+        timezone: 'Z',
+      })
+    );
   }
-  return pool;
+  return pools.get(dbKey);
 }
 
 /**
- * Verifies live MySQL connectivity; only attempts CREATE DATABASE when schema is missing.
+ * Verifies live connectivity for one configured database key.
  */
-export async function verifyDatabaseConnection() {
+export async function verifyDatabaseConnection(dbKey = 'auth') {
   const queryMetadata = async () => {
-    const activePool = getPool();
+    const activePool = getPool(dbKey);
     const [rows] = await activePool.query(
       'SELECT DATABASE() AS databaseName, VERSION() AS mysqlVersion, NOW() AS serverTime'
     );
@@ -61,8 +74,8 @@ export async function verifyDatabaseConnection() {
     return await queryMetadata();
   } catch (err) {
     if (err.code === 'ER_BAD_DB_ERROR') {
-      await ensureDatabaseExists();
-      await closeDatabasePool();
+      await ensureDatabaseExists(dbKey);
+      await closeDatabasePool(dbKey);
       return queryMetadata();
     }
     throw err;
@@ -70,11 +83,53 @@ export async function verifyDatabaseConnection() {
 }
 
 /**
- * Gracefully drains and closes the shared MySQL pool during shutdown.
+ * Checks connectivity for all 15 feature databases sequentially to stay friendly to shared connection caps.
  */
-export async function closeDatabasePool() {
-  if (pool) {
+export async function verifyAllDatabaseConnections() {
+  const results = [];
+  for (const def of DB_DEFINITIONS) {
+    const cfg = env.databases[def.key];
+    try {
+      const info = await verifyDatabaseConnection(def.key);
+      results.push({
+        key: def.key,
+        label: def.label,
+        database: info.databaseName,
+        connected: true,
+        version: info.mysqlVersion,
+      });
+    } catch (err) {
+      results.push({
+        key: def.key,
+        label: def.label,
+        database: cfg.database,
+        connected: false,
+        error: err.message,
+      });
+    }
+  }
+  return {
+    total: results.length,
+    connectedCount: results.filter((r) => r.connected).length,
+    databases: results,
+  };
+}
+
+/**
+ * Closes one pool cleanly or all active pools during graceful shutdown.
+ */
+export async function closeDatabasePool(dbKey = null) {
+  if (dbKey) {
+    const existing = pools.get(dbKey);
+    if (existing) {
+      await existing.end();
+      pools.delete(dbKey);
+    }
+    return;
+  }
+
+  for (const [key, pool] of pools.entries()) {
     await pool.end();
-    pool = null;
+    pools.delete(key);
   }
 }

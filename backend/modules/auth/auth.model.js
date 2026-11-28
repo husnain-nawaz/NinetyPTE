@@ -23,11 +23,13 @@ function sanitizePublicUser(row) {
   };
 }
 
+const getAuthPool = () => getPool('auth');
+
 /**
- * Creates `users` and `password_resets` tables in MySQL and ensures Super Admin exists.
+ * Creates `users`, `user_profiles`, and `password_resets` tables in the Auth DB and ensures Super Admin exists.
  */
 export async function ensureUsersTable() {
-  const pool = getPool();
+  const pool = getAuthPool();
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -49,12 +51,24 @@ export async function ensureUsersTable() {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_profiles (
+      user_id INT UNSIGNED NOT NULL PRIMARY KEY,
+      active_track ENUM('academic', 'core') NOT NULL DEFAULT 'academic',
+      target_score VARCHAR(32) NOT NULL DEFAULT '69 - 88',
+      exam_countdown_at DATETIME NULL,
+      preferred_language VARCHAR(24) NOT NULL DEFAULT 'en',
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS password_resets (
       id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
       user_id INT UNSIGNED NOT NULL,
       reset_token VARCHAR(128) NOT NULL UNIQUE,
-      expires_at TIMESTAMP NOT NULL,
-      used_at TIMESTAMP NULL,
+      expires_at DATETIME NOT NULL,
+      used_at DATETIME NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT fk_password_resets_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -75,7 +89,7 @@ export async function ensureUsersTable() {
 }
 
 export async function findUserByEmailWithSecret(email) {
-  const pool = getPool();
+  const pool = getAuthPool();
   const [rows] = await pool.query(
     `SELECT id, name, email, phone_code AS phoneCode, phone, password_hash AS passwordHash,
             auth_provider AS authProvider, google_id AS googleId, avatar_url AS avatarUrl,
@@ -89,7 +103,7 @@ export async function findUserByEmailWithSecret(email) {
 }
 
 export async function findUserById(userId) {
-  const pool = getPool();
+  const pool = getAuthPool();
   const [rows] = await pool.query(
     `SELECT id, name, email, phone_code AS phoneCode, phone,
             auth_provider AS authProvider, avatar_url AS avatarUrl,
@@ -103,7 +117,7 @@ export async function findUserById(userId) {
 }
 
 export async function createLocalUser({ name, email, phoneCode = '+92', phone = '', passwordHash }) {
-  const pool = getPool();
+  const pool = getAuthPool();
   const [result] = await pool.query(
     `INSERT INTO users (name, email, phone_code, phone, password_hash, auth_provider, role, email_verified, last_login_at)
      VALUES (?, ?, ?, ?, ?, 'local', 'student', 1, CURRENT_TIMESTAMP)`,
@@ -113,7 +127,7 @@ export async function createLocalUser({ name, email, phoneCode = '+92', phone = 
 }
 
 export async function upsertGoogleUser({ googleId, email, name, avatarUrl }) {
-  const pool = getPool();
+  const pool = getAuthPool();
   const normalizedLower = email.trim().toLowerCase();
 
   const [existingRows] = await pool.query(
@@ -149,12 +163,12 @@ export async function upsertGoogleUser({ googleId, email, name, avatarUrl }) {
 }
 
 export async function markUserLastLogin(userId) {
-  const pool = getPool();
+  const pool = getAuthPool();
   await pool.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?', [userId]);
 }
 
 export async function createPasswordResetRequest(userId) {
-  const pool = getPool();
+  const pool = getAuthPool();
   const resetToken = crypto.randomBytes(32).toString('hex');
   await pool.query(
     `INSERT INTO password_resets (user_id, reset_token, expires_at)

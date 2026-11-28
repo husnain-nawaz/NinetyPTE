@@ -1,4 +1,5 @@
 import { asyncHandler, sendError, sendSuccess } from '../../shared/apiResponse.js';
+import { writeAdminAuditLog } from '../logs/logs.model.js';
 import {
   findUiControlByKey,
   listUiControls,
@@ -36,5 +37,13 @@ export const saveUiControlByKey = asyncHandler(async (req, res) => {
     isEnabled: isEnabled !== undefined ? Boolean(isEnabled) : true,
     config: config && typeof config === 'object' ? config : {},
   });
+  writeAdminAuditLog({
+    adminUserId: req.user?.id || null,
+    action: 'upsert_ui_control',
+    targetType: 'ui_controls',
+    targetKey: req.params.controlKey,
+    details: { featureGroup: featureGroup || 'general', isEnabled: updated?.isEnabled },
+    ipAddress: req.ip,
+  }).catch(() => {});
   return sendSuccess(res, updated, 'Saved UI control record');
 });
