@@ -1,5 +1,6 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { syncAuthSessionWithServer } from './utils/auth';
 import ScrollToTop from './components/common/ScrollToTop';
 import Navbar from './components/navbar/Navbar';
 import Footer from './components/landing/Footer';
@@ -961,6 +962,10 @@ function AppContent() {
 }
 
 export default function App() {
+  useEffect(() => {
+    syncAuthSessionWithServer();
+  }, []);
+
   return (
     <BrowserRouter>
       <PortalProvider>

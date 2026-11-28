@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Eye, 
@@ -12,7 +12,13 @@ import {
   ChevronDown
 } from 'lucide-react';
 import LanguageDropdown from '../components/navbar/LanguageDropdown';
-import { authenticateUser } from '../utils/auth';
+import {
+  authenticateUser,
+  fetchAuthConfig,
+  loadGoogleIdentityScript,
+  requestPasswordResetEmail,
+  startGoogleDirectLogin,
+} from '../utils/auth';
 
 export default function AuthPage({ initialMode = 'signin' }) {
   const navigate = useNavigate();
@@ -35,26 +41,31 @@ export default function AuthPage({ initialMode = 'signin' }) {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [authNotice, setAuthNotice] = useState('');
+  const [authConfig, setAuthConfig] = useState({
+    googleEnabled: false,
+    googleClientId: '',
+    allowRegistration: true,
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setAuthError('');
-
-    const result = authenticateUser({
-      mode,
-      email: formData.email,
-      password: formData.password,
-      name: formData.name,
+  useEffect(() => {
+    let active = true;
+    fetchAuthConfig().then((cfg) => {
+      if (!active) return;
+      setAuthConfig(cfg);
+      if (cfg.googleClientId) {
+        loadGoogleIdentityScript().catch(() => {});
+      }
     });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-    if (result.error) {
-      setAuthError(result.error);
-      return;
-    }
-
+  const completeAuthSuccess = (result) => {
     setSubmitted(true);
-
     setTimeout(() => {
       setSubmitted(false);
       const requestedFrom = location.state?.from?.pathname;
@@ -68,7 +79,79 @@ export default function AuthPage({ initialMode = 'signin' }) {
             ? result.redirectPath
             : requestedFrom || result.redirectPath;
       navigate(destination);
-    }, 1200);
+    }, 900);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthNotice('');
+    setIsSubmitting(true);
+
+    try {
+      const result = await authenticateUser({
+        mode,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        name: formData.name,
+        phoneCode: formData.phoneCode,
+        phone: formData.phone,
+        rememberMe: formData.rememberMe ?? true,
+      });
+
+      if (result.error) {
+        setAuthError(result.error);
+        return;
+      }
+
+      completeAuthSuccess(result);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    setAuthError('');
+    setAuthNotice('');
+    setIsSubmitting(true);
+
+    try {
+      const result = await startGoogleDirectLogin({
+        googleClientId: authConfig.googleClientId,
+        rememberMe: formData.rememberMe ?? true,
+      });
+
+      if (result.error) {
+        setAuthError(result.error);
+        return;
+      }
+
+      completeAuthSuccess(result);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setAuthError('');
+    setAuthNotice('');
+    if (!formData.email || !formData.email.trim()) {
+      setAuthError('Enter your email address first, then click Forgot password.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await requestPasswordResetEmail(formData.email.trim());
+      if (result.error) {
+        setAuthError(result.error);
+        return;
+      }
+      setAuthNotice(result.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isSignUp = mode === 'signup';
@@ -290,18 +373,30 @@ export default function AuthPage({ initialMode = 'signin' }) {
                     />
                     <span>Remember Me</span>
                   </label>
-                  <a href="#forgot-password" className="text-cyan-600 hover:underline font-bold">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={isSubmitting}
+                    className="text-cyan-600 hover:underline font-bold disabled:opacity-60"
+                  >
                     Forgot password?
-                  </a>
+                  </button>
+                </div>
+              )}
+
+              {authNotice && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-emerald-700">
+                  {authNotice}
                 </div>
               )}
 
               {/* Submit Button (Dark Navy Pill matching Reference) */}
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-full bg-[#14324f] hover:bg-[#0c2338] text-white font-black text-xs sm:text-sm shadow-md transition-all active:scale-95"
+                disabled={isSubmitting || submitted}
+                className="w-full py-3.5 rounded-full bg-[#14324f] hover:bg-[#0c2338] text-white font-black text-xs sm:text-sm shadow-md transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isSignUp ? 'Create Account' : 'Sign In'}
+                {isSubmitting ? 'Please wait...' : isSignUp ? 'Create Account' : 'Sign In'}
               </button>
 
               {/* Switch View Link */}
@@ -344,7 +439,9 @@ export default function AuthPage({ initialMode = 'signin' }) {
                 {/* Google Button */}
                 <button
                   type="button"
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-2xs transition active:scale-95"
+                  onClick={handleGoogleAuth}
+                  disabled={isSubmitting || submitted}
+                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-2xs transition active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.9c2.28-2.1 3.645-5.2 3.645-9.15z"/>

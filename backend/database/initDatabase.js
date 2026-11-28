@@ -1,4 +1,5 @@
 import { verifyDatabaseConnection } from '../config/database.js';
+import { ensureUsersTable } from '../modules/auth/auth.model.js';
 import { ensureUiControlsTable } from '../modules/ui-control/uiControl.model.js';
 
 /**
@@ -7,5 +8,6 @@ import { ensureUiControlsTable } from '../modules/ui-control/uiControl.model.js'
 export async function initializeDatabase() {
   const dbInfo = await verifyDatabaseConnection();
   await ensureUiControlsTable();
+  await ensureUsersTable();
   return dbInfo;
 }

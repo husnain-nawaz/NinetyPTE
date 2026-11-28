@@ -39,6 +39,13 @@ export async function ensureUiControlsTable() {
       1,
       JSON.stringify({ enableAiScoring: true, defaultSpeakingTimerSec: 40 }),
     ],
+    [
+      'auth_settings',
+      'auth',
+      'Authentication & Google Direct Login Settings',
+      1,
+      JSON.stringify({ googleClientId: '', allowRegistration: true }),
+    ],
   ];
 
   await Promise.all(
