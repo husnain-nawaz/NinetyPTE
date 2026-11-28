@@ -91,22 +91,14 @@ export function ModuleTabsBar({
   onSelect,
   showTimedInfo = false,
   rightSlot = null,
-  spreadTabs = false,
+  spreadTabs = true,
   darkMode = false,
 }) {
   const [infoOpen, setInfoOpen] = useState(false);
 
   return (
-    <div
-      className={`relative flex flex-wrap items-center justify-between gap-3 border-b pb-0.5 ${
-        darkMode ? 'border-zinc-800' : 'border-slate-100'
-      }`}
-    >
-      <div
-        className={`flex flex-1 flex-wrap items-center ${
-          spreadTabs ? 'gap-2 sm:gap-4' : 'gap-2 sm:gap-6'
-        }`}
-      >
+    <div className="relative flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-1 flex-wrap items-center gap-3 sm:gap-4">
         {tabs.map((skill) => {
           const meta = SKILL_THEME_TOKENS[skill] || SKILL_THEME_TOKENS.Speaking;
           const isActive = activeTab === skill;
@@ -116,18 +108,18 @@ export function ModuleTabsBar({
               key={skill}
               type="button"
               onClick={() => onSelect(skill)}
-              className={`inline-flex items-center gap-2 px-2 pb-2.5 pt-1 text-xs sm:text-sm font-semibold transition cursor-pointer border-b-2 ${
-                spreadTabs ? 'flex-1 min-w-[120px]' : ''
+              className={`inline-flex items-center gap-2 px-1 pb-2.5 pt-1 text-xs sm:text-sm font-semibold transition cursor-pointer border-b-2 ${
+                spreadTabs ? 'flex-1 min-w-[115px]' : ''
               } ${
                 isActive
                   ? meta.activeTabClass
                   : darkMode
-                    ? 'border-transparent text-zinc-400 hover:text-zinc-200'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                    ? 'border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                    : 'border-slate-200 text-slate-500 hover:text-slate-700'
               }`}
             >
               <span
-                className={`w-6 h-6 rounded-md inline-flex items-center justify-center ${
+                className={`w-6 h-6 rounded-md inline-flex items-center justify-center shrink-0 ${
                   isActive
                     ? meta.iconBgClass
                     : darkMode
@@ -146,7 +138,7 @@ export function ModuleTabsBar({
       {rightSlot}
 
       {showTimedInfo && (
-        <div className="relative pb-2">
+        <div className="relative pb-2 shrink-0">
           <button
             type="button"
             onClick={() => setInfoOpen((prev) => !prev)}
@@ -156,7 +148,13 @@ export function ModuleTabsBar({
             <Info className="w-4 h-4" />
           </button>
           {infoOpen && (
-            <div className="absolute right-0 top-7 z-20 w-72 rounded-xl border border-slate-200 bg-white p-3.5 text-left text-[11px] leading-relaxed text-slate-600 shadow-lg">
+            <div
+              className={`absolute right-0 top-7 z-20 w-72 rounded-xl border p-3.5 text-left text-[11px] leading-relaxed shadow-lg ${
+                darkMode
+                  ? 'border-zinc-700 bg-[#181c23] text-zinc-300'
+                  : 'border-slate-200 bg-white text-slate-600'
+              }`}
+            >
               Timed Sectional Mock Tests run with strict real Pearson countdown timers per section
               to build pacing accuracy before exam day.
             </div>

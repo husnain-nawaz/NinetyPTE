@@ -212,12 +212,16 @@ export function SectionalMockHistorySection({
         onSelect={onSelectSkill}
         darkMode={darkMode}
         rightSlot={
-          <div className="flex items-center gap-2.5 pb-2">
+          <div
+            className={`rounded-lg border px-3 py-2 flex items-center gap-2.5 mb-1 shrink-0 ${
+              darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
+            }`}
+          >
             <SkillIconGlyph skill={activeSkill} className={`w-3.5 h-3.5 ${activeSkillToken.cardAccentClass}`} />
             <span className={`text-xs font-bold ${activeSkillToken.cardAccentClass}`}>
               {String(activeSkillScore).padStart(2, '0')}/90
             </span>
-            <div className="w-24 h-1.5 rounded-full bg-slate-200/60 overflow-hidden">
+            <div className={`w-24 h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-zinc-800' : 'bg-slate-200/60'}`}>
               <div
                 className={`h-full rounded-full ${activeSkillToken.barColor}`}
                 style={{ width: `${Math.round((activeSkillScore / 90) * 100)}%` }}

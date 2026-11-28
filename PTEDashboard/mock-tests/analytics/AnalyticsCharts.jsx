@@ -2,7 +2,7 @@ import { HelpCircle } from 'lucide-react';
 import { formatMMSS } from '../exam-runner';
 import { avgNormalizedTaskScore, SKILL_SECTIONS } from './analyticsConfig';
 
-function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
+function SkillRadarPolygon({ speaking, writing, reading, listening, overall, darkMode }) {
   const cx = 110;
   const cy = 110;
   const maxR = 72;
@@ -18,16 +18,17 @@ function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
     point(90, reading),
     point(180, listening),
   ];
+  const gridStroke = darkMode ? '#2d333d' : '#e2e8f0';
 
   return (
     <svg viewBox="0 0 220 220" className="w-56 h-56 mx-auto" aria-label="Skill performance radar">
       {[20, 40, 60, 80, 100].map((pct) => {
         const r = (pct / 100) * maxR;
         const ring = `${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`;
-        return <polygon key={pct} points={ring} fill="none" stroke="#e2e8f0" strokeWidth="1" />;
+        return <polygon key={pct} points={ring} fill="none" stroke={gridStroke} strokeWidth="1" />;
       })}
-      <line x1={cx} y1={cy - maxR} x2={cx} y2={cy + maxR} stroke="#e2e8f0" strokeWidth="1" />
-      <line x1={cx - maxR} y1={cy} x2={cx + maxR} y2={cy} stroke="#e2e8f0" strokeWidth="1" />
+      <line x1={cx} y1={cy - maxR} x2={cx} y2={cy + maxR} stroke={gridStroke} strokeWidth="1" />
+      <line x1={cx - maxR} y1={cy} x2={cx + maxR} y2={cy} stroke={gridStroke} strokeWidth="1" />
       <polygon
         points={pts.map((p) => p.join(',')).join(' ')}
         fill="rgba(78, 165, 245, 0.16)"
@@ -55,7 +56,12 @@ function SkillRadarPolygon({ speaking, writing, reading, listening, overall }) {
       <text x={cx - maxR - 8} y={cy + 3} textAnchor="end" className="fill-[#0b4a7b] text-[10px] font-bold">
         Listening
       </text>
-      <text x={cx} y={cy - 2} textAnchor="middle" className="fill-[#0b4a7b] text-lg font-extrabold">
+      <text
+        x={cx}
+        y={cy - 2}
+        textAnchor="middle"
+        className={`text-lg font-extrabold ${darkMode ? 'fill-white' : 'fill-[#0b4a7b]'}`}
+      >
         {overall}
       </text>
       <text x={cx} y={cy + 12} textAnchor="middle" className="fill-slate-400 text-[9px] font-semibold">
@@ -151,7 +157,11 @@ export function AnalyticsOverviewSection({
               <SectionalDonutRing score={targetVal} color={targetSec.color} darkMode={darkMode} />
             </div>
 
-            <div className="md:col-span-9 space-y-3">
+            <div
+              className={`md:col-span-9 md:border-l md:pl-6 space-y-3 ${
+                darkMode ? 'md:border-zinc-800' : 'md:border-slate-200/80'
+              }`}
+            >
               <h2
                 className={`text-sm font-extrabold border-b pb-2 ${
                   darkMode ? 'text-white border-zinc-800' : 'text-[#0b4a7b] border-slate-100'
@@ -211,6 +221,7 @@ export function AnalyticsOverviewSection({
             reading={attempt.reading ?? 0}
             listening={attempt.listening ?? 0}
             overall={attempt.overall}
+            darkMode={darkMode}
           />
         </div>
 
@@ -415,14 +426,14 @@ export function AnalyticsTimeTakenSection({
           )}
 
           <div className="flex items-stretch gap-3 pt-2">
-            <div className="flex flex-col justify-between pb-6 text-[9px] font-medium text-slate-400 shrink-0 select-none">
+            <div className="h-40 flex flex-col justify-between text-[9px] font-medium text-slate-400 shrink-0 select-none">
               {yTicks.map((tick) => (
                 <span key={tick}>{formatMMSS(tick)}</span>
               ))}
             </div>
 
             <div className="relative flex-1">
-              <div className="pointer-events-none absolute inset-x-0 top-1 bottom-6 flex flex-col justify-between">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-40 flex flex-col justify-between">
                 {yTicks.map((tick) => (
                   <div
                     key={tick}
@@ -433,15 +444,17 @@ export function AnalyticsTimeTakenSection({
                 ))}
               </div>
 
-              <div className="relative z-10 h-44 flex items-end gap-2 sm:gap-3 pt-4 border-b border-slate-100/20 overflow-x-auto pb-1">
+              <div className="relative z-10 flex items-end gap-2 sm:gap-3 overflow-x-auto">
                 {timeBars.map((bar) => {
-                  const hPct = Math.max(12, Math.round((bar.secs / maxBarSec) * 100));
+                  const hPct = Math.max(8, Math.round((bar.secs / maxBarSec) * 100));
                   return (
-                    <div key={bar.code} className="min-w-[34px] flex-1 flex flex-col items-center gap-1">
-                      <span className="text-[9px] text-slate-400 font-medium">{formatMMSS(bar.secs)}</span>
-                      <div className="w-3.5 h-28 flex items-end justify-center">
+                    <div key={bar.code} className="min-w-[36px] flex-1 flex flex-col items-center gap-1.5">
+                      <div className="h-40 w-full flex flex-col items-center justify-end">
+                        <span className="text-[9px] text-slate-400 font-medium mb-1">
+                          {formatMMSS(bar.secs)}
+                        </span>
                         <div
-                          className="w-full rounded-t-full transition-all"
+                          className="w-3.5 rounded-t-full transition-all"
                           style={{ height: `${hPct}%`, backgroundColor: bar.color }}
                         />
                       </div>

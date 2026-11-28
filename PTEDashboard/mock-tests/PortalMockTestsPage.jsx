@@ -165,7 +165,11 @@ function MockTestListRow({
         <button
           type="button"
           onClick={() => onStart(item)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition cursor-pointer ${
+            darkMode
+              ? 'border-zinc-700 bg-[#14171c] text-zinc-200 hover:border-[#3dc8c1]'
+              : 'border-slate-200 bg-white text-[#0b4a7b] hover:border-[#0b4a7b] hover:bg-slate-50'
+          }`}
         >
           {isResumable ? <RotateCcw className="w-3 h-3" /> : <Play className="w-3 h-3" />}
           <span>{isResumable ? 'Resume' : 'Start'}</span>
@@ -449,19 +453,19 @@ export default function PortalMockTestsPage({
         {/* Top Segmented Tabs + Score History Button */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div
-            className={`inline-flex rounded-full border p-0.5 shadow-2xs ${
+            className={`inline-flex rounded-xl border overflow-hidden shadow-2xs ${
               darkMode ? 'border-zinc-700 bg-[#14171c]' : 'border-slate-200 bg-white'
             }`}
           >
             <button
               type="button"
               onClick={() => handleSelectTopTab('mock-test')}
-              className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              className={`min-w-[140px] px-6 py-2.5 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'mock-test'
-                  ? 'bg-[#3dc8c1] text-white shadow-2xs'
+                  ? 'bg-[#3dc8c1] text-white'
                   : darkMode
-                    ? 'bg-transparent text-zinc-300 hover:text-[#3dc8c1]'
-                    : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
+                    ? 'bg-transparent text-zinc-300 hover:bg-zinc-800'
+                    : 'bg-white text-[#0b4a7b] hover:bg-slate-50'
               }`}
             >
               Mock Test
@@ -469,12 +473,12 @@ export default function PortalMockTestsPage({
             <button
               type="button"
               onClick={() => handleSelectTopTab('scores')}
-              className={`min-w-[130px] rounded-full px-6 py-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
+              className={`min-w-[140px] px-6 py-2.5 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 topTab === 'scores'
-                  ? 'bg-[#3dc8c1] text-white shadow-2xs'
+                  ? 'bg-[#3dc8c1] text-white'
                   : darkMode
-                    ? 'bg-transparent text-zinc-300 hover:text-[#3dc8c1]'
-                    : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
+                    ? 'bg-transparent text-zinc-300 hover:bg-zinc-800'
+                    : 'bg-white text-[#0b4a7b] hover:bg-slate-50'
               }`}
             >
               Scores
@@ -502,7 +506,7 @@ export default function PortalMockTestsPage({
                 darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-200/80 bg-white'
               }`}
             >
-              <div className="inline-flex flex-wrap items-center rounded-full border border-slate-200 bg-white p-0.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {MOCK_TEST_MODES.map((tab) => {
                   const isActive = mode === tab.id;
                   return (
@@ -510,10 +514,12 @@ export default function PortalMockTestsPage({
                       key={tab.id}
                       type="button"
                       onClick={() => handleSelectMode(tab.id)}
-                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition cursor-pointer ${
+                      className={`rounded-lg px-4 py-2 text-xs font-semibold transition cursor-pointer ${
                         isActive
-                          ? 'bg-[#109aa8] text-white shadow-2xs'
-                          : 'bg-transparent text-[#0b4a7b] hover:text-[#109aa8]'
+                          ? 'bg-[#12738b] text-white shadow-2xs'
+                          : darkMode
+                            ? 'bg-transparent text-zinc-300 hover:bg-zinc-800 hover:text-white'
+                            : 'bg-transparent text-[#0b4a7b] hover:bg-slate-50 hover:text-[#12738b]'
                       }`}
                     >
                       {tab.label}
@@ -523,7 +529,11 @@ export default function PortalMockTestsPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5 text-xs">
-                <label className="inline-flex items-center gap-1.5 text-slate-600 cursor-pointer">
+                <label
+                  className={`inline-flex items-center gap-1.5 cursor-pointer ${
+                    darkMode ? 'text-zinc-300' : 'text-slate-600'
+                  }`}
+                >
                   <input
                     type="checkbox"
                     checked={predictionOnly}
@@ -536,7 +546,11 @@ export default function PortalMockTestsPage({
                   <span>Prediction MT</span>
                 </label>
 
-                <label className="inline-flex items-center gap-1.5 text-slate-600 cursor-pointer">
+                <label
+                  className={`inline-flex items-center gap-1.5 cursor-pointer ${
+                    darkMode ? 'text-zinc-300' : 'text-slate-600'
+                  }`}
+                >
                   <input
                     type="checkbox"
                     checked={presetOnly}
@@ -560,7 +574,11 @@ export default function PortalMockTestsPage({
                     }}
                     placeholder="Search..."
                     aria-label="Search mock tests"
-                    className="w-40 sm:w-48 rounded-full border border-slate-200 bg-white pl-8.5 pr-3.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-[#00b4c6]"
+                    className={`w-40 sm:w-48 rounded-full border pl-8.5 pr-3.5 py-1.5 text-xs focus:outline-none focus:border-[#00b4c6] ${
+                      darkMode
+                        ? 'border-zinc-700 bg-[#14171c] text-zinc-200 placeholder:text-zinc-500'
+                        : 'border-slate-200 bg-white text-slate-700'
+                    }`}
                   />
                 </div>
 
@@ -571,7 +589,11 @@ export default function PortalMockTestsPage({
                     aria-haspopup="listbox"
                     aria-expanded={filterMenuOpen}
                     aria-label="Filter mock tests"
-                    className="min-w-[100px] inline-flex items-center justify-between gap-4 rounded-full border border-slate-200 bg-white hover:border-[#00b4c6] px-4 py-1.5 text-xs font-medium text-[#0b4a7b] focus:outline-none focus:border-[#00b4c6] cursor-pointer transition"
+                    className={`min-w-[100px] inline-flex items-center justify-between gap-4 rounded-full border hover:border-[#00b4c6] px-4 py-1.5 text-xs font-medium focus:outline-none focus:border-[#00b4c6] cursor-pointer transition ${
+                      darkMode
+                        ? 'border-zinc-700 bg-[#14171c] text-zinc-200'
+                        : 'border-slate-200 bg-white text-[#0b4a7b]'
+                    }`}
                   >
                     <span>{filterValue}</span>
                     <ChevronDown
@@ -591,7 +613,11 @@ export default function PortalMockTestsPage({
                       <div
                         role="listbox"
                         aria-label="Mock test filter options"
-                        className="absolute left-0 top-full mt-2 w-40 rounded-xl border border-slate-100 bg-white shadow-lg divide-y divide-slate-100 overflow-hidden z-30"
+                        className={`absolute left-0 top-full mt-2 w-40 rounded-xl border shadow-lg divide-y overflow-hidden z-30 ${
+                          darkMode
+                            ? 'border-zinc-800 bg-[#181c23] divide-zinc-800'
+                            : 'border-slate-100 bg-white divide-slate-100'
+                        }`}
                       >
                         {MOCK_DIFFICULTY_FILTERS.map((opt) => {
                           const isSelected = filterValue === opt;
@@ -608,8 +634,12 @@ export default function PortalMockTestsPage({
                               }}
                               className={`w-full text-left px-4 py-2.5 text-xs transition cursor-pointer ${
                                 isSelected
-                                  ? 'font-bold text-[#0b4a7b] bg-slate-50/70'
-                                  : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-[#0b4a7b]'
+                                  ? darkMode
+                                    ? 'font-bold text-[#3dc8c1] bg-zinc-800/70'
+                                    : 'font-bold text-[#0b4a7b] bg-slate-50/70'
+                                  : darkMode
+                                    ? 'font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white'
+                                    : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-[#0b4a7b]'
                               }`}
                             >
                               {opt}
@@ -625,7 +655,11 @@ export default function PortalMockTestsPage({
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="rounded-full border border-[#0b4a7b]/40 bg-white hover:border-[#0b4a7b] px-4 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
+                    className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition cursor-pointer ${
+                      darkMode
+                        ? 'border-zinc-700 bg-[#14171c] text-zinc-200 hover:border-[#3dc8c1]'
+                        : 'border-[#0b4a7b]/40 bg-white text-[#0b4a7b] hover:border-[#0b4a7b]'
+                    }`}
                   >
                     Reset
                   </button>
@@ -636,13 +670,25 @@ export default function PortalMockTestsPage({
             {mode === 'full' ? (
               <div className="space-y-3">
                 {/* Featured Free Mock Test Card */}
-                <div className="rounded-xl border border-[#bceee9] bg-linear-to-r from-[#effcfb] to-[#f8fefe] px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                <div
+                  className={`rounded-xl border px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 ${
+                    darkMode
+                      ? 'border-[#1f565a] bg-[#0e2629]'
+                      : 'border-[#bceee9] bg-linear-to-r from-[#effcfb] to-[#f8fefe]'
+                  }`}
+                >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-10 h-10 rounded-xl bg-white text-[#1ea7a1] border border-[#cef2ee] flex items-center justify-center shrink-0">
+                    <span
+                      className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+                        darkMode
+                          ? 'bg-[#143337] text-[#3dc8c1] border-[#1f565a]'
+                          : 'bg-white text-[#1ea7a1] border-[#cef2ee]'
+                      }`}
+                    >
                       <Gift className="w-5 h-5" />
                     </span>
                     <div>
-                      <p className="text-xs sm:text-sm font-bold text-[#0b4a7b]">
+                      <p className={`text-xs sm:text-sm font-bold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
                         {dataset.freeFullTest.title}
                       </p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-4 text-[11px] text-slate-400">
@@ -659,8 +705,8 @@ export default function PortalMockTestsPage({
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 ml-auto">
-                    <span className="rounded-md bg-[#e5f8f6] px-2.5 py-0.5 text-[11px] font-semibold text-[#1ea7a1]">
-                      Free
+                    <span className="text-[11px] font-semibold text-[#1ea7a1]">
+                      {dataset.freeFullTest.trackLabel}
                     </span>
                     {freeInProgressPercent !== null && (
                       <MockProgressRing percent={freeInProgressPercent} />
@@ -668,7 +714,11 @@ export default function PortalMockTestsPage({
                     <button
                       type="button"
                       onClick={() => handleRequestStartTest(dataset.freeFullTest)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white hover:border-[#0b4a7b] px-3 py-1.5 text-xs font-semibold text-[#0b4a7b] transition cursor-pointer"
+                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition cursor-pointer ${
+                        darkMode
+                          ? 'border-zinc-700 bg-[#14171c] text-zinc-200 hover:border-[#3dc8c1]'
+                          : 'border-slate-200 bg-white text-[#0b4a7b] hover:border-[#0b4a7b]'
+                      }`}
                     >
                       {freeInProgressPercent !== null || freeTestAttempts > 0 ? (
                         <RotateCcw className="w-3 h-3" />
@@ -698,23 +748,35 @@ export default function PortalMockTestsPage({
                 </div>
 
                 {/* Create Your Own Mock Test Banner */}
-                <div className="rounded-xl border border-[#b4ece6] bg-linear-to-r from-[#e6f8f6] to-[#f4fcfb] px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                <div
+                  className={`rounded-xl border px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 ${
+                    darkMode
+                      ? 'border-[#1f565a] bg-[#102d31]'
+                      : 'border-[#b4ece6] bg-linear-to-r from-[#e6f8f6] to-[#f4fcfb]'
+                  }`}
+                >
                   <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-xl bg-white text-[#1ea7a1] border border-[#cef2ee] flex items-center justify-center shrink-0">
+                    <span
+                      className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+                        darkMode
+                          ? 'bg-[#143337] text-[#3dc8c1] border-[#1f565a]'
+                          : 'bg-white text-[#1ea7a1] border-[#cef2ee]'
+                      }`}
+                    >
                       <Sliders className="w-5 h-5" />
                     </span>
                     <div>
-                      <p className="text-xs sm:text-sm font-bold text-[#0b4a7b]">
+                      <p className={`text-xs sm:text-sm font-bold ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
                         Create Your Own Mock Test
                       </p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
+                      <p className={`text-[11px] mt-0.5 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
                         Customize test length, section focus &amp; difficulty as per your need.
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 ml-auto">
-                    <span className="text-[11px] font-medium text-slate-600">
+                    <span className={`text-[11px] font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
                       {dataset.customRangeLabel}
                     </span>
                     <button
@@ -728,7 +790,9 @@ export default function PortalMockTestsPage({
                   </div>
                 </div>
 
-                <h2 className="text-sm font-extrabold text-[#0b4a7b] pt-2">Mock Tests</h2>
+                <h2 className={`text-sm font-extrabold pt-2 ${darkMode ? 'text-white' : 'text-[#0b4a7b]'}`}>
+                  Mock Tests
+                </h2>
               </div>
             ) : (
               <ModuleTabsBar
@@ -792,10 +856,14 @@ export default function PortalMockTestsPage({
                       key={pageNum}
                       type="button"
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      className={`w-7 h-7 rounded-full text-xs font-bold transition cursor-pointer ${
                         active
-                          ? 'bg-[#e6f7f6] text-[#1ea7a1] border border-[#bceee9]'
-                          : 'text-slate-600 hover:bg-slate-100'
+                          ? darkMode
+                            ? 'bg-[#143337] text-[#3dc8c1] border border-[#3dc8c1]'
+                            : 'bg-[#e6f7f6] text-[#1ea7a1] border border-[#bceee9]'
+                          : darkMode
+                            ? 'text-zinc-400 hover:bg-zinc-800'
+                            : 'text-slate-600 hover:bg-slate-100'
                       }`}
                     >
                       {pageNum}
@@ -871,14 +939,6 @@ export default function PortalMockTestsPage({
                   onSelect={setActiveScoreSkill}
                   spreadTabs
                   darkMode={darkMode}
-                />
-              )}
-
-              {scoreMode !== 'full' && (
-                <ModuleTabsBar
-                  tabs={SECTION_TABS}
-                  activeTab={activeScoreSkill}
-                  onSelect={setActiveScoreSkill}
                 />
               )}
 

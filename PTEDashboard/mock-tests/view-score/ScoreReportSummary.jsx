@@ -223,15 +223,15 @@ export function ScoreReportSummaryCard({
 
           {isTimedReport ? (
             <div
-              className={`rounded-xl border px-5 py-3.5 space-y-1.5 shrink-0 ${
-                darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-100 bg-slate-50/70'
+              className={`rounded-xl border px-7 py-4 text-center space-y-1.5 shrink-0 ${
+                darkMode ? 'border-zinc-800 bg-[#181c23]' : 'border-slate-100 bg-[#fcfbfa]'
               }`}
             >
-              <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#eb8c44]">
+              <p className="inline-flex items-center justify-center gap-1.5 text-[11px] font-bold text-[#eb8c44]">
                 <Hourglass className="w-3.5 h-3.5" />
                 <span>Total Taken Time</span>
               </p>
-              <p className="text-sm font-extrabold">
+              <p className="text-base font-extrabold">
                 <span className={darkMode ? 'text-white' : 'text-[#0b4a7b]'}>{formatMMSS(takenSec)}</span>{' '}
                 <span className="text-xs font-semibold text-slate-400">/ {formatMMSS(totalSec)}</span>
               </p>

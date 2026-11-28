@@ -167,8 +167,10 @@ function buildSectionalMockTests(isCore, skill) {
 
 const TIMED_SECTIONAL_PATTERN = {
   Speaking: [
-    { coreQuestions: 24, academicQuestions: 27, durationMinutes: 30 },
-    { coreQuestions: 25, academicQuestions: 28, durationMinutes: 30 },
+    { coreQuestions: 30, academicQuestions: 34, durationMinutes: 30 },
+    { coreQuestions: 30, academicQuestions: 34, durationMinutes: 30 },
+    { coreQuestions: 28, academicQuestions: 32, durationMinutes: 30 },
+    { coreQuestions: 28, academicQuestions: 32, durationMinutes: 30 },
   ],
   Writing: [
     { coreQuestions: 3, academicQuestions: 3, durationMinutes: 32 },

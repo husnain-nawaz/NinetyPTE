@@ -67,9 +67,11 @@ export function QuestionAnalysisSection({
               return (
                 <div
                   key={`${item.id}-${idx}`}
-                  className={`px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 transition ${
-                    darkMode ? 'hover:bg-[#1a1f28]' : 'hover:bg-slate-50/60'
-                  }`}
+                  className={`px-4 sm:px-6 py-3.5 transition ${
+                    isTimedReport
+                      ? 'flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1fr)_120px_auto] md:items-center md:gap-4'
+                      : 'flex flex-wrap items-center justify-between gap-3'
+                  } ${darkMode ? 'hover:bg-[#1a1f28]' : 'hover:bg-slate-50/60'}`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span
@@ -91,7 +93,7 @@ export function QuestionAnalysisSection({
 
                   {isTimedReport && (
                     <div
-                      className={`inline-flex items-center gap-1.5 text-xs font-bold shrink-0 ${
+                      className={`inline-flex items-center gap-1.5 text-xs font-bold shrink-0 md:justify-center ${
                         darkMode ? 'text-zinc-200' : 'text-[#0b4a7b]'
                       }`}
                     >
@@ -100,7 +102,11 @@ export function QuestionAnalysisSection({
                     </div>
                   )}
 
-                  <div className="flex flex-wrap items-center gap-2.5 ml-auto sm:ml-0 shrink-0">
+                  <div
+                    className={`flex flex-wrap items-center gap-2.5 shrink-0 ${
+                      isTimedReport ? 'md:justify-end' : 'ml-auto sm:ml-0'
+                    }`}
+                  >
                     {(item.skillPills || []).map((pill) => (
                       <span
                         key={pill.key}
