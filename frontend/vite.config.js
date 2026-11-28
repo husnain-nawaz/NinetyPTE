@@ -29,5 +29,11 @@ export default defineConfig({
     fs: {
       allow: ['..'],
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
   },
 });
